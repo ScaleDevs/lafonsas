@@ -1,3 +1,10 @@
-import { Product } from '@prisma/client';
+import { Delivery } from '@prisma/client';
 
-export type IProduct = Product;
+// models
+export type IDelivery = Delivery;
+
+// inputs
+export type IPaginationInputs = {
+  page: number;
+  limit: number;
+};

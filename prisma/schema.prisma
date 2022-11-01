@@ -1,20 +1,30 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["referentialIntegrity"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider             = "mysql"
-  url                  = env("DATABASE_URL")
-  referentialIntegrity = "prisma"
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
 }
 
-model Product {
-  id              Int    @id @default(autoincrement())
-  productName     String
-  productPrice    Int
-  productCategory String
+model Delivery {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  store           String
+  postingDate     DateTime?
+  deliveryNumber  String    @unique
+  amount          Int       @db.Int
+  badOrder        Int?      @db.Int
+  widthHoldingTax Int?      @db.Int
+  otherDeduction  Int?      @db.Int
+  amountPaid      Int?      @db.Int
+  checkNumber     String?
+  checkDate       DateTime?
+  orders          Order[]
+  returnSlip      Order[]
+}
+
+type Order {
+  size     String
+  quantity Int
+  price    Int
 }

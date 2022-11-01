@@ -1,4 +1,4 @@
-This is a Dashboard template built with Next.js fullstack setup (Helpful for small to medium size apps)
+# Lafonsas Inventory System
 
 ## Stacks
 
@@ -28,3 +28,6 @@ This is a Dashboard template built with Next.js fullstack setup (Helpful for sma
 - MAILER_SEND_FROM_EMAIL={mailer send from email}
 - MAILER_SEND_FROM_NAME={mailer send from name}
 - MAILER_SEND_API_KEY={api key of your mailer send account domain}
+
+## reminders
+- prisma model delivery (can update later postingDate to have an index)
