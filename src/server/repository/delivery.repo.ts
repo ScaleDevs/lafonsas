@@ -46,6 +46,23 @@ class Respository {
       records: result,
     };
   }
+
+  public async updateDelivery(deliveryId: string, deliveryPartialData: Partial<IDelivery>) {
+    return prisma.delivery.update({
+      where: {
+        id: deliveryId,
+      },
+      data: deliveryPartialData,
+    });
+  }
+
+  public async deleteDelivery(deliveryId: string) {
+    return prisma.delivery.delete({
+      where: {
+        id: deliveryId,
+      },
+    });
+  }
 }
 
 export const DeliveryRepository = new Respository();

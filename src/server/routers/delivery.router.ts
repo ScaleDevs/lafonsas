@@ -40,6 +40,66 @@ export const deliveryRouter = createRouter()
       });
     },
   })
+  .mutation('update', {
+    input: z.object({
+      deliveryId: z.string(),
+      partialData: z.object({
+        storeId: z.string().optional(),
+        postingDate: z.string().nullable().optional(),
+        deliveryNumber: z.string().optional(),
+        amount: z.number().optional(),
+        badOrder: z.number().nullable().optional(),
+        widthHoldingTax: z.number().nullable().optional(),
+        otherDeduction: z.number().nullable().optional(),
+        amountPaid: z.number().nullable().optional(),
+        checkNumber: z.string().nullable().optional(),
+        checkDate: z.string().nullable().optional(),
+        orders: z
+          .array(
+            z.object({
+              size: z.string(),
+              quantity: z.number(),
+              price: z.number(),
+            }),
+          )
+          .optional(),
+        returnSlip: z
+          .array(
+            z.object({
+              size: z.string(),
+              quantity: z.number(),
+              price: z.number(),
+            }),
+          )
+          .optional(),
+      }),
+    }),
+    resolve({ input }) {
+      const partialData = {
+        ...input.partialData,
+        postingDate:
+          input.partialData.postingDate === undefined
+            ? undefined
+            : !!input.partialData.postingDate
+            ? new Date(input.partialData.postingDate)
+            : null,
+        checkDate:
+          input.partialData.checkDate === undefined
+            ? undefined
+            : !!input.partialData.checkDate
+            ? new Date(input.partialData.checkDate)
+            : null,
+      };
+
+      return DeliveryService.updateDelivery(input.deliveryId, partialData);
+    },
+  })
+  .mutation('delete', {
+    input: z.string(),
+    resolve({ input }) {
+      return DeliveryService.deleteDelivery(input);
+    },
+  })
   .query('getById', {
     input: z.string(),
     resolve({ input }) {

@@ -34,6 +34,22 @@ class Service {
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
     }
   }
+
+  public async updateDelivery(deliveryId: string, partialData: Partial<IDelivery>) {
+    try {
+      return DeliveryRepository.updateDelivery(deliveryId, partialData);
+    } catch (err) {
+      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
+    }
+  }
+
+  public async deleteDelivery(deliveryId: string) {
+    try {
+      return DeliveryRepository.deleteDelivery(deliveryId);
+    } catch (err) {
+      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
+    }
+  }
 }
 
 export const DeliveryService = new Service();
