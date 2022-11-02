@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ReactPaginate from 'react-paginate';
 
 import { trpc } from '@/utils/trpc';
 import Layout from '@/layouts/index';
@@ -8,10 +9,14 @@ import StoreModal from '@/modules/store/StoreModal';
 
 export default function ListProducts() {
   const [storeData, setStoreData] = useState<IStore | null>(null);
-  const { data, isLoading, refetch } = trpc.useQuery(['store.getStores', {}]);
+  const [page, setPage] = useState(1);
+  const { data, isLoading, refetch } = trpc.useQuery(['store.getStores', { limit: 10, page }]);
 
   const onStoreClick = (data: IStore) => setStoreData({ ...data });
+
   const resetStoreState = () => setStoreData(null);
+
+  const handlePageChange = ({ selected }: { selected: number }) => setPage(selected + 1);
 
   return (
     <Layout>
@@ -48,6 +53,18 @@ export default function ListProducts() {
             </tbody>
           </table>
         )}
+        <ReactPaginate
+          breakLabel='...'
+          nextLabel={page === data?.pageCount ? '' : '>'}
+          previousLabel={page === 1 ? '' : '<'}
+          onPageChange={handlePageChange}
+          pageRangeDisplayed={6}
+          pageCount={data?.pageCount as number}
+          breakClassName=''
+          containerClassName='flex flex-row space-x-7 items-center justify-center pt-10 font-comfortaa text-xl'
+          activeClassName='text-blue-400'
+          renderOnZeroPageCount={null as any}
+        />
       </div>
     </Layout>
   );

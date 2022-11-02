@@ -40,7 +40,7 @@ class Respository {
     });
 
     return {
-      totalCount,
+      pageCount: Math.ceil(totalCount / limit),
       records: result,
     };
   }
