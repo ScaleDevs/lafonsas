@@ -7,9 +7,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+type Order {
+  size     String
+  quantity Int
+  price    Int
+}
+
+type Product {
+  size  String
+  price Int    @db.Int
+}
+
+model Store {
+  id         String     @id @default(auto()) @map("_id") @db.ObjectId
+  name       String     @unique
+  products   Product[]
+  deliveries Delivery[]
+}
+
 model Delivery {
   id              String    @id @default(auto()) @map("_id") @db.ObjectId
-  store           String
   postingDate     DateTime?
   deliveryNumber  String    @unique
   amount          Int       @db.Int
@@ -21,10 +38,6 @@ model Delivery {
   checkDate       DateTime?
   orders          Order[]
   returnSlip      Order[]
-}
-
-type Order {
-  size     String
-  quantity Int
-  price    Int
+  store           Store     @relation(fields: [storeId], references: [id])
+  storeId         String    @db.ObjectId
 }
