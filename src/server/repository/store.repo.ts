@@ -44,6 +44,23 @@ class Respository {
       records: result,
     };
   }
+
+  public async updateStore(storeId: string, storePartialData: Partial<IStore>) {
+    return prisma.store.update({
+      where: {
+        id: storeId,
+      },
+      data: storePartialData,
+    });
+  }
+
+  public async deleteStore(storeId: string) {
+    return prisma.store.delete({
+      where: {
+        id: storeId,
+      },
+    });
+  }
 }
 
 export const StoreRepository = new Respository();

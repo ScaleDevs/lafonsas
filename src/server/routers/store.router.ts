@@ -19,6 +19,31 @@ export const storeRouter = createRouter()
       return StoreService.createStore(input);
     },
   })
+  .mutation('update', {
+    input: z.object({
+      storeId: z.string(),
+      storePartialData: z.object({
+        name: z.string().optional(),
+        products: z
+          .array(
+            z.object({
+              size: z.string(),
+              price: z.number(),
+            }),
+          )
+          .optional(),
+      }),
+    }),
+    resolve({ input }) {
+      return StoreService.updateStore(input.storeId, input.storePartialData);
+    },
+  })
+  .mutation('delete', {
+    input: z.string(),
+    resolve({ input }) {
+      return StoreService.deleteStore(input);
+    },
+  })
   .query('getById', {
     input: z.string(),
     resolve({ input }) {

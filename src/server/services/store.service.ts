@@ -34,6 +34,22 @@ class Service {
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
     }
   }
+
+  public async updateStore(storeId: string, storePartialData: Partial<IStore>) {
+    try {
+      return StoreRepository.updateStore(storeId, storePartialData);
+    } catch (err) {
+      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
+    }
+  }
+
+  public async deleteStore(storeId: string) {
+    try {
+      return StoreRepository.deleteStore(storeId);
+    } catch (err) {
+      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
+    }
+  }
 }
 
 export const StoreService = new Service();
