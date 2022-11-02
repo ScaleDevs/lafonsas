@@ -13,7 +13,7 @@ interface InputWrapperProps {
 
 const InputWrapper = ({ register, label, labelCss, property, placeholder, errorsMsg, type = 'text' }: InputWrapperProps) => {
   return (
-    <div className='flex flex-col space-y-1 text-md md:text-lg font-semibold font-raleway'>
+    <div className='flex flex-col space-y-1 text-md md:text-lg font-semibold font-comfortaa'>
       {label ? <label className={'p-0 ' + labelCss}>{label} :</label> : ''}
       <input
         {...register(property)}
@@ -23,7 +23,7 @@ const InputWrapper = ({ register, label, labelCss, property, placeholder, errors
         }`}
         placeholder={placeholder}
       />
-      {errorsMsg ? <FadeIn cssText='font-raleway text-red-500'>{errorsMsg}</FadeIn> : ''}
+      {errorsMsg ? <FadeIn cssText='font-comfortaa text-red-500'>{errorsMsg}</FadeIn> : ''}
     </div>
   );
 };
