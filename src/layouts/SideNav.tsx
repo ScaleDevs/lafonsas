@@ -159,11 +159,11 @@ export default function SideNav() {
                 Users
               </NavLink>
               <NavLinkHouse
-                title='Product'
+                title='Store'
                 Icon={() => <IconComp iconName='BoxIcon' iconProps={{}} />}
                 links={[
-                  { title: 'Create Product', path: '/product/create' },
-                  { title: 'List Product', path: '/product/list' },
+                  { title: 'Create Store', path: '/store/create' },
+                  { title: 'List Stores', path: '/store/list' },
                 ]}
               />
               <NavLink path='/login' logout Icon={() => <IconComp iconName='LogoutIcon' iconProps={{}} />}>
