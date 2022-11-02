@@ -7,7 +7,7 @@ export const deliveryRouter = createRouter()
   .middleware(authMiddleware)
   .mutation('create', {
     input: z.object({
-      store: z.string(),
+      storeId: z.string(),
       postingDate: z.string().nullable(),
       deliveryNumber: z.string(),
       amount: z.number(),

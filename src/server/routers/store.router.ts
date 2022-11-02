@@ -1,0 +1,43 @@
+import { z } from 'zod';
+import { createRouter } from '../createRouter';
+import { authMiddleware } from '../util';
+import { StoreService } from '@/server/services/store.service';
+
+export const storeRouter = createRouter()
+  .middleware(authMiddleware)
+  .mutation('create', {
+    input: z.object({
+      name: z.string(),
+      products: z.array(
+        z.object({
+          size: z.string(),
+          price: z.number(),
+        }),
+      ),
+    }),
+    resolve({ input }) {
+      return StoreService.createStore(input);
+    },
+  })
+  .query('getById', {
+    input: z.string(),
+    resolve({ input }) {
+      return StoreService.findStoreById(input);
+    },
+  })
+  .query('getStoreByName', {
+    input: z.string(),
+    resolve({ input }) {
+      return StoreService.findStoreByName(input);
+    },
+  })
+  .query('getStores', {
+    input: z.object({
+      storeName: z.string().min(3).optional(),
+      page: z.number().optional().default(1),
+      limit: z.number().optional().default(10),
+    }),
+    resolve({ input }) {
+      return StoreService.findStores(input);
+    },
+  });

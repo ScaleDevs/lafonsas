@@ -2,7 +2,7 @@ import prisma from './prisma.client';
 import { IDelivery, IPaginationInputs } from '@/utils/types';
 
 export type IFindDeliveriesInput = {
-  store?: string;
+  storeId?: string;
   startDate: Date;
   endDate: Date;
 } & IPaginationInputs;
@@ -24,13 +24,13 @@ class Respository {
     return prisma.delivery.findUnique({ where: { deliveryNumber } });
   }
 
-  public async findDeliveries({ startDate, endDate, store, page, limit }: IFindDeliveriesInput) {
+  public async findDeliveries({ startDate, endDate, storeId, page, limit }: IFindDeliveriesInput) {
     const whereFilter = {
       postingDate: {
         gte: startDate,
         lte: endDate,
       },
-      store,
+      storeId,
     };
 
     const result = await prisma.delivery.findMany({
