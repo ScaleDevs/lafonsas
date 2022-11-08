@@ -26,6 +26,7 @@ export interface ISelectProps {
     property: any;
   };
   onChange?: (value: string) => void;
+  defaultValue?: string;
 }
 
 export default function SelectField({
@@ -39,6 +40,7 @@ export default function SelectField({
   placeholder = 'Select ...',
   formInput,
   onChange,
+  defaultValue,
   errorMessage,
 }: ISelectProps) {
   const radius = {
@@ -63,7 +65,7 @@ export default function SelectField({
   } bg-transparent border rounded-sm outline-none duration-500 placeholder:text-sm`;
 
   const [showMenu, setShowMenu] = useState(false);
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState(defaultValue ? options.find((opt) => opt.value === defaultValue)?.label : '');
   const [menuItems, setMenuItems] = useState<IOption[]>(options);
 
   const onUseFormUpdate = (value: string) => {
