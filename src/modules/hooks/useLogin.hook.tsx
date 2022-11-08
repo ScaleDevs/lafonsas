@@ -20,7 +20,7 @@ export default function useLogin() {
   const { mutate, isLoading: isSignInLoading } = trpc.useMutation('auth.signIn');
   const { loginAllTabs } = useSyncTabs();
 
-  const { register, handleSubmit } = useForm({
+  const { register, handleSubmit, setValue } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
       username: '',
@@ -64,5 +64,6 @@ export default function useLogin() {
     register,
     signIn,
     updateAuthStates,
+    setValue,
   };
 }

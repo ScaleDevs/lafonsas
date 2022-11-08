@@ -7,7 +7,7 @@ import { trpc } from '@/utils/trpc';
 import Layout from '@/layouts/index';
 import ModalLoader from '@/components/ModalLoader';
 import Notification from '@/components/Notification';
-import InputWrapper from '@/components/InputWrapper';
+import TextField from '@/components/TextField';
 import IconComp from '@/components/Icon';
 import FadeIn from '@/components/FadeIn';
 
@@ -28,11 +28,11 @@ const schema = z.object({
 
 type FormSchemaType = z.infer<typeof schema>;
 
-export default function CreateProduct() {
+export default function CreateStore() {
   const { mutate, isLoading, isSuccess, isError } = trpc.useMutation('store.create');
 
   const {
-    register,
+    setValue,
     handleSubmit,
     reset,
     formState: { errors },
@@ -48,8 +48,6 @@ export default function CreateProduct() {
       required: 'Please add a product',
     },
   });
-
-  console.log(errors);
 
   const createStore = (formData: FormSchemaType) => {
     mutate(formData, {
@@ -76,38 +74,38 @@ export default function CreateProduct() {
       >
         {isSuccess ? <Notification rounded='sm' type='success' message='Store Saved' /> : ''}
         {isError ? <Notification rounded='sm' type='error' message='Something went wrong' /> : ''}
-        <InputWrapper
-          register={register}
-          errorsMsg={errors.name?.message}
+        <TextField
+          required
           label='Store Name'
-          property='name'
           placeholder='enter store name here'
+          formInput={{ setValue, property: 'name' }}
+          errorMessage={errors.name?.message}
         />
 
         <div>
-          <h1 className='text-md md:text-lg font-semibold font-raleway'>Products :</h1>
+          <h1 className='text-md md:text-lg font-semibold font-raleway'>
+            Products : <span className='text-red-500'>*</span>
+          </h1>
           {errors.products?.message ? <FadeIn cssText='font-raleway text-red-500'>{errors.products?.message}</FadeIn> : ''}
           <div className='space-y-3'>
             {fields.map((field, index) => {
               return (
                 <div key={field.id} className='grid grid-rows-3 md:grid-rows-1 grid-flow-col gap-3 mt-2 w-full'>
-                  <InputWrapper
+                  <TextField
                     label='Size'
                     labelCss='text-sm font-bold'
-                    register={register}
                     type='text'
-                    errorsMsg={errors?.products ? errors.products[index]?.size?.message : undefined}
-                    property={`products.${index}.size`}
                     placeholder='Product size here'
+                    formInput={{ setValue, property: `products.${index}.size` }}
+                    errorMessage={errors?.products ? errors.products[index]?.size?.message : undefined}
                   />
-                  <InputWrapper
+                  <TextField
                     label='Price'
                     labelCss='text-sm font-bold'
-                    register={register}
                     type='number'
-                    errorsMsg={errors?.products ? errors.products[index]?.price?.message : undefined}
-                    property={`products.${index}.price`}
                     placeholder='Product price here'
+                    formInput={{ setValue, property: `products.${index}.price` }}
+                    errorMessage={errors?.products ? errors.products[index]?.price?.message : undefined}
                   />
                   <button
                     type='button'
@@ -122,10 +120,10 @@ export default function CreateProduct() {
           </div>
           <button
             type='button'
-            className='bg-blue-500 rounded-sm p-2 text-md mt-3 font-raleway font-semibold'
+            className='bg-blue-500 rounded-sm py-1 px-5 text-md mt-3 text-xl font-raleway font-semibold'
             onClick={() => append({ size: '', price: 0 })}
           >
-            Add Product
+            +
           </button>
         </div>
         <br />

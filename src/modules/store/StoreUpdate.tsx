@@ -7,7 +7,7 @@ import { IStore } from '@/utils/types';
 import { trpc } from '@/utils/trpc';
 import Modal from '@/components/Modal';
 import { Overlay } from '@/components/Overlay';
-import InputWrapper from '@/components/InputWrapper';
+import TextField from '@/components/TextField';
 import FadeIn from '@/components/FadeIn';
 import IconComp from '@/components/Icon';
 import Notification from '@/components/Notification';
@@ -41,9 +41,9 @@ export default function StoreUpdate({ resetStoreState, data, storesRefetch, rese
   const { mutate, isLoading, isSuccess, isError } = trpc.useMutation('store.update');
 
   const {
-    register,
+    setValue,
     handleSubmit,
-    formState: { errors, dirtyFields },
+    formState: { errors, dirtyFields, defaultValues },
     control,
     reset,
   } = useForm({
@@ -113,12 +113,13 @@ export default function StoreUpdate({ resetStoreState, data, storesRefetch, rese
           )}
 
           <form onSubmit={handleSubmit(updateStore)}>
-            <InputWrapper
-              register={register}
-              errorsMsg={errors.name?.message}
+            <TextField
+              required
               label='Store Name'
-              property='name'
               placeholder='enter store name here'
+              defaultValue={defaultValues?.name}
+              formInput={{ setValue, property: 'name' }}
+              errorMessage={errors.name?.message}
             />
 
             <br />
@@ -130,23 +131,23 @@ export default function StoreUpdate({ resetStoreState, data, storesRefetch, rese
                 {fields.map((field, index) => {
                   return (
                     <div key={field.id} className='grid grid-rows-3 md:grid-rows-1 grid-flow-col gap-3 mt-2 w-full'>
-                      <InputWrapper
+                      <TextField
                         label='Size'
                         labelCss='text-sm font-bold'
-                        register={register}
                         type='text'
-                        errorsMsg={errors?.products ? errors.products[index]?.size?.message : undefined}
-                        property={`products.${index}.size`}
                         placeholder='Product size here'
+                        defaultValue={field.size}
+                        formInput={{ setValue, property: `products.${index}.size` }}
+                        errorMessage={errors?.products ? errors.products[index]?.size?.message : undefined}
                       />
-                      <InputWrapper
+                      <TextField
                         label='Price'
                         labelCss='text-sm font-bold'
-                        register={register}
                         type='number'
-                        errorsMsg={errors?.products ? errors.products[index]?.price?.message : undefined}
-                        property={`products.${index}.price`}
                         placeholder='Product price here'
+                        defaultValue={field.price}
+                        formInput={{ setValue, property: `products.${index}.price` }}
+                        errorMessage={errors?.products ? errors.products[index]?.price?.message : undefined}
                       />
                       <button
                         type='button'

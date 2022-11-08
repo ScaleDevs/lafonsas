@@ -10,6 +10,7 @@ import useAuthStoreTrack from '@/store/auth.store';
 import useLogin from '@/hooks/useLogin.hook';
 import Loader from '@/components/Loader';
 import IconComp from '@/components/Icon';
+import TextField from '@/components/TextField';
 
 const schema = z.object({
   newPassword: z.string(),
@@ -32,7 +33,7 @@ export default function ForceChangePassword() {
 
   const pwdReqItemCss = (isPassed: boolean) => colorTransitionCss + ' ' + (isPassed ? 'text-green-400' : '');
 
-  const { register, handleSubmit } = useForm({
+  const { setValue, handleSubmit } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
       newPassword: '',
@@ -41,9 +42,7 @@ export default function ForceChangePassword() {
 
   const toggleShowPass = () => setShowPassword((val) => !val);
 
-  const onPasswordValidation = (e: any) => {
-    const newValue: string = e.target.value;
-
+  const onPasswordValidation = (newValue: any) => {
     if (newValue.length >= 8 && !passMinCharLength) {
       setPassMinCharLength(true);
       setConditionsPassed((i) => i + 1);
@@ -134,11 +133,11 @@ export default function ForceChangePassword() {
       <form className='flex flex-col space-y-6 md:w-full' onSubmit={handleSubmit(forceChangePassword)}>
         <h1 className='text-center font-roboto text-xl'>You are required to change your password</h1>
         <div className='w-full relative'>
-          <input
+          <TextField
+            size='md'
             type={showPassword ? 'text' : 'password'}
-            className='p-4 rounded-sm w-full'
-            placeholder='enter new password'
-            {...register('newPassword')}
+            placeholder='enter password'
+            formInput={{ setValue, property: 'newPassword' }}
             onChange={onPasswordValidation}
           />
           {showPassword ? (
