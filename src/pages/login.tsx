@@ -14,7 +14,7 @@ export default function Login() {
         <link rel='icon' href='/favicon.ico' />
       </Head>
 
-      <div className='w-full h-screen bg-zinc-800 flex flex-row justify-center items-center font-roboto'>
+      <div className='w-full h-screen bg-zinc-900 flex flex-row justify-center items-center font-roboto'>
         {forceChangePassword ? <ForceChangePassword /> : <LoginForm />}
       </div>
     </div>

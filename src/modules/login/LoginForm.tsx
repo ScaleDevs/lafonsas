@@ -13,7 +13,7 @@ export default function LoginForm() {
   const toggleShowPass = () => setShowPassword((val) => !val);
 
   return (
-    <div className='bg-zinc-900 p-10 rounded-md text-center w-3/4 md:w-auto'>
+    <div className='bg-zinc-800 p-10 rounded-md text-center w-3/4 md:w-auto'>
       <h1 className='font-roboto text-4xl pb-6'>LOGIN</h1>
       {!!errMessage && (
         <>

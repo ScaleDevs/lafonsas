@@ -69,7 +69,7 @@ export default function CreateStore() {
       <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>Create Product</h1>
       <br />
       <form
-        className='flex flex-col space-y-4 md:w-[100%] xl:w-[60%] 2xl:w-[800px] bg-slate-200 p-8 rounded-md shadow-md overflow-hidden'
+        className='flex flex-col space-y-4 md:w-[100%] xl:w-[60%] 2xl:w-[800px] bg-zinc-900 p-8 rounded-md shadow-md overflow-hidden'
         onSubmit={handleSubmit(createStore)}
       >
         {isSuccess ? <Notification rounded='sm' type='success' message='Store Saved' /> : ''}
@@ -126,7 +126,6 @@ export default function CreateStore() {
             +
           </button>
         </div>
-        <br />
 
         <button
           type='submit'

@@ -48,7 +48,7 @@ export default function ListProducts() {
       <br />
       <br />
 
-      <div className='bg-slate-200 shadow-lg px-5 py-7 rounded-md'>
+      <div className='bg-zinc-900 shadow-lg px-5 py-7 rounded-md'>
         {isLoading ? (
           <TableLoader />
         ) : (
