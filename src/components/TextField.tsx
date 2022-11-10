@@ -3,7 +3,7 @@ import { UseFormSetValue } from 'react-hook-form';
 import FadeIn from './FadeIn';
 
 interface InputWrapperProps {
-  type?: 'text' | 'password' | 'number';
+  type?: 'text' | 'password' | 'number' | 'date';
   label?: string;
   labelCss?: string;
   placeholder?: string;
@@ -41,7 +41,7 @@ const TextField = ({
   };
 
   const padding = {
-    sm: 'p-2',
+    sm: type === 'date' ? 'p-[7.6px]' : 'p-2',
     md: 'p-3',
     lg: 'p-4',
   };
@@ -58,7 +58,9 @@ const TextField = ({
   const [value, setValue] = useState(defaultValue || '');
 
   const onUseFormUpdate = (value: string) => {
-    if (formInput) formInput.setValue(formInput.property, value, { shouldValidate: true });
+    let newValue = type === 'number' ? parseFloat(value) : value;
+    if (!newValue) newValue = type === 'number' ? 0 : '';
+    if (formInput) formInput.setValue(formInput.property, newValue, { shouldValidate: true });
   };
 
   const onInputChange = (e: any) => {
@@ -69,16 +71,22 @@ const TextField = ({
   };
 
   return (
-    <div className='flex flex-col space-y-1 text-md md:text-lg font-normal font-roboto'>
+    <div className='w-full flex flex-col space-y-1 text-md md:text-lg font-normal font-roboto'>
       {label ? (
-        <label className={'p-0 ' + labelCss}>
-          {label} : {required ? <span className='text-red-500'>*</span> : ''}
+        <label className={'p-0 font-bold' + labelCss}>
+          {label} {required ? <span className='text-red-500'>*</span> : ''}
         </label>
       ) : (
         ''
       )}
       <input type={type} className={inputCss} placeholder={placeholder} value={value} onChange={onInputChange} />
-      {errorMessage ? <FadeIn cssText='text-red-500'>{errorMessage}</FadeIn> : ''}
+      {errorMessage ? (
+        <FadeIn cssText='text-red-500' duration='animation-duration-200'>
+          {errorMessage}
+        </FadeIn>
+      ) : (
+        ''
+      )}
     </div>
   );
 };

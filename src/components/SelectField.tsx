@@ -3,6 +3,7 @@ import { UseFormSetValue } from 'react-hook-form';
 import OutsideClickHandler from 'react-outside-click-handler';
 import FadeIn from './FadeIn';
 import IconComp from './Icon';
+import Loader from './Loader';
 
 type IOption = {
   value: string;
@@ -27,6 +28,7 @@ export interface ISelectProps {
   };
   onChange?: (value: string) => void;
   defaultValue?: string;
+  isLoading?: boolean;
 }
 
 export default function SelectField({
@@ -42,6 +44,7 @@ export default function SelectField({
   onChange,
   defaultValue,
   errorMessage,
+  isLoading,
 }: ISelectProps) {
   const radius = {
     sm: 'rounded-sm',
@@ -65,58 +68,67 @@ export default function SelectField({
   } bg-transparent border rounded-sm outline-none duration-500 placeholder:text-sm`;
 
   const [showMenu, setShowMenu] = useState(false);
-  const [value, setValue] = useState(defaultValue ? options.find((opt) => opt.value === defaultValue)?.label : '');
-  const [menuItems, setMenuItems] = useState<IOption[]>(options);
+  const [value, setValue] = useState(!!defaultValue ? options.find((opt) => opt.value === defaultValue)?.label || '' : '');
+  const [searchQry, setSearchQry] = useState('');
+  const [selected, setSelected] = useState(false);
 
   const onUseFormUpdate = (value: string) => {
+    onChange && onChange(value);
     if (formInput) {
-      const selected = options.find((opt) => opt.label === value);
-      formInput.setValue(formInput.property, selected?.value || '', { shouldValidate: true });
+      formInput.setValue(formInput.property, value || '', { shouldValidate: true });
     }
   };
 
   const onSelect = (opt: IOption) => {
+    setSelected(true);
+    setSearchQry('');
     setShowMenu(false);
     setValue(opt.label);
-    onChange && onChange(opt.value);
-    onUseFormUpdate(opt.label);
+    onUseFormUpdate(opt.value);
   };
 
   const onInputChange = (e: any) => {
     const searchVal = e.target.value;
-    setMenuItems(() => {
-      return options.filter((opt) => opt.label.includes(searchVal));
-    });
-
+    setSearchQry(searchVal);
     setValue(searchVal);
-    onChange && onChange(searchVal);
-    onUseFormUpdate(searchVal);
+
+    console.log(selected);
+
+    if (onChange && searchVal === '') onUseFormUpdate('');
+
+    setSelected(false);
   };
 
-  const onBlur = () => {
-    setValue((currentValue) => {
-      const isExist = options.find((opt) => opt.label === currentValue);
+  const onBlurHandler = () => {
+    if (!showMenu) onBlurAction();
+  };
 
-      if (isExist) return currentValue;
+  const onOutSideClick = () => {
+    if (showMenu) onBlurAction();
+    else setShowMenu(false);
+  };
 
-      setMenuItems(options);
+  const onBlurAction = () => {
+    setSearchQry('');
+    setShowMenu(false);
 
-      onChange && onChange('');
-      return '';
-    });
+    if (!selected) {
+      setValue('');
+      onUseFormUpdate('');
+    }
   };
 
   return (
-    <div className='flex flex-col space-y-1 text-md md:text-lg font-raleway'>
+    <div className='w-full flex flex-col space-y-1 text-md md:text-lg font-normal font-roboto'>
       {label ? (
-        <label className={'p-0 font-semibold ' + labelCss}>
-          {label} : {required ? <span className='text-red-500'>*</span> : ''}
+        <label className={'p-0 font-bold' + labelCss}>
+          {label} {required ? <span className='text-red-500'>*</span> : ''}
         </label>
       ) : (
         ''
       )}
       <div className='relative'>
-        <OutsideClickHandler onOutsideClick={() => setShowMenu(false)}>
+        <OutsideClickHandler onOutsideClick={() => onOutSideClick()}>
           <div className='relative overflow-hidden'>
             <input
               name={'stores'}
@@ -124,23 +136,26 @@ export default function SelectField({
               placeholder={placeholder}
               value={value}
               onChange={onInputChange}
-              onBlur={onBlur}
+              onBlur={onBlurHandler}
+              disabled={isLoading}
             />
             <div
               className='absolute top-0 right-0 flex h-full justify-center items-center p-3 z-10 border-0 hover:cursor-pointer'
               onClick={() => setShowMenu(!showMenu)}
             >
-              <IconComp iconName='ChevronDownIcon' iconProps={{}} />
+              {isLoading ? <Loader /> : <IconComp iconName='ChevronDownIcon' iconProps={{}} />}
             </div>
           </div>
 
-          {showMenu ? (
-            <ul className='absolute bg-slate-700 w-full p-2 rounded-sm space-y-1 mt-1 z-10'>
-              {menuItems.map((opt, i) => (
-                <li key={i} className='px-2 rounded-sm hover:cursor-pointer hover:bg-slate-600' onClick={() => onSelect(opt)}>
-                  {opt.label}
-                </li>
-              ))}
+          {showMenu && !isLoading ? (
+            <ul className='absolute bg-slate-700 w-full p-2 rounded-sm space-y-1 mt-1 z-10 overflow-auto max-h-96 scrollbar'>
+              {options
+                .filter((opt) => opt.label.includes(searchQry))
+                .map((opt, i) => (
+                  <li key={i} className='px-2 rounded-sm hover:cursor-pointer hover:bg-slate-600' onClick={() => onSelect(opt)}>
+                    {opt.label}
+                  </li>
+                ))}
             </ul>
           ) : (
             ''

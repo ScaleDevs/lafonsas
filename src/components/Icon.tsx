@@ -228,8 +228,8 @@ const IconObject = {
     return (
       <svg
         xmlns='http://www.w3.org/2000/svg'
-        width='28'
-        height='28'
+        width='20'
+        height='20'
         fill='currentColor'
         className={'bi bi-trash ' + fillColor}
         viewBox='0 0 16 16'
