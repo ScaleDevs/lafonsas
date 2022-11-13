@@ -27,7 +27,7 @@ model Store {
 
 model Delivery {
   id              String    @id @default(auto()) @map("_id") @db.ObjectId
-  postingDate     DateTime?
+  postingDate     DateTime
   deliveryNumber  String    @unique
   amount          Int       @db.Int
   badOrder        Int?      @db.Int

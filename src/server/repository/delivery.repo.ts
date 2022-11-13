@@ -42,7 +42,7 @@ class Respository {
     const totalCount = await prisma.delivery.count({ where: whereFilter });
 
     return {
-      totalCount,
+      pageCount: Math.ceil(totalCount / limit),
       records: result,
     };
   }

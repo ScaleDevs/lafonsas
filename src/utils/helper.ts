@@ -61,3 +61,7 @@ export const isPublicRoute = (pathname: string) => {
 export const getCurrentTimestamp = () => {
   return day().unix();
 };
+
+export const getStartOfMonth = () => day().startOf('month').format('MM-DD-YYYY');
+
+export const getEndOfMonth = () => day().endOf('month').format('MM-DD-YYYY');

@@ -12,7 +12,7 @@ import { HandleChangeStepParams } from './types';
 const schema = z.object({
   storeId: z.string().min(1, 'Please Choose Store'),
   deliveryNumber: z.string().min(1, 'Please Input Delivery Number'),
-  postingDate: z.string().optional(),
+  postingDate: z.string().min(1, 'Please Input posting date'),
   badOrder: z.number().optional(),
   widthHoldingTax: z.number().optional(),
   otherDeduction: z.number().optional(),
@@ -149,6 +149,7 @@ export default function CreateDeliveryForm({ defaultValues, changeStep }: Create
         />
 
         <TextField
+          required
           type='date'
           label='Posting Date'
           formInput={{ setValue, property: 'postingDate' }}

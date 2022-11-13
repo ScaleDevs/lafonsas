@@ -8,7 +8,7 @@ export const deliveryRouter = createRouter()
   .mutation('create', {
     input: z.object({
       storeId: z.string(),
-      postingDate: z.string().nullable(),
+      postingDate: z.string(),
       deliveryNumber: z.string(),
       amount: z.number(),
       badOrder: z.number().nullable(),
@@ -35,7 +35,7 @@ export const deliveryRouter = createRouter()
     resolve({ input }) {
       return DeliveryService.createDelivery({
         ...input,
-        postingDate: !!input.postingDate ? new Date(input.postingDate) : null,
+        postingDate: new Date(input.postingDate),
         checkDate: !!input.checkDate ? new Date(input.checkDate) : null,
       });
     },
@@ -45,7 +45,7 @@ export const deliveryRouter = createRouter()
       deliveryId: z.string(),
       partialData: z.object({
         storeId: z.string().optional(),
-        postingDate: z.string().nullable().optional(),
+        postingDate: z.string().optional(),
         deliveryNumber: z.string().optional(),
         amount: z.number().optional(),
         badOrder: z.number().nullable().optional(),
@@ -77,12 +77,7 @@ export const deliveryRouter = createRouter()
     resolve({ input }) {
       const partialData = {
         ...input.partialData,
-        postingDate:
-          input.partialData.postingDate === undefined
-            ? undefined
-            : !!input.partialData.postingDate
-            ? new Date(input.partialData.postingDate)
-            : null,
+        postingDate: input.partialData.postingDate === undefined ? undefined : new Date(input.partialData.postingDate),
         checkDate:
           input.partialData.checkDate === undefined
             ? undefined

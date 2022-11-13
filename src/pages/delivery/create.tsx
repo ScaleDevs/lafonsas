@@ -8,6 +8,7 @@ import { HandleChangeStepParams } from '@/modules/delivery/types';
 const initialData = {
   storeId: '',
   deliveryNumber: '',
+  postingDate: '',
   widthHoldingTax: 0,
   otherDeduction: 0,
   badOrder: 0,
