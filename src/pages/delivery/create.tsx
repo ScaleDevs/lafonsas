@@ -2,30 +2,50 @@ import { useState } from 'react';
 import Layout from '@/layouts/index';
 import CreateDeliveryForm, { FormSchemaType } from '@/modules/delivery/CreateDeliveryForm';
 import ReviewDelivery from '@/modules/delivery/ReviewDelivery';
+import Notification from '@/components/Notification';
+import { HandleChangeStepParams } from '@/modules/delivery/types';
+
+const initialData = {
+  storeId: '',
+  deliveryNumber: '',
+  widthHoldingTax: 0,
+  otherDeduction: 0,
+  badOrder: 0,
+  amountPaid: 0,
+  amount: 0,
+  checkDate: '',
+  checkNumber: '',
+  orders: [],
+  returnSlip: [],
+};
 
 export default function CreateDelivery() {
   const [step, setStep] = useState(1);
-  const [data, setData] = useState<FormSchemaType & { amount: number }>({
-    storeId: '636276fee74296863d8a4eda',
-    deliveryNumber: '',
-    widthHoldingTax: 0,
-    otherDeduction: 0,
-    badOrder: 10,
-    amountPaid: 0,
-    amount: 0,
-    checkDate: '',
-    checkNumber: '',
-    orders: [],
-    returnSlip: [],
-  });
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [data, setData] = useState<FormSchemaType & { amount: number }>(initialData);
 
-  const handleChangeStep = (step: number, newData?: FormSchemaType & { amount: number }) => {
+  const handleChangeStep = ({ step, data, isSuccessfulSubmit, isResetData }: HandleChangeStepParams) => {
     setStep(step);
-    if (!!newData) setData(newData);
+    if (!!data) setData(data);
+    if (isResetData) setData(initialData);
+    if (!!isSuccessfulSubmit) {
+      setIsSuccess(true);
+      setTimeout(() => {
+        setIsSuccess(false);
+      }, 5000);
+    }
   };
 
   return (
     <Layout>
+      {isSuccess ? (
+        <>
+          <Notification rounded='sm' type='success' message='Delivery Record Created' />
+          <br />
+        </>
+      ) : (
+        ''
+      )}
       {step === 1 ? <CreateDeliveryForm changeStep={handleChangeStep} defaultValues={data} /> : ''}
       {step === 2 ? <ReviewDelivery deliveryDetails={data} changeStep={handleChangeStep} /> : ''}
     </Layout>

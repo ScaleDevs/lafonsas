@@ -30,4 +30,5 @@
 - MAILER_SEND_API_KEY={api key of your mailer send account domain}
 
 ## reminders
+
 - prisma model delivery (can update later postingDate to have an index)

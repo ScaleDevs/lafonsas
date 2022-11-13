@@ -7,6 +7,7 @@ import { trpc } from '@/utils/trpc';
 import TextField from '@/components/TextField';
 import SelectField from '@/components/SelectField';
 import InputArray from '@/modules/delivery/InputArray';
+import { HandleChangeStepParams } from './types';
 
 const schema = z.object({
   storeId: z.string().min(1, 'Please Choose Store'),
@@ -39,18 +40,18 @@ export type FormSchemaType = z.infer<typeof schema>;
 
 export interface CreateDeliveryFormProps {
   defaultValues: FormSchemaType;
-  changeStep: (step: number, data?: FormSchemaType & { amount: number }) => void;
+  changeStep: (handleChangeStepParams: HandleChangeStepParams) => void;
 }
 
 export default function CreateDeliveryForm({ defaultValues, changeStep }: CreateDeliveryFormProps) {
   const { data, isLoading } = trpc.useQuery(['store.getStores', { limit: 1000 }]);
-  const [storeId, setStoreId] = useState('');
+  const [storeId, setStoreId] = useState(defaultValues.storeId ? defaultValues.storeId : '');
 
   const {
     setValue,
     handleSubmit,
     resetField,
-    formState: { errors },
+    formState: { errors, defaultValues: formDefaultValues },
     control,
   } = useForm<FormSchemaType>({
     resolver: zodResolver(schema),
@@ -108,9 +109,10 @@ export default function CreateDeliveryForm({ defaultValues, changeStep }: Create
       amount: amount,
     };
 
-    console.log(step1FormData);
-
-    changeStep(2, step1FormData);
+    changeStep({
+      step: 2,
+      data: step1FormData,
+    });
   };
 
   return (
@@ -134,6 +136,7 @@ export default function CreateDeliveryForm({ defaultValues, changeStep }: Create
           errorMessage={errors.storeId?.message}
           onChange={onStoreSelect}
           isLoading={isLoading}
+          defaultValue={formDefaultValues?.storeId}
         />
 
         <TextField
@@ -142,6 +145,7 @@ export default function CreateDeliveryForm({ defaultValues, changeStep }: Create
           placeholder='enter delivery number here'
           formInput={{ setValue, property: 'deliveryNumber' }}
           errorMessage={errors.deliveryNumber?.message}
+          defaultValue={formDefaultValues?.deliveryNumber}
         />
 
         <TextField
@@ -149,6 +153,7 @@ export default function CreateDeliveryForm({ defaultValues, changeStep }: Create
           label='Posting Date'
           formInput={{ setValue, property: 'postingDate' }}
           errorMessage={errors.postingDate?.message}
+          defaultValue={formDefaultValues?.postingDate}
         />
       </div>
 
@@ -159,6 +164,7 @@ export default function CreateDeliveryForm({ defaultValues, changeStep }: Create
           placeholder='enter bad order here'
           formInput={{ setValue, property: 'badOrder' }}
           errorMessage={errors.badOrder?.message}
+          defaultValue={formDefaultValues?.badOrder}
         />
 
         <TextField
@@ -167,6 +173,7 @@ export default function CreateDeliveryForm({ defaultValues, changeStep }: Create
           placeholder='enter width holding tax here'
           formInput={{ setValue, property: 'widthHoldingTax' }}
           errorMessage={errors.widthHoldingTax?.message}
+          defaultValue={formDefaultValues?.widthHoldingTax}
         />
 
         <TextField
@@ -175,6 +182,7 @@ export default function CreateDeliveryForm({ defaultValues, changeStep }: Create
           placeholder='enter other deductions here'
           formInput={{ setValue, property: 'otherDeduction' }}
           errorMessage={errors.otherDeduction?.message}
+          defaultValue={formDefaultValues?.otherDeduction}
         />
       </div>
 
@@ -185,6 +193,7 @@ export default function CreateDeliveryForm({ defaultValues, changeStep }: Create
           placeholder='enter amount paid here'
           formInput={{ setValue, property: 'amountPaid' }}
           errorMessage={errors.amountPaid?.message}
+          defaultValue={formDefaultValues?.amountPaid}
         />
 
         <TextField
@@ -192,6 +201,7 @@ export default function CreateDeliveryForm({ defaultValues, changeStep }: Create
           placeholder='enter check number here'
           formInput={{ setValue, property: 'checkNumber' }}
           errorMessage={errors.checkNumber?.message}
+          defaultValue={formDefaultValues?.checkNumber}
         />
 
         <TextField
@@ -200,6 +210,7 @@ export default function CreateDeliveryForm({ defaultValues, changeStep }: Create
           placeholder='enter check date here'
           formInput={{ setValue, property: 'checkDate' }}
           errorMessage={errors.checkDate?.message}
+          defaultValue={formDefaultValues?.checkDate}
         />
       </div>
 
@@ -212,6 +223,7 @@ export default function CreateDeliveryForm({ defaultValues, changeStep }: Create
         remove={removeOrder}
         label='Orders'
         property='orders'
+        defaultValues={formDefaultValues?.orders}
       />
 
       <InputArray
@@ -223,6 +235,7 @@ export default function CreateDeliveryForm({ defaultValues, changeStep }: Create
         remove={removeReturnSlipItem}
         label='Return Slip'
         property='returnSlip'
+        defaultValues={formDefaultValues?.returnSlip}
       />
 
       <button
