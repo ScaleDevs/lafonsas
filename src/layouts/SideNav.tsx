@@ -159,6 +159,14 @@ export default function SideNav() {
                 Users
               </NavLink>
               <NavLinkHouse
+                title='Delivery'
+                Icon={() => <IconComp iconName='BoxIcon' iconProps={{}} />}
+                links={[
+                  { title: 'Create Delivery', path: '/delivery/create' },
+                  { title: 'List Delivery', path: '/delivery/list' },
+                ]}
+              />
+              <NavLinkHouse
                 title='Store'
                 Icon={() => <IconComp iconName='BoxIcon' iconProps={{}} />}
                 links={[
