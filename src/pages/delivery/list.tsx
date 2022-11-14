@@ -2,11 +2,13 @@ import { useState } from 'react';
 import ReactPaginate from 'react-paginate';
 import dayjs from 'dayjs';
 
+import { Delivery } from '@prisma/client';
 import { trpc } from '@/utils/trpc';
 import Layout from '@/layouts/index';
 import TableLoader from '@/components/TableLoader';
 import { getStartOfMonth, getEndOfMonth } from '@/utils/helper';
-import { Delivery } from '@prisma/client';
+import Button from '@/components/Button';
+import ListDeliveryFilter, { OnDeliverySearchParams } from '@/modules/delivery/ListDeliveryFilter';
 
 interface TableRowProps {
   delivery: Delivery;
@@ -35,16 +37,52 @@ const TableRow = ({ delivery }: TableRowProps) => {
 export default function ListProducts() {
   const [startDate, setStartDate] = useState(getStartOfMonth());
   const [endDate, setEndDate] = useState(getEndOfMonth());
+  const [storeId, setStoreId] = useState<string | undefined>(undefined);
+  const [deliveryNumber, setDeliveryNumber] = useState<string | undefined>(undefined);
+
+  const [openFilterModal, setOpenFilterModal] = useState(false);
   const [page, setPage] = useState(1);
-  const { data, isLoading } = trpc.useQuery(['delivery.getDeliveriesByDate', { limit: 10, page, startDate, endDate }]);
+  const { data, isLoading } = trpc.useQuery([
+    'delivery.getDeliveries',
+    { limit: 10, page, startDate, endDate, storeId, deliveryNumber },
+  ]);
 
   const handlePageChange = ({ selected }: { selected: number }) => setPage(selected + 1);
+
+  const onSearch = ({ date1, date2, storeId, dr }: OnDeliverySearchParams) => {
+    setStartDate(date1);
+    setEndDate(date2);
+
+    if (storeId === 'ALL') setStoreId(undefined);
+    else setStoreId(storeId);
+
+    if (!!dr) setDeliveryNumber(dr);
+    else if (!dr || dr === '') setDeliveryNumber(undefined);
+    setOpenFilterModal(false);
+  };
+
   return (
     <Layout>
+      {openFilterModal ? (
+        <ListDeliveryFilter
+          startDate={startDate}
+          endDate={endDate}
+          store={storeId}
+          deliveryNumber={deliveryNumber}
+          closeModal={() => setOpenFilterModal(false)}
+          onSearch={onSearch}
+        />
+      ) : (
+        ''
+      )}
       <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>List Deliveries</h1>
 
       <br />
       <br />
+
+      <div className='w-[100px]'>
+        <Button buttonTitle='Filter' size='sm' onClick={() => setOpenFilterModal(true)} />
+      </div>
       <br />
 
       <div className='bg-zinc-900 shadow-lg px-5 py-7 rounded-md'>

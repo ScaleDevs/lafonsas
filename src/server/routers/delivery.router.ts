@@ -107,15 +107,23 @@ export const deliveryRouter = createRouter()
       return DeliveryService.findDeliveryByDeliveryNumber(input);
     },
   })
-  .query('getDeliveriesByDate', {
+  .query('getDeliveries', {
     input: z.object({
-      store: z.string().optional(),
+      deliveryNumber: z.string().optional(),
+      storeId: z.string().optional(),
       startDate: z.string(),
       endDate: z.string(),
       page: z.number().optional().default(1),
       limit: z.number().optional().default(10),
     }),
-    resolve({ input }) {
+    async resolve({ input }) {
+      if (input.deliveryNumber) {
+        const delivery = await DeliveryService.findDeliveryByDeliveryNumber(input.deliveryNumber);
+        return {
+          pageCount: 1,
+          records: delivery ? [delivery] : [],
+        };
+      }
       return DeliveryService.findDeliveries({
         ...input,
         startDate: new Date(input.startDate),
