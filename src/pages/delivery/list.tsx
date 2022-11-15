@@ -9,16 +9,24 @@ import TableLoader from '@/components/TableLoader';
 import { getStartOfMonth, getEndOfMonth } from '@/utils/helper';
 import Button from '@/components/Button';
 import ListDeliveryFilter, { OnDeliverySearchParams } from '@/modules/delivery/ListDeliveryFilter';
+import DeliveryDetails from '@/modules/delivery/DeliveryDetails';
 
 interface TableRowProps {
-  delivery: Delivery;
+  delivery: Omit<
+    Delivery,
+    'badOrder' | 'widthHoldingTax' | 'otherDeduction' | 'checkNumber' | 'checkDate' | 'orders' | 'returnSlip'
+  >;
+  onClick: (deliveryId: string) => void;
 }
 
-const TableRow = ({ delivery }: TableRowProps) => {
+const TableRow = ({ delivery, onClick }: TableRowProps) => {
   const { data } = trpc.useQuery(['store.getById', delivery.storeId]);
 
   return (
-    <tr className='font-comfortaa h-14 text-left hover:cursor-pointer hover:bg-gray-700 transition-colors duration-200'>
+    <tr
+      className='font-comfortaa h-14 text-left hover:cursor-pointer hover:bg-gray-700 transition-colors duration-200'
+      onClick={() => onClick(delivery.id)}
+    >
       <td>{data?.name}</td>
       <td>{delivery.deliveryNumber}</td>
       <td>{dayjs(delivery.postingDate).format('MMM DD, YYYY')}</td>
@@ -39,6 +47,7 @@ export default function ListProducts() {
   const [endDate, setEndDate] = useState(getEndOfMonth());
   const [storeId, setStoreId] = useState<string | undefined>(undefined);
   const [deliveryNumber, setDeliveryNumber] = useState<string | undefined>(undefined);
+  const [deliveryId, setDeliveryId] = useState<string | null>(null);
 
   const [openFilterModal, setOpenFilterModal] = useState(false);
   const [page, setPage] = useState(1);
@@ -60,6 +69,17 @@ export default function ListProducts() {
     else if (!dr || dr === '') setDeliveryNumber(undefined);
     setOpenFilterModal(false);
   };
+
+  const onTableRowClick = (deliveryId: string) => setDeliveryId(deliveryId);
+
+  if (deliveryId)
+    return (
+      <Layout>
+        <div className='bg-zinc-900 shadow-lg px-5 py-7 rounded-md'>
+          <DeliveryDetails deliveryId={deliveryId} />
+        </div>
+      </Layout>
+    );
 
   return (
     <Layout>
@@ -100,7 +120,11 @@ export default function ListProducts() {
                   <th className='pb-3'>Paid</th>
                 </tr>
               </thead>
-              <tbody>{data ? data.records.map((delivery) => <TableRow key={delivery.id} delivery={delivery} />) : null}</tbody>
+              <tbody>
+                {data
+                  ? data.records.map((delivery) => <TableRow key={delivery.id} delivery={delivery} onClick={onTableRowClick} />)
+                  : null}
+              </tbody>
             </table>
           </>
         )}

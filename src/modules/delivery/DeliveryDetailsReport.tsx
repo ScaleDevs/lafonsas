@@ -2,8 +2,13 @@ import { useEffect, useState } from 'react';
 import { trpc } from '@/utils/trpc';
 import { FormSchemaType } from './CreateDeliveryForm';
 import Loader from '@/components/Loader';
+import { IDelivery } from '@/utils/types';
+import dayjs from 'dayjs';
 
-const displayData = (data: any) => (!data || data === '' ? 'N/A' : data);
+const displayData = (data: any) => {
+  if (data[0] === 'postingDate' && typeof data[1] !== 'string') return dayjs(data).format('MMM DD, YYYY');
+  return !data[1] || data[1] === '' ? 'N/A' : data[1];
+};
 
 const SectionContainer = ({ children }: any) => {
   return <div className='min-w-[96%] sm:min-w-[90%] lg:min-w-[70%] 3xl:min-w-[450px]'>{children}</div>;
@@ -16,7 +21,7 @@ export type IOrder = {
 };
 
 export interface IDeliveryDetailsReportProps {
-  deliveryDetails: FormSchemaType & { amount: number };
+  deliveryDetails: (FormSchemaType & { amount: number }) | IDelivery;
 }
 
 export default function DeliveryDetailsReport({ deliveryDetails }: IDeliveryDetailsReportProps) {
@@ -70,7 +75,7 @@ export default function DeliveryDetailsReport({ deliveryDetails }: IDeliveryDeta
           {[...Object.entries(rest), ['Store', data?.name]].map((record) => (
             <li key={record[0]} className='w-full text-center flex flex-row justify-between border-b border-zinc-600 py-2'>
               <div className='font-bold text-left'>{record[0]}:</div>{' '}
-              <span className='text-right min-w-[100px]'>{displayData(record[1])}</span>
+              <span className='text-right min-w-[100px]'>{displayData(record)}</span>
             </li>
           ))}
         </ul>
