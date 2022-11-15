@@ -37,6 +37,14 @@ class Respository {
       where: whereFilter,
       skip: page > 0 ? (page - 1) * limit : 0,
       take: limit,
+      select: {
+        id: true,
+        storeId: true,
+        deliveryNumber: true,
+        postingDate: true,
+        amount: true,
+        amountPaid: true,
+      },
     });
 
     const totalCount = await prisma.delivery.count({ where: whereFilter });
