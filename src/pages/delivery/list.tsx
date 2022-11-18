@@ -1,0 +1,146 @@
+import { useState } from 'react';
+import ReactPaginate from 'react-paginate';
+import dayjs from 'dayjs';
+
+import { Delivery } from '@prisma/client';
+import { trpc } from '@/utils/trpc';
+import Layout from '@/layouts/index';
+import TableLoader from '@/components/TableLoader';
+import { getStartOfMonth, getEndOfMonth } from '@/utils/helper';
+import Button from '@/components/Button';
+import ListDeliveryFilter, { OnDeliverySearchParams } from '@/modules/delivery/ListDeliveryFilter';
+import DeliveryDetails from '@/modules/delivery/DeliveryDetails';
+
+interface TableRowProps {
+  delivery: Omit<
+    Delivery,
+    'badOrder' | 'widthHoldingTax' | 'otherDeduction' | 'checkNumber' | 'checkDate' | 'orders' | 'returnSlip'
+  >;
+  onClick: (deliveryId: string) => void;
+}
+
+const TableRow = ({ delivery, onClick }: TableRowProps) => {
+  const { data } = trpc.useQuery(['store.getById', delivery.storeId]);
+
+  return (
+    <tr
+      className='font-comfortaa h-14 text-left hover:cursor-pointer hover:bg-gray-700 transition-colors duration-200'
+      onClick={() => onClick(delivery.id)}
+    >
+      <td>{data?.name}</td>
+      <td>{delivery.deliveryNumber}</td>
+      <td>{dayjs(delivery.postingDate).format('MMM DD, YYYY')}</td>
+      <td>₱{delivery.amount}</td>
+      <td>
+        {!!delivery.amountPaid && delivery.amountPaid > 0 ? (
+          <span className='bg-green-500 p-2 rounded-full text-sm'>PAID</span>
+        ) : (
+          <span className='bg-red-500 p-2 rounded-full text-sm'>UNPAID</span>
+        )}
+      </td>
+    </tr>
+  );
+};
+
+export default function ListProducts() {
+  const [startDate, setStartDate] = useState(getStartOfMonth());
+  const [endDate, setEndDate] = useState(getEndOfMonth());
+  const [storeId, setStoreId] = useState<string | undefined>(undefined);
+  const [deliveryNumber, setDeliveryNumber] = useState<string | undefined>(undefined);
+  const [deliveryId, setDeliveryId] = useState<string | null>(null);
+
+  const [openFilterModal, setOpenFilterModal] = useState(false);
+  const [page, setPage] = useState(1);
+  const { data, isLoading } = trpc.useQuery([
+    'delivery.getDeliveries',
+    { limit: 10, page, startDate, endDate, storeId, deliveryNumber },
+  ]);
+
+  const handlePageChange = ({ selected }: { selected: number }) => setPage(selected + 1);
+
+  const onSearch = ({ date1, date2, storeId, dr }: OnDeliverySearchParams) => {
+    setStartDate(date1);
+    setEndDate(date2);
+
+    if (storeId === 'ALL') setStoreId(undefined);
+    else setStoreId(storeId);
+
+    if (!!dr) setDeliveryNumber(dr);
+    else if (!dr || dr === '') setDeliveryNumber(undefined);
+    setOpenFilterModal(false);
+  };
+
+  const onTableRowClick = (deliveryId: string) => setDeliveryId(deliveryId);
+
+  if (deliveryId)
+    return (
+      <Layout>
+        <div className='bg-zinc-900 shadow-lg px-5 py-7 rounded-md'>
+          <DeliveryDetails deliveryId={deliveryId} />
+        </div>
+      </Layout>
+    );
+
+  return (
+    <Layout>
+      {openFilterModal ? (
+        <ListDeliveryFilter
+          startDate={startDate}
+          endDate={endDate}
+          store={storeId}
+          deliveryNumber={deliveryNumber}
+          closeModal={() => setOpenFilterModal(false)}
+          onSearch={onSearch}
+        />
+      ) : (
+        ''
+      )}
+      <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>List Deliveries</h1>
+
+      <br />
+      <br />
+
+      <div className='w-[100px]'>
+        <Button buttonTitle='Filter' size='sm' onClick={() => setOpenFilterModal(true)} />
+      </div>
+      <br />
+
+      <div className='bg-zinc-900 shadow-lg px-5 py-7 rounded-md'>
+        {isLoading ? (
+          <TableLoader />
+        ) : (
+          <>
+            <table className='w-full'>
+              <thead>
+                <tr className='border-gray-500 border-b font-raleway text-xl text-left'>
+                  <th className='pb-3'>Store</th>
+                  <th className='pb-3'>DeliveryNumber</th>
+                  <th className='pb-3'>PostingDate</th>
+                  <th className='pb-3'>Amount</th>
+                  <th className='pb-3'>Paid</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data
+                  ? data.records.map((delivery) => <TableRow key={delivery.id} delivery={delivery} onClick={onTableRowClick} />)
+                  : null}
+              </tbody>
+            </table>
+          </>
+        )}
+        <ReactPaginate
+          breakLabel='...'
+          nextLabel={page === data?.pageCount ? '' : '>'}
+          previousLabel={page === 1 ? '' : '<'}
+          onPageChange={handlePageChange}
+          pageRangeDisplayed={6}
+          pageCount={data?.pageCount || 0}
+          breakClassName=''
+          containerClassName='flex flex-row space-x-7 items-center justify-center pt-10 font-comfortaa text-xl'
+          activeClassName='text-blue-400'
+          renderOnZeroPageCount={null as any}
+        />
+      </div>
+    </Layout>
+  );
+}

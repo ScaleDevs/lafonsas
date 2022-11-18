@@ -26,6 +26,7 @@ export default function useRefreshToken() {
       resetAuthState();
       setAuthState('authLoader', false);
       logoutAllTabs();
+      if (publicRoutes[router.pathname as keyof typeof publicRoutes]) return;
       router.push(publicRoutes['/login']);
     },
   });

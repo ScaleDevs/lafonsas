@@ -21,7 +21,7 @@ const NavLinkHouse = ({ title, Icon, links }: INavLinkHouseProps) => {
 
   const LinkItem = ({ children, path }: { children: any; path: string }) => (
     <Link href={path} passHref>
-      <div className='text-md p-3 rounded-md hover:bg-gray-100 hover:cursor-pointer'>{children}</div>
+      <div className='text-md p-3 rounded-md hover:bg-zinc-700 hover:cursor-pointer'>{children}</div>
     </Link>
   );
 
@@ -41,7 +41,7 @@ const NavLinkHouse = ({ title, Icon, links }: INavLinkHouseProps) => {
     <li>
       <FadeIn>
         <div
-          className='flex flex-row justify-between p-3 w-full rounded-md hover:bg-gray-100 hover:cursor-pointer'
+          className='flex flex-row justify-between p-3 w-full rounded-md hover:bg-zinc-700 hover:cursor-pointer'
           onClick={() => setCollapse((curr) => !curr)}
         >
           <div className='flex flex-row items-center'>
@@ -97,7 +97,7 @@ const NavLink = ({ children, path, logout, Icon }: INavLinkProps) => {
   if (logout)
     return (
       <li onClick={() => signOutWithMutate()}>
-        <FadeIn cssText='p-3 w-full rounded-md hover:bg-gray-100 hover:cursor-pointer flex flex-row items-center'>
+        <FadeIn cssText='p-3 w-full rounded-md hover:bg-zinc-700 hover:cursor-pointer flex flex-row items-center'>
           <IconComp />
           {children}
         </FadeIn>
@@ -106,7 +106,7 @@ const NavLink = ({ children, path, logout, Icon }: INavLinkProps) => {
 
   return (
     <li>
-      <FadeIn cssText='rounded-md hover:bg-gray-100 hover:cursor-pointer'>
+      <FadeIn cssText='rounded-md hover:bg-zinc-700 hover:cursor-pointer'>
         <Link href={path} passHref>
           <a className='p-3 flex flex-row items-center'>
             <IconComp />
@@ -159,11 +159,19 @@ export default function SideNav() {
                 Users
               </NavLink>
               <NavLinkHouse
-                title='Product'
+                title='Delivery'
                 Icon={() => <IconComp iconName='BoxIcon' iconProps={{}} />}
                 links={[
-                  { title: 'Create Product', path: '/product/create' },
-                  { title: 'List Product', path: '/product/list' },
+                  { title: 'Create Delivery', path: '/delivery/create' },
+                  { title: 'List Delivery', path: '/delivery/list' },
+                ]}
+              />
+              <NavLinkHouse
+                title='Store'
+                Icon={() => <IconComp iconName='BoxIcon' iconProps={{}} />}
+                links={[
+                  { title: 'Create Store', path: '/store/create' },
+                  { title: 'List Stores', path: '/store/list' },
                 ]}
               />
               <NavLink path='/login' logout Icon={() => <IconComp iconName='LogoutIcon' iconProps={{}} />}>

@@ -4,15 +4,16 @@ import FadeIn from '@/components/FadeIn';
 import Loader from '@/components/Loader';
 import useLogin from '@/hooks/useLogin.hook';
 import IconComp from '@/components/Icon';
+import TextField from '@/components/TextField';
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
-  const { errMessage, handleSubmit, signIn, register, isSignInLoading } = useLogin();
+  const { errMessage, handleSubmit, signIn, isSignInLoading, setValue } = useLogin();
 
   const toggleShowPass = () => setShowPassword((val) => !val);
 
   return (
-    <div className='bg-zinc-900 p-10 rounded-md text-center w-3/4 md:w-auto'>
+    <div className='bg-zinc-800 p-10 rounded-md text-center w-3/4 md:w-auto'>
       <h1 className='font-roboto text-4xl pb-6'>LOGIN</h1>
       {!!errMessage && (
         <>
@@ -23,13 +24,14 @@ export default function LoginForm() {
         </>
       )}
       <form className='flex flex-col space-y-6 md:w-96' onSubmit={handleSubmit(signIn)}>
-        <input className='p-4 rounded-sm' placeholder='enter email' {...register('username')} />
+        <TextField size='md' placeholder='enter email' formInput={{ setValue, property: 'username' }} />
+
         <div className='w-full relative'>
-          <input
+          <TextField
+            size='md'
             type={showPassword ? 'text' : 'password'}
-            className='p-4 rounded-sm w-full'
             placeholder='enter password'
-            {...register('password')}
+            formInput={{ setValue, property: 'password' }}
           />
           {showPassword ? (
             <div

@@ -7,6 +7,14 @@ module.exports = {
     './src/modules/**/*.{ts,tsx}',
   ],
   theme: {
+    screens: {
+      sm: '640px',
+      md: '768px',
+      lg: '1080px',
+      xl: '1380px',
+      '2xl': '1536px',
+      '3xl': '1600px',
+    },
     fontFamily: {
       sans: ['Helvetica', 'Arial', 'sans-serif'],
       roboto: ['Roboto Condensed', 'sans-serif'],

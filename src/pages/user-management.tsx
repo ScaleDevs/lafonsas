@@ -57,11 +57,11 @@ function Users() {
       <br />
 
       <div className='w-1/2 flex flex-row space-x-3'>
-        <button className='bg-slate-200 py-4 px-8 rounded-t-sm '>INVITE USER</button>
-        <button className='bg-slate-200 py-4 px-8 rounded-t-sm '>LIST USERS</button>
+        <button className='bg-zinc-900 py-4 px-8 rounded-t-sm '>INVITE USER</button>
+        <button className='bg-zinc-900 py-4 px-8 rounded-t-sm '>LIST USERS</button>
       </div>
 
-      <div className='bg-slate-200 w-1/2 p-5 rounded-sm shadow-lg'>
+      <div className='bg-zinc-900 w-1/2 p-5 rounded-sm shadow-lg'>
         {!!errMessage && (
           <FadeIn>
             <div className='bg-rose-600 rounded-sm p-4 opacity-90 text-center'>{errMessage}</div>

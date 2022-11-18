@@ -14,12 +14,12 @@ function Home() {
 
       <div className='flex flex-col space-y-5'>
         <div className='flex flex-col lg:flex-row w-full'>
-          <div className='bg-slate-200 h-64 w-[90%] mx-auto shadow-lg rounded-md lg:h-96 lg:w-[55%]'></div>
-          <div className='bg-slate-200 h-64 w-[90%] mt-5 mx-auto shadow-lg rounded-md lg:mt-0 lg:h-96 lg:w-[40%]'></div>
+          <div className='bg-zinc-900 h-64 w-[90%] mx-auto shadow-lg rounded-md lg:h-96 lg:w-[55%]'></div>
+          <div className='bg-zinc-900 h-64 w-[90%] mt-5 mx-auto shadow-lg rounded-md lg:mt-0 lg:h-96 lg:w-[40%]'></div>
         </div>
         <div className='flex flex-col lg:flex-row w-full mt-5'>
-          <div className='bg-slate-200 h-64 w-[90%] mx-auto shadow-lg rounded-md lg:h-96 lg:w-[55%]'></div>
-          <div className='bg-slate-200 h-64 w-[90%] mt-5 mx-auto shadow-lg rounded-md lg:mt-0 lg:h-96 lg:w-[40%]'></div>
+          <div className='bg-zinc-900 h-64 w-[90%] mx-auto shadow-lg rounded-md lg:h-96 lg:w-[55%]'></div>
+          <div className='bg-zinc-900 h-64 w-[90%] mt-5 mx-auto shadow-lg rounded-md lg:mt-0 lg:h-96 lg:w-[40%]'></div>
         </div>
       </div>
     </Layout>
