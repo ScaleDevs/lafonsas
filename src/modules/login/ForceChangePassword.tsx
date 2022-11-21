@@ -105,7 +105,14 @@ export default function ForceChangePassword() {
       { username, newPassword: formData.newPassword, session: session },
       {
         onSuccess(data) {
-          if (data) updateAuthStates(data);
+          const { authResult, expiresAt } = data;
+          if (authResult.AuthenticationResult)
+            updateAuthStates({
+              AccessToken: authResult.AuthenticationResult.AccessToken,
+              IdToken: authResult.AuthenticationResult.IdToken,
+              ExpiresIn: authResult.AuthenticationResult.ExpiresIn,
+              expiresAt,
+            });
         },
         onError(error: any) {
           if (error.message.includes('Invalid Session')) setErrMessage('Invalid Session, kindly login again');
@@ -120,7 +127,7 @@ export default function ForceChangePassword() {
   };
 
   return (
-    <div className='bg-zinc-900 p-10 rounded-md text-center w-3/4 md:w-[500px]'>
+    <div className='bg-zinc-800 p-10 rounded-md text-center w-3/4 md:w-[500px]'>
       <h1 className='font-roboto text-3xl pb-6'>CHANGE PASSWORD</h1>
       {!!errMessage && (
         <>
