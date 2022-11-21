@@ -77,7 +77,7 @@ export default function StoreModal({ data, resetStoreState, storesRefetch }: ISt
                       return (
                         <tr key={product.size} className='text-left font-comfortaa font-bold'>
                           <th className='p-2'>{product.size}</th>
-                          <th className='p-2'>₱{product.price}</th>
+                          <th className='p-2'>₱{product.price.toFixed(2)}</th>
                         </tr>
                       );
                     })}
