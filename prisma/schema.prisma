@@ -10,12 +10,12 @@ datasource db {
 type Order {
   size     String
   quantity Int
-  price    Int
+  price    Float
 }
 
 type Product {
   size  String
-  price Int    @db.Int
+  price Float
 }
 
 model Store {
@@ -29,11 +29,11 @@ model Delivery {
   id              String    @id @default(auto()) @map("_id") @db.ObjectId
   postingDate     DateTime
   deliveryNumber  String    @unique
-  amount          Int       @db.Int
-  badOrder        Int?      @db.Int
-  widthHoldingTax Int?      @db.Int
-  otherDeduction  Int?      @db.Int
-  amountPaid      Int?      @db.Int
+  amount          Float
+  badOrder        Float?
+  widthHoldingTax Float?
+  otherDeduction  Float?
+  amountPaid      Float?
   checkNumber     String?
   checkDate       DateTime?
   orders          Order[]
