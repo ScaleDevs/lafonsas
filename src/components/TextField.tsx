@@ -60,7 +60,7 @@ const TextField = ({
   const onUseFormUpdate = (value: string) => {
     let newValue = type === 'number' ? parseFloat(value) : value;
     if (!newValue) newValue = type === 'number' ? 0 : '';
-    if (formInput) formInput.setValue(formInput.property, newValue, { shouldValidate: true });
+    if (formInput) formInput.setValue(formInput.property, newValue, { shouldValidate: true, shouldDirty: true });
   };
 
   const onInputChange = (e: any) => {

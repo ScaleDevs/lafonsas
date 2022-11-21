@@ -35,6 +35,7 @@ export const storeRouter = createRouter()
       }),
     }),
     resolve({ input }) {
+      console.log('updateStore - RESOLVER');
       return StoreService.updateStore(input.storeId, input.storePartialData);
     },
   })
