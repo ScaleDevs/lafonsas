@@ -63,16 +63,16 @@ export default function StoreUpdate({ resetStoreState, data, storesRefetch, rese
   });
 
   const updateStore = (formData: FormSchemaType) => {
-    const paritalData = { ...formData } as Partial<FormSchemaType>;
+    const partialData = { ...formData } as Partial<FormSchemaType>;
 
     Object.keys(formData).forEach((key) => {
       const keyField = key as keyof FormSchemaType;
-      if (!dirtyFields[keyField]) delete paritalData[keyField];
+      if (!dirtyFields[keyField]) delete partialData[keyField];
     });
 
     const mutateParams = {
       storeId: data.id,
-      storePartialData: paritalData,
+      storePartialData: partialData,
     };
 
     mutate(mutateParams, {

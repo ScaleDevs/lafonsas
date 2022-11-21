@@ -37,6 +37,7 @@ class Service {
 
   public async updateStore(storeId: string, storePartialData: Partial<IStore>) {
     try {
+      console.log('updateStore - SERVICE');
       return StoreRepository.updateStore(storeId, storePartialData);
     } catch (err) {
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
