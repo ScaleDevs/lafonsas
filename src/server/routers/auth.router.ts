@@ -17,6 +17,7 @@ export const authRouter = createRouter()
       password: z.string(),
     }),
     async resolve({ ctx, input }) {
+      console.log('SIGNING IN ===== ROUTER');
       return AuthService.signIn(ctx, input.username, input.password);
     },
   })
@@ -26,8 +27,8 @@ export const authRouter = createRouter()
       username: z.string().email(),
       newPassword: z.string(),
     }),
-    resolve({ input }) {
-      return AuthService.forceChangePassword(input.session, input.username, input.newPassword);
+    resolve({ ctx, input }) {
+      return AuthService.forceChangePassword(ctx, input.session, input.username, input.newPassword);
     },
   })
   .mutation('signOut', {

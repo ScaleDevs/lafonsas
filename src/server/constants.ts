@@ -9,6 +9,7 @@ export const constants = {
   general: {
     appName: process.env.GENERAL_APP_NAME,
     companyName: process.env.GENERAL_COMPANY_NAME,
+    appUrl: process.env.GENERAL_APP_URL || 'http://localhost:3000',
   },
 
   mailerSend: {
