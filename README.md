@@ -23,6 +23,7 @@
 
 - GENERAL_APP_NAME={app name}
 - GENERAL_COMPANY_NAME={company name that uses this app}
+- GENERAL_APP_URL={app base url}
 
 - MAILER_SEND_TEMPLATE_ID={mailer send template id}
 - MAILER_SEND_FROM_EMAIL={mailer send from email}

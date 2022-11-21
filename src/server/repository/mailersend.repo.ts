@@ -15,6 +15,7 @@ export const sendUserInvite = async (recipientEmail: string, temporaryPassword: 
       data: {
         user: recipientEmail.split('@')[0],
         app_name: constants.general.appName,
+        app_url: constants.general.appUrl,
         company_name: constants.general.companyName,
         temporary_password: temporaryPassword,
       },
