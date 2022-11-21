@@ -12,6 +12,9 @@ const verifier = CognitoJwtVerifier.create({
 });
 
 export const trpcErrorHandling = (err: any) => {
+  console.log('=======ERROR LOG=======');
+  console.log(err);
+
   if (err['$fault'] === 'client')
     throw new trpc.TRPCError({
       code: 'BAD_REQUEST',
@@ -60,6 +63,8 @@ export const decodeToken = async (token: string) => {
     const result = await verifier.verify(token);
     return result;
   } catch (err) {
+    console.log('=======ERROR LOG decodeToken=======');
+    console.log(err);
     throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
   }
 };
