@@ -3,16 +3,19 @@ import ReactPaginate from 'react-paginate';
 
 import { getEndOfMonth, getStartOfMonth } from '@/utils/helper';
 import { trpc } from '@/utils/trpc';
-import ListDeliveryFilter, { OnDeliverySearchParams } from './components/ListDeliveryFilter';
+import useDeliveryStoreTrack from '@/store/delivery.store';
 import Button from '@/components/Button';
 import TableLoader from '@/components/TableLoader';
+import Notification from '@/components/Notification';
 import TableRow from './components/TableRow';
+import ListDeliveryFilter, { OnDeliverySearchParams } from './components/ListDeliveryFilter';
 
 export interface ITableDeliveryProps {
   setDeliveryId: (id: string | null) => void;
 }
 
 export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
+  const { deletedDelivery } = useDeliveryStoreTrack();
   const [openFilterModal, setOpenFilterModal] = useState(false);
   const [startDate, setStartDate] = useState(getStartOfMonth());
   const [endDate, setEndDate] = useState(getEndOfMonth());
@@ -64,6 +67,15 @@ export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
         <Button buttonTitle='Filter' size='sm' onClick={() => setOpenFilterModal(true)} />
       </div>
       <br />
+
+      {!!deletedDelivery ? (
+        <>
+          <Notification rounded='sm' type='success' message={`Delivery Record: "Delivery Number ${deletedDelivery}" Deleted!`} />
+          <br />
+        </>
+      ) : (
+        ''
+      )}
 
       <div className='bg-zinc-900 shadow-lg px-5 py-7 rounded-md'>
         {isLoading ? (

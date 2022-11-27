@@ -6,6 +6,7 @@ import DeliveryDetailsReport from './components/DeliveryDetailsReport';
 import Button from '@/components/Button';
 import EditDeliveryForm from './components/EditDeliveryForm';
 import Notification from '@/components/Notification';
+import useDeliveryStoreTrack from '@/store/delivery.store';
 
 const generateInitialEditFormValues = (delivery: Delivery) => {
   return {
@@ -29,7 +30,9 @@ export interface IDeliveryProfileProps {
 }
 
 export default function DeliveryProfile({ deliveryId, setDeliveryId }: IDeliveryProfileProps) {
+  const { setDeliveryState } = useDeliveryStoreTrack();
   const { data, isLoading, refetch } = trpc.useQuery(['delivery.getById', deliveryId]);
+  const { mutate } = trpc.useMutation('delivery.delete');
   const [isEdit, setIsEdit] = useState(false);
   const [isSuccessEdit, setIsSuccessEdit] = useState(false);
 
@@ -42,6 +45,18 @@ export default function DeliveryProfile({ deliveryId, setDeliveryId }: IDelivery
       setIsSuccessEdit(false);
     }, 5000);
     refetch();
+  };
+
+  const onDeleteDelivery = () => {
+    mutate(deliveryId, {
+      onSuccess() {
+        setDeliveryId(null);
+        setDeliveryState('deletedDelivery', data?.deliveryNumber);
+        setTimeout(() => {
+          setDeliveryState('deletedDelivery', null);
+        }, 5000);
+      },
+    });
   };
 
   if (isLoading || !data) return <></>;
@@ -79,7 +94,7 @@ export default function DeliveryProfile({ deliveryId, setDeliveryId }: IDelivery
                   <Button buttonTitle='Edit' size='sm' onClick={() => setIsEdit(true)} />
                 </div>
                 <div className='w-24'>
-                  <Button buttonTitle='Delete' size='sm' color='red' />
+                  <Button buttonTitle='Delete' size='sm' color='red' onClick={onDeleteDelivery} />
                 </div>
               </div>
             </div>
