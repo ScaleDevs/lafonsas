@@ -3,11 +3,12 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
+import { Product } from '@prisma/client';
 import { trpc } from '@/utils/trpc';
 import TextField from '@/components/TextField';
 import SelectField from '@/components/SelectField';
 import InputArray from '@/modules/delivery/components/InputArray';
-import { HandleChangeStepParams } from './types';
+import { IOrder } from './DeliveryDetailsReport';
 
 const schema = z.object({
   storeId: z.string().min(1, 'Please Choose Store'),
@@ -38,20 +39,22 @@ const schema = z.object({
 
 export type FormSchemaType = z.infer<typeof schema>;
 
-export interface CreateDeliveryFormProps {
+export interface EditDeliveryFormProps {
+  deliveryId: string;
   defaultValues: FormSchemaType;
-  changeStep: (handleChangeStepParams: HandleChangeStepParams) => void;
+  onSuccessfulEdit: () => void;
 }
 
-export default function CreateDeliveryForm({ defaultValues, changeStep }: CreateDeliveryFormProps) {
+export default function EditDeliveryForm({ deliveryId, defaultValues, onSuccessfulEdit }: EditDeliveryFormProps) {
   const { data, isLoading } = trpc.useQuery(['store.getStores', { limit: 1000 }]);
+  const { mutate } = trpc.useMutation('delivery.update');
   const [storeId, setStoreId] = useState(defaultValues.storeId ? defaultValues.storeId : '');
 
   const {
     setValue,
     handleSubmit,
     resetField,
-    formState: { errors, defaultValues: formDefaultValues },
+    formState: { errors, defaultValues: formDefaultValues, dirtyFields },
     control,
   } = useForm<FormSchemaType>({
     resolver: zodResolver(schema),
@@ -87,40 +90,67 @@ export default function CreateDeliveryForm({ defaultValues, changeStep }: Create
     resetField('returnSlip', { defaultValue: [] });
   };
 
-  const createDelivery = (formData: FormSchemaType) => {
-    let amount = 0;
+  const updateDelivery = (formData: FormSchemaType) => {
+    const amountDependency = {
+      badOrder: true,
+      widthHoldingTax: true,
+      otherDeduction: true,
+      orders: true,
+    } as any;
 
-    // add total price of orders
-    const currentProducts = data?.records.find((store) => store.id === formData.storeId)?.products;
-    if (currentProducts) {
-      formData.orders.forEach((order) => {
-        const findProduct = currentProducts.find((prd) => prd.size === order.size);
-        if (findProduct) amount += findProduct.price * order.quantity;
-      });
-    }
+    const partialData = { ...formData } as Partial<FormSchemaType & { amount: number; orders: IOrder[] }>;
+    const currentProducts: Product[] = data?.records.find((store) => store.id === formData.storeId)?.products || [];
+    const newOrderArr: IOrder[] = [];
 
-    // deductions for total price
-    if (!!formData.badOrder) amount -= formData.badOrder;
-    if (!!formData.widthHoldingTax) amount -= formData.widthHoldingTax;
-    if (!!formData.otherDeduction) amount -= formData.otherDeduction;
+    Object.keys(formData).forEach((key) => {
+      const keyField = key as keyof FormSchemaType;
+      if (keyField === 'orders' && !!dirtyFields['orders']) {
+        formData.orders.map((ord) => {
+          const price = !!currentProducts ? (currentProducts.find((prd) => prd.size === ord.size)?.price || 0) * ord.quantity : 0;
+          newOrderArr.push({ size: ord.size, quantity: ord.quantity, price });
+        });
 
-    const step1FormData = {
-      ...formData,
-      amount: amount,
-    };
+        partialData['orders'] = newOrderArr;
+      } else if (!dirtyFields[keyField]) delete partialData[keyField];
 
-    changeStep({
-      step: 2,
-      data: step1FormData,
+      if (amountDependency[keyField] && !!dirtyFields[keyField]) {
+        let tempAmount = 0;
+
+        // add total price of orders
+        if (currentProducts) {
+          formData.orders.forEach((order) => {
+            const findProduct = currentProducts.find((prd) => prd.size === order.size);
+            if (findProduct) tempAmount += findProduct.price * order.quantity;
+          });
+        }
+
+        // deductions for total price
+        if (!!formData.badOrder) tempAmount -= formData.badOrder;
+        if (!!formData.widthHoldingTax) tempAmount -= formData.widthHoldingTax;
+        if (!!formData.otherDeduction) tempAmount -= formData.otherDeduction;
+        partialData['amount'] = tempAmount;
+      }
     });
+
+    mutate(
+      {
+        deliveryId,
+        partialData,
+      },
+      {
+        onSuccess() {
+          onSuccessfulEdit();
+        },
+      },
+    );
   };
 
   return (
     <form
       className='flex flex-col space-y-4 md:w-[100%] bg-zinc-900 p-8 rounded-md shadow-md overflow-hidden'
-      onSubmit={handleSubmit(createDelivery)}
+      onSubmit={handleSubmit(updateDelivery)}
     >
-      <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>Create Delivery</h1>
+      <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>Edit Delivery</h1>
       <br />
 
       <div className='flex justify-between flex-col space-y-5 lg:flex-row lg:space-x-7 lg:space-y-0'>
@@ -243,7 +273,7 @@ export default function CreateDeliveryForm({ defaultValues, changeStep }: Create
         type='submit'
         className='p-3 rounded-sm font-comfortaa transition-colors duration-500 bg-blue-600 hover:bg-blue-400'
       >
-        REVIEW
+        UPDATE
       </button>
     </form>
   );

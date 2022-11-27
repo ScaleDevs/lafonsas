@@ -4,7 +4,7 @@ import Button from '@/components/Button';
 import ModalLoader from '@/components/ModalLoader';
 import Notification from '@/components/Notification';
 import { HandleChangeStepParams } from './types';
-import DeliveryDetailsReport, { IOrder } from './DeliveryDetailsReport';
+import DeliveryDetailsReport, { IOrder } from './components/DeliveryDetailsReport';
 
 export interface ReviewDeliveryProps {
   deliveryDetails: FormSchemaType & { amount: number };

@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { trpc } from '@/utils/trpc';
-import { FormSchemaType } from './CreateDeliveryForm';
+import { FormSchemaType } from '../CreateDeliveryForm';
 import Loader from '@/components/Loader';
 import { IDelivery } from '@/utils/types';
 import dayjs from 'dayjs';
 
 const displayData = (data: any) => {
-  if (data[0] === 'postingDate' && typeof data[1] !== 'string') return dayjs(data).format('MMM DD, YYYY');
+  if (['postingDate', 'checkDate'].includes(data[0]) && typeof data[1] !== 'string') return dayjs(data).format('MMM DD, YYYY');
   return !data[1] || data[1] === '' ? 'N/A' : data[1];
 };
 
@@ -57,7 +57,7 @@ export default function DeliveryDetailsReport({ deliveryDetails }: IDeliveryDeta
     initializeOrderDetails();
     initializeReturnSlipDetails();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [badOrder, data, orders, otherDeduction, widthHoldingTax]);
+  }, [badOrder, data, orders, otherDeduction, widthHoldingTax, returnSlip]);
 
   if (isLoading)
     return (
