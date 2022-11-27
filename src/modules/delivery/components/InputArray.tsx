@@ -33,8 +33,6 @@ interface InputArrayProps {
 
 const InputArray = ({ errors, setValue, fields, append, remove, property, label, storeId, defaultValues }: InputArrayProps) => {
   const { data } = trpc.useQuery(['store.getStores', {}]);
-  console.log('default');
-  console.log(defaultValues);
   return (
     <div className='space-y-3 border-gray-600 font-roboto text-md md:text-lg'>
       <div className='w-ful h-[2px] bg-zinc-700 my-5' />

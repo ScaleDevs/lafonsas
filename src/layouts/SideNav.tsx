@@ -163,7 +163,7 @@ export default function SideNav() {
                 Icon={() => <IconComp iconName='BoxIcon' iconProps={{}} />}
                 links={[
                   { title: 'Create Delivery', path: '/delivery/create' },
-                  { title: 'List Delivery', path: '/delivery/list' },
+                  { title: 'List Delivery', path: '/delivery' },
                 ]}
               />
               <NavLinkHouse
@@ -171,7 +171,7 @@ export default function SideNav() {
                 Icon={() => <IconComp iconName='BoxIcon' iconProps={{}} />}
                 links={[
                   { title: 'Create Store', path: '/store/create' },
-                  { title: 'List Stores', path: '/store/list' },
+                  { title: 'List Stores', path: '/store' },
                 ]}
               />
               <NavLink path='/login' logout Icon={() => <IconComp iconName='LogoutIcon' iconProps={{}} />}>

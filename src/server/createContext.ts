@@ -14,6 +14,8 @@ export const createContext = async ({
   res,
 }: trpcNext.CreateNextContextOptions | NodeHTTPCreateContextFnOptions<IncomingMessage, ws>) => {
   console.log('==============REQUEST==============');
+  console.log('Timestamp: ', new Date());
+  console.log('Payload:');
   console.log((req as any).query);
   console.log('==============REQUEST==============');
   return {

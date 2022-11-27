@@ -1,55 +1,27 @@
 import { useState } from 'react';
 import ReactPaginate from 'react-paginate';
-import dayjs from 'dayjs';
 
-import { Delivery } from '@prisma/client';
+import { getEndOfMonth, getStartOfMonth } from '@/utils/helper';
 import { trpc } from '@/utils/trpc';
-import Layout from '@/layouts/index';
-import TableLoader from '@/components/TableLoader';
-import { getStartOfMonth, getEndOfMonth } from '@/utils/helper';
+import useDeliveryStoreTrack from '@/store/delivery.store';
 import Button from '@/components/Button';
-import ListDeliveryFilter, { OnDeliverySearchParams } from '@/modules/delivery/ListDeliveryFilter';
-import DeliveryDetails from '@/modules/delivery/DeliveryDetails';
+import TableLoader from '@/components/TableLoader';
+import Notification from '@/components/Notification';
+import TableRow from './components/TableRow';
+import ListDeliveryFilter, { OnDeliverySearchParams } from './components/ListDeliveryFilter';
 
-interface TableRowProps {
-  delivery: Omit<
-    Delivery,
-    'badOrder' | 'widthHoldingTax' | 'otherDeduction' | 'checkNumber' | 'checkDate' | 'orders' | 'returnSlip'
-  >;
-  onClick: (deliveryId: string) => void;
+export interface ITableDeliveryProps {
+  setDeliveryId: (id: string | null) => void;
 }
 
-const TableRow = ({ delivery, onClick }: TableRowProps) => {
-  const { data } = trpc.useQuery(['store.getById', delivery.storeId]);
-
-  return (
-    <tr
-      className='font-comfortaa h-14 text-left hover:cursor-pointer hover:bg-gray-700 transition-colors duration-200'
-      onClick={() => onClick(delivery.id)}
-    >
-      <td>{data?.name}</td>
-      <td>{delivery.deliveryNumber}</td>
-      <td>{dayjs(delivery.postingDate).format('MMM DD, YYYY')}</td>
-      <td>₱{delivery.amount}</td>
-      <td>
-        {!!delivery.amountPaid && delivery.amountPaid > 0 ? (
-          <span className='bg-green-500 p-2 rounded-full text-sm'>PAID</span>
-        ) : (
-          <span className='bg-red-500 p-2 rounded-full text-sm'>UNPAID</span>
-        )}
-      </td>
-    </tr>
-  );
-};
-
-export default function ListProducts() {
+export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
+  const { deletedDelivery } = useDeliveryStoreTrack();
+  const [openFilterModal, setOpenFilterModal] = useState(false);
   const [startDate, setStartDate] = useState(getStartOfMonth());
   const [endDate, setEndDate] = useState(getEndOfMonth());
   const [storeId, setStoreId] = useState<string | undefined>(undefined);
   const [deliveryNumber, setDeliveryNumber] = useState<string | undefined>(undefined);
-  const [deliveryId, setDeliveryId] = useState<string | null>(null);
 
-  const [openFilterModal, setOpenFilterModal] = useState(false);
   const [page, setPage] = useState(1);
   const { data, isLoading } = trpc.useQuery([
     'delivery.getDeliveries',
@@ -72,17 +44,8 @@ export default function ListProducts() {
 
   const onTableRowClick = (deliveryId: string) => setDeliveryId(deliveryId);
 
-  if (deliveryId)
-    return (
-      <Layout>
-        <div className='bg-zinc-900 shadow-lg px-5 py-7 rounded-md'>
-          <DeliveryDetails deliveryId={deliveryId} />
-        </div>
-      </Layout>
-    );
-
   return (
-    <Layout>
+    <div>
       {openFilterModal ? (
         <ListDeliveryFilter
           startDate={startDate}
@@ -104,6 +67,15 @@ export default function ListProducts() {
         <Button buttonTitle='Filter' size='sm' onClick={() => setOpenFilterModal(true)} />
       </div>
       <br />
+
+      {!!deletedDelivery ? (
+        <>
+          <Notification rounded='sm' type='success' message={`Delivery Record: "Delivery Number ${deletedDelivery}" Deleted!`} />
+          <br />
+        </>
+      ) : (
+        ''
+      )}
 
       <div className='bg-zinc-900 shadow-lg px-5 py-7 rounded-md'>
         {isLoading ? (
@@ -141,6 +113,6 @@ export default function ListProducts() {
           renderOnZeroPageCount={null as any}
         />
       </div>
-    </Layout>
+    </div>
   );
 }
