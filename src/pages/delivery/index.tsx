@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import Layout from '@/layouts/index';
 import TableDelivery from '@/modules/delivery/TableDelivery';
@@ -20,6 +21,12 @@ export default function ListDeliveries() {
 
   return (
     <Layout>
+      <Head>
+        <title>Delivery</title>
+        <meta name='description' content='Sample Home page with nextjs' />
+        <link rel='icon' href='/favicon.ico' />
+      </Head>
+
       {deliveryId ? (
         <DeliveryProfile deliveryId={deliveryId} setDeliveryId={onSetDeliveryId} />
       ) : (

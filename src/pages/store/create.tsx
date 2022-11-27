@@ -1,4 +1,5 @@
 import * as React from 'react';
+import Head from 'next/head';
 import { useForm, useFieldArray } from 'react-hook-form';
 import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -65,6 +66,12 @@ export default function CreateStore() {
 
   return (
     <Layout>
+      <Head>
+        <title>Store | Create</title>
+        <meta name='description' content='Sample Home page with nextjs' />
+        <link rel='icon' href='/favicon.ico' />
+      </Head>
+
       <ModalLoader open={isLoading}>Saving Product ...</ModalLoader>
       <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>Create Product</h1>
       <br />

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Head from 'next/head';
 import Layout from '@/layouts/index';
 import CreateDeliveryForm, { FormSchemaType } from '@/modules/delivery/CreateDeliveryForm';
 import ReviewDelivery from '@/modules/delivery/ReviewDelivery';
@@ -39,6 +40,12 @@ export default function CreateDelivery() {
 
   return (
     <Layout>
+      <Head>
+        <title>Delivery | Create</title>
+        <meta name='description' content='Sample Home page with nextjs' />
+        <link rel='icon' href='/favicon.ico' />
+      </Head>
+
       {isSuccess ? (
         <>
           <Notification rounded='sm' type='success' message='Delivery Record Created' />

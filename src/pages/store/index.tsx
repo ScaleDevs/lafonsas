@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Head from 'next/head';
 import ReactPaginate from 'react-paginate';
 
 import { trpc } from '@/utils/trpc';
@@ -40,6 +41,12 @@ export default function ListProducts() {
 
   return (
     <Layout>
+      <Head>
+        <title>Store</title>
+        <meta name='description' content='Sample Home page with nextjs' />
+        <link rel='icon' href='/favicon.ico' />
+      </Head>
+
       {!!storeData ? <StoreModal resetStoreState={resetStoreState} data={storeData} storesRefetch={refetch} /> : ''}
 
       <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>List Products</h1>
