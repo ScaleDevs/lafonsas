@@ -1,15 +1,12 @@
 import { useState } from 'react';
-import ReactPaginate from 'react-paginate';
-import dayjs from 'dayjs';
-
 import { Delivery } from '@prisma/client';
+import dayjs from 'dayjs';
+import ReactPaginate from 'react-paginate';
+import { getEndOfMonth, getStartOfMonth } from '@/utils/helper';
 import { trpc } from '@/utils/trpc';
-import Layout from '@/layouts/index';
-import TableLoader from '@/components/TableLoader';
-import { getStartOfMonth, getEndOfMonth } from '@/utils/helper';
+import ListDeliveryFilter, { OnDeliverySearchParams } from './ListDeliveryFilter';
 import Button from '@/components/Button';
-import ListDeliveryFilter, { OnDeliverySearchParams } from '@/modules/delivery/ListDeliveryFilter';
-import DeliveryDetails from '@/modules/delivery/DeliveryDetails';
+import TableLoader from '@/components/TableLoader';
 
 interface TableRowProps {
   delivery: Omit<
@@ -42,14 +39,17 @@ const TableRow = ({ delivery, onClick }: TableRowProps) => {
   );
 };
 
-export default function ListProducts() {
+export interface ITableDeliveryProps {
+  setDeliveryId: (id: string | null) => void;
+}
+
+export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
+  const [openFilterModal, setOpenFilterModal] = useState(false);
   const [startDate, setStartDate] = useState(getStartOfMonth());
   const [endDate, setEndDate] = useState(getEndOfMonth());
   const [storeId, setStoreId] = useState<string | undefined>(undefined);
   const [deliveryNumber, setDeliveryNumber] = useState<string | undefined>(undefined);
-  const [deliveryId, setDeliveryId] = useState<string | null>(null);
 
-  const [openFilterModal, setOpenFilterModal] = useState(false);
   const [page, setPage] = useState(1);
   const { data, isLoading } = trpc.useQuery([
     'delivery.getDeliveries',
@@ -72,17 +72,8 @@ export default function ListProducts() {
 
   const onTableRowClick = (deliveryId: string) => setDeliveryId(deliveryId);
 
-  if (deliveryId)
-    return (
-      <Layout>
-        <div className='bg-zinc-900 shadow-lg px-5 py-7 rounded-md'>
-          <DeliveryDetails deliveryId={deliveryId} />
-        </div>
-      </Layout>
-    );
-
   return (
-    <Layout>
+    <div>
       {openFilterModal ? (
         <ListDeliveryFilter
           startDate={startDate}
@@ -141,6 +132,6 @@ export default function ListProducts() {
           renderOnZeroPageCount={null as any}
         />
       </div>
-    </Layout>
+    </div>
   );
 }
