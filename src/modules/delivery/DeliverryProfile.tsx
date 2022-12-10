@@ -98,6 +98,8 @@ export default function DeliveryProfile({ deliveryId, setDeliveryId }: IDelivery
                 </div>
               </div>
             </div>
+            <br />
+            <br />
             <DeliveryDetailsReport deliveryDetails={data} />
           </>
         )}

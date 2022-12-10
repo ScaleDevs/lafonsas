@@ -32,7 +32,8 @@ interface InputArrayProps {
 }
 
 const InputArray = ({ errors, setValue, fields, append, remove, property, label, storeId, defaultValues }: InputArrayProps) => {
-  const { data } = trpc.useQuery(['store.getStores', {}]);
+  const { data } = trpc.useQuery(['store.getById', storeId]);
+
   return (
     <div className='space-y-3 border-gray-600 font-roboto text-md md:text-lg'>
       <div className='w-ful h-[2px] bg-zinc-700 my-5' />
@@ -53,13 +54,7 @@ const InputArray = ({ errors, setValue, fields, append, remove, property, label,
             <SelectField
               required
               label='Size'
-              options={
-                !!data
-                  ? data.records
-                      .find((store) => store.id === storeId)
-                      ?.products.map((product) => ({ label: product.size, value: product.size })) || []
-                  : []
-              }
+              options={(!!data && data.products.map((product) => ({ label: product.size, value: product.size }))) || []}
               formInput={{ setValue, property: `${property}.${index}.size` }}
               errorMessage={errors[`${property}`] ? errors[`${property}`][index]?.size?.message : undefined}
               defaultValue={defaultValues ? defaultValues[index]?.size : ''}
