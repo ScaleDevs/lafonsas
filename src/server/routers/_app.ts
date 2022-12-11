@@ -3,6 +3,7 @@ import { createRouter } from '../createRouter';
 import { authRouter } from './auth.router';
 import { deliveryRouter } from './delivery.router';
 import { storeRouter } from './store.router';
+import { expenseRouter } from './expense.router';
 
 /**
  * Create your application's root router
@@ -22,6 +23,7 @@ export const appRouter = createRouter()
   })
   .merge('auth.', authRouter)
   .merge('delivery.', deliveryRouter)
-  .merge('store.', storeRouter);
+  .merge('store.', storeRouter)
+  .merge('expense.', expenseRouter);
 
 export type AppRouter = typeof appRouter;

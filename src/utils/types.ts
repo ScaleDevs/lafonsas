@@ -1,9 +1,11 @@
-import { Delivery, Store } from '@prisma/client';
+import { Delivery, Expense, Store } from '@prisma/client';
 
 // models
 export type IDelivery = Delivery;
 
 export type IStore = Store;
+
+export type IExpense = Expense;
 
 // inputs
 export type IPaginationInputs = {
