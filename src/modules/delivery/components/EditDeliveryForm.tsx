@@ -51,6 +51,7 @@ export default function EditDeliveryForm({ deliveryId, defaultValues, onSuccessf
   const [storeId, setStoreId] = useState(defaultValues.storeId ? defaultValues.storeId : '');
 
   const {
+    register,
     setValue,
     handleSubmit,
     resetField,
@@ -173,18 +174,16 @@ export default function EditDeliveryForm({ deliveryId, defaultValues, onSuccessf
           required
           label='Delivery Number'
           placeholder='enter delivery number here'
-          formInput={{ setValue, property: 'deliveryNumber' }}
+          formInput={{ register, property: 'deliveryNumber' }}
           errorMessage={errors.deliveryNumber?.message}
-          defaultValue={formDefaultValues?.deliveryNumber}
         />
 
         <TextField
           required
           type='date'
           label='Posting Date'
-          formInput={{ setValue, property: 'postingDate' }}
+          formInput={{ register, property: 'postingDate' }}
           errorMessage={errors.postingDate?.message}
-          defaultValue={formDefaultValues?.postingDate}
         />
       </div>
 
@@ -193,27 +192,24 @@ export default function EditDeliveryForm({ deliveryId, defaultValues, onSuccessf
           label='Bad Order'
           type='number'
           placeholder='enter bad order here'
-          formInput={{ setValue, property: 'badOrder' }}
+          formInput={{ register, property: 'badOrder' }}
           errorMessage={errors.badOrder?.message}
-          defaultValue={formDefaultValues?.badOrder}
         />
 
         <TextField
           label='Width Holding Tax'
           type='number'
           placeholder='enter width holding tax here'
-          formInput={{ setValue, property: 'widthHoldingTax' }}
+          formInput={{ register, property: 'widthHoldingTax' }}
           errorMessage={errors.widthHoldingTax?.message}
-          defaultValue={formDefaultValues?.widthHoldingTax}
         />
 
         <TextField
           label='Other Deductions'
           type='number'
           placeholder='enter other deductions here'
-          formInput={{ setValue, property: 'otherDeduction' }}
+          formInput={{ register, property: 'otherDeduction' }}
           errorMessage={errors.otherDeduction?.message}
-          defaultValue={formDefaultValues?.otherDeduction}
         />
       </div>
 
@@ -222,30 +218,28 @@ export default function EditDeliveryForm({ deliveryId, defaultValues, onSuccessf
           label='Amount Paid'
           type='number'
           placeholder='enter amount paid here'
-          formInput={{ setValue, property: 'amountPaid' }}
+          formInput={{ register, property: 'amountPaid' }}
           errorMessage={errors.amountPaid?.message}
-          defaultValue={formDefaultValues?.amountPaid}
         />
 
         <TextField
           label='Check Number'
           placeholder='enter check number here'
-          formInput={{ setValue, property: 'checkNumber' }}
+          formInput={{ register, property: 'checkNumber' }}
           errorMessage={errors.checkNumber?.message}
-          defaultValue={formDefaultValues?.checkNumber}
         />
 
         <TextField
           type='date'
           label='Check Date'
           placeholder='enter check date here'
-          formInput={{ setValue, property: 'checkDate' }}
+          formInput={{ register, property: 'checkDate' }}
           errorMessage={errors.checkDate?.message}
-          defaultValue={formDefaultValues?.checkDate}
         />
       </div>
 
       <InputArray
+        register={register}
         storeId={storeId}
         fields={orderFields}
         errors={errors}
@@ -258,6 +252,7 @@ export default function EditDeliveryForm({ deliveryId, defaultValues, onSuccessf
       />
 
       <InputArray
+        register={register}
         storeId={storeId}
         fields={returnSlipFields}
         errors={errors}

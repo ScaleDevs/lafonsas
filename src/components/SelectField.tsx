@@ -5,6 +5,39 @@ import FadeIn from './FadeIn';
 import IconComp from './Icon';
 import Loader from './Loader';
 
+const inputCssGenerate = ({
+  rounded = 'sm',
+  size = 'sm',
+  color = 'primary',
+  errorMessage,
+}: {
+  rounded?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg';
+  color?: 'primary';
+  errorMessage?: string;
+}) => {
+  const radius = {
+    sm: 'rounded-sm',
+    md: 'rounded-md',
+    lg: 'rounded-lg',
+  };
+
+  const padding = {
+    sm: 'p-2',
+    md: 'p-3',
+    lg: 'p-4',
+  };
+
+  const borderColor = {
+    primary: 'border-zinc-600 hover:border-blue-500 focus:border-blue-500 pr-10',
+    error: 'border-red-500',
+  };
+
+  return `w-full ${radius[rounded]} ${padding[size]} ${
+    errorMessage ? borderColor['error'] : borderColor[color]
+  } bg-transparent border rounded-sm outline-none duration-500 placeholder:text-sm`;
+};
+
 type IOption = {
   value: string;
   label: string;
@@ -31,7 +64,7 @@ export interface ISelectProps {
   isLoading?: boolean;
 }
 
-export default function SelectField({
+function SelectFieldComp({
   rounded = 'sm',
   size = 'sm',
   color = 'primary',
@@ -46,31 +79,10 @@ export default function SelectField({
   errorMessage,
   isLoading,
 }: ISelectProps) {
-  const radius = {
-    sm: 'rounded-sm',
-    md: 'rounded-md',
-    lg: 'rounded-lg',
-  };
-
-  const padding = {
-    sm: 'p-2',
-    md: 'p-3',
-    lg: 'p-4',
-  };
-
-  const borderColor = {
-    primary: 'border-zinc-600 hover:border-blue-500 focus:border-blue-500 pr-10',
-    error: 'border-red-500',
-  };
-
-  const inputCss = `w-full ${radius[rounded]} ${padding[size]} ${
-    errorMessage ? borderColor['error'] : borderColor[color]
-  } bg-transparent border rounded-sm outline-none duration-500 placeholder:text-sm`;
-
   const [showMenu, setShowMenu] = useState(false);
   const [value, setValue] = useState(!!defaultValue ? options.find((opt) => opt.value === defaultValue)?.label || '' : '');
   const [searchQry, setSearchQry] = useState('');
-  const [selected, setSelected] = useState(false);
+  const [selected, setSelected] = useState(!!defaultValue);
 
   const onUseFormUpdate = (value: string) => {
     onChange && onChange(value);
@@ -129,8 +141,7 @@ export default function SelectField({
         <OutsideClickHandler onOutsideClick={() => onOutSideClick()}>
           <div className='relative overflow-hidden'>
             <input
-              name={'stores'}
-              className={inputCss}
+              className={inputCssGenerate({ rounded, size, color, errorMessage })}
               placeholder={placeholder}
               value={value}
               onChange={onInputChange}
@@ -161,6 +172,30 @@ export default function SelectField({
         </OutsideClickHandler>
       </div>
       {errorMessage ? <FadeIn cssText='text-red-500'>{errorMessage}</FadeIn> : ''}
+    </div>
+  );
+}
+
+export default function SelectField(props: ISelectProps) {
+  const { rounded, size, color, errorMessage, label, labelCss, required } = props;
+
+  if (props.options.length > 0) return <SelectFieldComp {...props} />;
+
+  return (
+    <div className='w-full flex flex-col space-y-1 text-md md:text-lg font-normal font-roboto'>
+      {label ? (
+        <label className={'p-0 font-bold' + labelCss}>
+          {label} {required ? <span className='text-red-500'>*</span> : ''}
+        </label>
+      ) : (
+        ''
+      )}
+      <div className='relative overflow-hidden'>
+        <input name={'stores'} className={inputCssGenerate({ rounded, size, color, errorMessage })} />
+        <div className='absolute top-0 right-0 flex h-full justify-center items-center p-3 z-10 border-0 hover:cursor-pointer'>
+          <Loader />
+        </div>
+      </div>
     </div>
   );
 }
