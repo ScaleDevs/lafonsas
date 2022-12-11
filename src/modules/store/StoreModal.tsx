@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import OutsideClickHandler from 'react-outside-click-handler';
 
-import { IStore } from '@/utils/types';
 import Modal from '@/components/Modal';
 import { Overlay } from '@/components/Overlay';
 import { trpc } from '@/utils/trpc';
@@ -9,29 +8,38 @@ import Loader from '@/components/Loader';
 import StoreUpdate from './StoreUpdate';
 
 export interface IStoreModalProps {
-  data: IStore;
+  storeId: string;
   resetStoreState: () => void;
   storesRefetch: any;
 }
 
-export default function StoreModal({ data, resetStoreState, storesRefetch }: IStoreModalProps) {
+export default function StoreModal({ storeId, resetStoreState, storesRefetch }: IStoreModalProps) {
   const [isUpdate, setIsUpdate] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const { data, refetch } = trpc.useQuery(['store.getById', storeId]);
   const { mutate, isSuccess, isLoading: isDeleting } = trpc.useMutation('store.delete');
 
   const onDelete = () => {
-    mutate(data.id, {
-      onSuccess() {
-        storesRefetch();
-      },
-    });
+    if (data?.id)
+      mutate(data.id, {
+        onSuccess() {
+          storesRefetch();
+        },
+      });
   };
 
   const resetIsUpdate = () => setIsUpdate(false);
 
+  const refetchCalls = () => {
+    storesRefetch();
+    refetch();
+  };
+
+  if (!data) return <></>;
+
   if (isUpdate)
     return (
-      <StoreUpdate data={data} resetStoreState={resetStoreState} storesRefetch={storesRefetch} resetIsUpdate={resetIsUpdate} />
+      <StoreUpdate data={data} resetStoreState={resetStoreState} storesRefetch={refetchCalls} resetIsUpdate={resetIsUpdate} />
     );
 
   if (isDeleting)

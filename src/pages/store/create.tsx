@@ -33,7 +33,7 @@ export default function CreateStore() {
   const { mutate, isLoading, isSuccess, isError } = trpc.useMutation('store.create');
 
   const {
-    setValue,
+    register,
     handleSubmit,
     reset,
     formState: { errors },
@@ -85,7 +85,7 @@ export default function CreateStore() {
           required
           label='Store Name'
           placeholder='enter store name here'
-          formInput={{ setValue, property: 'name' }}
+          formInput={{ register, property: 'name' }}
           errorMessage={errors.name?.message}
         />
 
@@ -103,7 +103,7 @@ export default function CreateStore() {
                     labelCss='text-sm font-bold'
                     type='text'
                     placeholder='Product size here'
-                    formInput={{ setValue, property: `products.${index}.size` }}
+                    formInput={{ register, property: `products.${index}.size` }}
                     errorMessage={errors?.products ? errors.products[index]?.size?.message : undefined}
                   />
                   <TextField
@@ -111,7 +111,7 @@ export default function CreateStore() {
                     labelCss='text-sm font-bold'
                     type='number'
                     placeholder='Product price here'
-                    formInput={{ setValue, property: `products.${index}.price` }}
+                    formInput={{ register, property: `products.${index}.price` }}
                     errorMessage={errors?.products ? errors.products[index]?.price?.message : undefined}
                   />
                   <button

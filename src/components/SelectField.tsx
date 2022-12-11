@@ -92,8 +92,6 @@ export default function SelectField({
     setSearchQry(searchVal);
     setValue(searchVal);
 
-    console.log(selected);
-
     if (onChange && searchVal === '') onUseFormUpdate('');
 
     setSelected(false);

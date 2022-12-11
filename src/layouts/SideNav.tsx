@@ -174,6 +174,14 @@ export default function SideNav() {
                   { title: 'List Stores', path: '/store' },
                 ]}
               />
+              <NavLinkHouse
+                title='Expenses'
+                Icon={() => <IconComp iconName='BoxIcon' iconProps={{}} />}
+                links={[
+                  { title: 'Create Expense', path: '/expense/create' },
+                  { title: 'List Expenses', path: '/expense' },
+                ]}
+              />
               <NavLink path='/login' logout Icon={() => <IconComp iconName='LogoutIcon' iconProps={{}} />}>
                 Logout
               </NavLink>

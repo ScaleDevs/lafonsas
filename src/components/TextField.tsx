@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { UseFormSetValue } from 'react-hook-form';
+// import { useState } from 'react';
+import { UseFormSetValue, UseFormRegister } from 'react-hook-form';
 import FadeIn from './FadeIn';
 
 interface InputWrapperProps {
@@ -13,7 +13,8 @@ interface InputWrapperProps {
   color?: 'primary';
   errorMessage?: string;
   formInput?: {
-    setValue: UseFormSetValue<any>;
+    setValue?: UseFormSetValue<any>;
+    register?: UseFormRegister<any>;
     property: any;
   };
   onChange?: (value: string) => void;
@@ -31,7 +32,7 @@ const TextField = ({
   color = 'primary',
   formInput,
   onChange,
-  defaultValue,
+  // defaultValue,
   errorMessage,
 }: InputWrapperProps) => {
   const radius = {
@@ -55,20 +56,32 @@ const TextField = ({
     errorMessage ? borderColor['error'] : borderColor[color]
   } bg-transparent border rounded-sm outline-none duration-500 placeholder:text-sm`;
 
-  const [value, setValue] = useState(defaultValue || '');
+  // const [value, setValue] = useState(defaultValue || '');
 
-  const onUseFormUpdate = (value: string) => {
-    let newValue = type === 'number' ? parseFloat(value) : value;
-    if (!newValue) newValue = type === 'number' ? 0 : '';
-    if (formInput) formInput.setValue(formInput.property, newValue, { shouldValidate: true, shouldDirty: true });
-  };
+  // const onUseFormUpdate = (value: string) => {
+  //   let newValue = type === 'number' ? parseFloat(value) : value;
+  //   if (!newValue) newValue = type === 'number' ? 0 : '';
+  //   if (formInput) formInput.setValue(formInput.property, newValue, { shouldValidate: true, shouldDirty: true });
+  // };
 
   const onInputChange = (e: any) => {
     const inputVal = e.target.value;
-    setValue(inputVal);
-    onUseFormUpdate(inputVal);
     onChange && onChange(inputVal);
   };
+
+  const setFormValue = (v: string) => {
+    if (type === 'number' && v === '') return undefined;
+    return type === 'number' ? parseFloat(v) : v;
+  };
+
+  const useFormRegisterField = formInput?.register
+    ? formInput.register(formInput.property, {
+        onChange: onInputChange,
+        setValueAs: setFormValue,
+      })
+    : {
+        onChange: onInputChange,
+      };
 
   return (
     <div className='w-full flex flex-col space-y-1 text-md md:text-lg font-normal font-roboto'>
@@ -79,7 +92,7 @@ const TextField = ({
       ) : (
         ''
       )}
-      <input type={type} className={inputCss} placeholder={placeholder} value={value} onChange={onInputChange} />
+      <input {...useFormRegisterField} type={type} className={inputCss} placeholder={placeholder} />
       {errorMessage ? (
         <FadeIn cssText='text-red-500' duration='animation-duration-200'>
           {errorMessage}

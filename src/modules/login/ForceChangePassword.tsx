@@ -33,7 +33,7 @@ export default function ForceChangePassword() {
 
   const pwdReqItemCss = (isPassed: boolean) => colorTransitionCss + ' ' + (isPassed ? 'text-green-400' : '');
 
-  const { setValue, handleSubmit } = useForm({
+  const { handleSubmit, register } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
       newPassword: '',
@@ -144,7 +144,7 @@ export default function ForceChangePassword() {
             size='md'
             type={showPassword ? 'text' : 'password'}
             placeholder='enter password'
-            formInput={{ setValue, property: 'newPassword' }}
+            formInput={{ register, property: 'newPassword' }}
             onChange={onPasswordValidation}
           />
           {showPassword ? (

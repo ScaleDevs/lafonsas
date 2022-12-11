@@ -8,7 +8,7 @@ import TextField from '@/components/TextField';
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
-  const { errMessage, handleSubmit, signIn, isSignInLoading, setValue } = useLogin();
+  const { errMessage, handleSubmit, signIn, isSignInLoading, register } = useLogin();
 
   const toggleShowPass = () => setShowPassword((val) => !val);
 
@@ -24,14 +24,14 @@ export default function LoginForm() {
         </>
       )}
       <form className='flex flex-col space-y-6 md:w-96' onSubmit={handleSubmit(signIn)}>
-        <TextField size='md' placeholder='enter email' formInput={{ setValue, property: 'username' }} />
+        <TextField size='md' placeholder='enter email' formInput={{ register, property: 'username' }} />
 
         <div className='w-full relative'>
           <TextField
             size='md'
             type={showPassword ? 'text' : 'password'}
             placeholder='enter password'
-            formInput={{ setValue, property: 'password' }}
+            formInput={{ register, property: 'password' }}
           />
           {showPassword ? (
             <div

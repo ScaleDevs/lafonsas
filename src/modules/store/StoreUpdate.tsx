@@ -41,7 +41,7 @@ export default function StoreUpdate({ resetStoreState, data, storesRefetch, rese
   const { mutate, isLoading, isSuccess, isError } = trpc.useMutation('store.update');
 
   const {
-    setValue,
+    register,
     handleSubmit,
     formState: { errors, dirtyFields, defaultValues },
     control,
@@ -118,7 +118,7 @@ export default function StoreUpdate({ resetStoreState, data, storesRefetch, rese
               label='Store Name'
               placeholder='enter store name here'
               defaultValue={defaultValues?.name}
-              formInput={{ setValue, property: 'name' }}
+              formInput={{ register, property: 'name' }}
               errorMessage={errors.name?.message}
             />
 
@@ -136,8 +136,7 @@ export default function StoreUpdate({ resetStoreState, data, storesRefetch, rese
                         labelCss='text-sm font-bold'
                         type='text'
                         placeholder='Product size here'
-                        defaultValue={field.size}
-                        formInput={{ setValue, property: `products.${index}.size` }}
+                        formInput={{ register, property: `products.${index}.size` }}
                         errorMessage={errors?.products ? errors.products[index]?.size?.message : undefined}
                       />
                       <TextField
@@ -145,8 +144,7 @@ export default function StoreUpdate({ resetStoreState, data, storesRefetch, rese
                         labelCss='text-sm font-bold'
                         type='number'
                         placeholder='Product price here'
-                        defaultValue={field.price}
-                        formInput={{ setValue, property: `products.${index}.price` }}
+                        formInput={{ register, property: `products.${index}.price` }}
                         errorMessage={errors?.products ? errors.products[index]?.price?.message : undefined}
                       />
                       <button
