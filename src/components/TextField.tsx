@@ -56,14 +56,6 @@ const TextField = ({
     errorMessage ? borderColor['error'] : borderColor[color]
   } bg-transparent border rounded-sm outline-none duration-500 placeholder:text-sm`;
 
-  // const [value, setValue] = useState(defaultValue || '');
-
-  // const onUseFormUpdate = (value: string) => {
-  //   let newValue = type === 'number' ? parseFloat(value) : value;
-  //   if (!newValue) newValue = type === 'number' ? 0 : '';
-  //   if (formInput) formInput.setValue(formInput.property, newValue, { shouldValidate: true, shouldDirty: true });
-  // };
-
   const onInputChange = (e: any) => {
     const inputVal = e.target.value;
     onChange && onChange(inputVal);

@@ -15,7 +15,7 @@ const schema = z.object({
   description: z.string().optional(),
   category: z.string().min(1, 'Please input category!'),
   expenseDate: z.string().min(1, 'Please input expense date'),
-  amount: z.number().min(0, 'Please input expense amount!'),
+  amount: z.number().min(1, 'Please input expense amount!'),
 });
 
 type FormSchemaType = z.infer<typeof schema>;

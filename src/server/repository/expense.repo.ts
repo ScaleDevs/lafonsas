@@ -23,7 +23,7 @@ class Respository {
 
   public async findExpenses({ startDate, endDate, name, category, page, limit }: IFindExpensesInput) {
     const whereFilter = {
-      date: {
+      expenseDate: {
         gte: startDate,
         lte: endDate,
       },

@@ -27,11 +27,11 @@ export const expenseRouter = createRouter()
     input: z.object({
       expenseId: z.string(),
       partialData: z.object({
-        name: z.string(),
-        description: z.string().nullable(),
-        category: z.string(),
-        expenseDate: z.string(),
-        amount: z.number(),
+        name: z.string().optional(),
+        description: z.string().optional().nullable(),
+        category: z.string().optional(),
+        expenseDate: z.string().optional(),
+        amount: z.number().optional(),
       }),
     }),
     resolve({ input }) {
