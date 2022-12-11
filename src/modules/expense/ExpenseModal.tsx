@@ -56,7 +56,7 @@ export default function ExpenseModal({ expenseId, expensesRefetch, resetExpenseD
           <Modal w='w-[80%] md: w-[520px]' p='p-8'>
             <div className='flex flex-row justify-center'>
               <Loader h='h-7' w='w-7' />
-              <h1 className='text-xl font-comfortaa'>Removing Store ...</h1>
+              <h1 className='text-xl font-comfortaa'>Removing Expense Record ...</h1>
             </div>
           </Modal>
         </OutsideClickHandler>
@@ -104,7 +104,7 @@ export default function ExpenseModal({ expenseId, expensesRefetch, resetExpenseD
               <br />
               {confirmDelete ? (
                 <div className='flex flex-row space-x-2 items-end'>
-                  <h1 className='font-comfortaa font-bold text-red-500'>Are you sure you want to delete this store?</h1>
+                  <h1 className='font-comfortaa font-bold text-red-500'>Are you sure you want to delete this expense?</h1>
                   <button className='bg-red-500 px-5 py-2 rounded-sm hover:bg-red-400' onClick={onDelete}>
                     YES
                   </button>

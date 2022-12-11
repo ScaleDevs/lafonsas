@@ -56,7 +56,7 @@ export default function CreateExpense() {
         <link rel='icon' href='/favicon.ico' />
       </Head>
 
-      <ModalLoader open={isLoading}>Saving Product ...</ModalLoader>
+      <ModalLoader open={isLoading}>Saving Expense ...</ModalLoader>
       <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>Create Expense</h1>
       <br />
       <form
