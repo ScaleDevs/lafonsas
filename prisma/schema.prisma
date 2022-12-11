@@ -41,3 +41,14 @@ model Delivery {
   store           Store     @relation(fields: [storeId], references: [id])
   storeId         String    @db.ObjectId
 }
+
+model Expense {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  category    String
+  expenseDate DateTime
+  amount      Float
+
+  @@index([name])
+}

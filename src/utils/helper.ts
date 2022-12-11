@@ -62,6 +62,12 @@ export const getCurrentTimestamp = () => {
   return day().unix();
 };
 
-export const getStartOfMonth = () => day().startOf('month').format('MM-DD-YYYY');
+export const getStartOfMonth = (format?: string) =>
+  day()
+    .startOf('month')
+    .format(format ? format : 'MM-DD-YYYY');
 
-export const getEndOfMonth = () => day().endOf('month').format('MM-DD-YYYY');
+export const getEndOfMonth = (format?: string) =>
+  day()
+    .endOf('month')
+    .format(format ? format : 'MM-DD-YYYY');

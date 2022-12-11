@@ -33,3 +33,4 @@
 ## reminders
 
 - prisma model delivery (can update later postingDate to have an index)
+- prisma model expense (can update later date to have an index)

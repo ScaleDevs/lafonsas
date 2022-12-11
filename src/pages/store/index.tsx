@@ -47,7 +47,7 @@ export default function ListProducts() {
         <link rel='icon' href='/favicon.ico' />
       </Head>
 
-      {!!storeData ? <StoreModal resetStoreState={resetStoreState} data={storeData} storesRefetch={refetch} /> : ''}
+      {!!storeData ? <StoreModal resetStoreState={resetStoreState} storeId={storeData.id} storesRefetch={refetch} /> : ''}
 
       <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>List Products</h1>
 
