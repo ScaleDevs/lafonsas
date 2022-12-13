@@ -56,12 +56,12 @@ function Users() {
 
       <br />
 
-      <div className='w-1/2 flex flex-row space-x-3'>
-        <button className='bg-zinc-900 py-4 px-8 rounded-t-sm '>INVITE USER</button>
-        <button className='bg-zinc-900 py-4 px-8 rounded-t-sm '>LIST USERS</button>
+      <div className='w-1/2 flex flex-row space-x-3 font-comfortaa'>
+        <button className='bg-white py-4 px-8 rounded-t-sm '>INVITE USER</button>
+        <button className='bg-white py-4 px-8 rounded-t-sm '>LIST USERS</button>
       </div>
 
-      <div className='bg-zinc-900 w-1/2 p-5 rounded-sm shadow-lg'>
+      <div className='bg-white w-1/2 p-5 rounded-sm shadow-lg font-comfortaa'>
         {!!errMessage && (
           <FadeIn>
             <div className='bg-rose-600 rounded-sm p-4 opacity-90 text-center'>{errMessage}</div>
@@ -74,8 +74,11 @@ function Users() {
         )}
         <h1 className='font-roboto text-2xl py-5'>INVITE A USER</h1>
         <form className='flex flex-col space-y-5' onSubmit={handleSubmit(createUser)}>
-          <input className='p-4 rounded-sm' placeholder='enter email' {...register('email')} />
-          <button type='submit' className='bg-purple-500 p-4 rounded-sm hover:bg-purple-600 transition-colors duration-300'>
+          <input className='p-4 rounded-sm bg-gray-200 hover:bg-gray-300' placeholder='enter email' {...register('email')} />
+          <button
+            type='submit'
+            className='bg-primary p-4 rounded-sm hover:bg-primarylight transition-colors duration-300 text-white'
+          >
             SEND
           </button>
         </form>

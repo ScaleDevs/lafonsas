@@ -16,7 +16,7 @@ export default function TableRow({ delivery, onClick }: ITableRowProps) {
 
   return (
     <tr
-      className='font-comfortaa h-14 text-left hover:cursor-pointer hover:bg-gray-700 transition-colors duration-200'
+      className='font-comfortaa h-14 text-left hover:cursor-pointer hover:bg-gray-200 transition-colors duration-200'
       onClick={() => onClick(delivery.id)}
     >
       <td>{data?.name}</td>

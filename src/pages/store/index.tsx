@@ -49,13 +49,13 @@ export default function ListProducts() {
 
       {!!storeData ? <StoreModal resetStoreState={resetStoreState} storeId={storeData.id} storesRefetch={refetch} /> : ''}
 
-      <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>List Products</h1>
+      <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>List Stores</h1>
 
       <br />
       <br />
       <br />
 
-      <div className='bg-zinc-900 shadow-lg px-5 py-7 rounded-md'>
+      <div className='bg-white shadow-lg px-5 py-7 rounded-md'>
         {isLoading ? (
           <TableLoader />
         ) : (
@@ -85,7 +85,7 @@ export default function ListProducts() {
                   ? data.records.map((store) => (
                       <tr
                         key={store.id}
-                        className='font-comfortaa h-14 text-center hover:cursor-pointer hover:bg-gray-700 transition-colors duration-200'
+                        className='font-comfortaa h-14 text-center hover:cursor-pointer hover:bg-gray-200 transition-colors duration-200'
                         onClick={() => onStoreClick(store)}
                       >
                         <td className='show-modal-ref'>{store.name}</td>

@@ -53,7 +53,7 @@ const IconObject = {
         xmlns='http://www.w3.org/2000/svg'
         width='25'
         height='25'
-        fill='currentColor'
+        fill='green'
         className={`bi bi-arrow-left-circle-fill ${
           isButton ? 'transition-colors duration-300 text-blue-400 hover:text-blue-300' : ''
         }`}
@@ -69,7 +69,7 @@ const IconObject = {
         xmlns='http://www.w3.org/2000/svg'
         width='25'
         height='25'
-        fill='currentColor'
+        fill='green'
         className={`bi bi-arrow-right-circle-fill ${
           isButton ? 'transition-colors duration-300 text-blue-400 hover:text-blue-300' : ''
         }`}
@@ -161,7 +161,7 @@ const IconObject = {
         xmlns='http://www.w3.org/2000/svg'
         width='16'
         height='16'
-        fill='currentColor'
+        fill='black'
         className='bi bi-chevron-compact-down animate-fadeIn animation-duration-300'
         viewBox='0 0 16 16'
       >
@@ -178,7 +178,7 @@ const IconObject = {
         xmlns='http://www.w3.org/2000/svg'
         width='16'
         height='16'
-        fill='currentColor'
+        fill='black'
         className='bi bi-chevron-compact-up animate-fadeIn animation-duration-300'
         viewBox='0 0 16 16'
       >

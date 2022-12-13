@@ -83,7 +83,7 @@ const InputArray = ({
         return (
           <div
             key={field.id}
-            className='flex flex-col space-y-4 md:space-y-0 md:flex-row md:space-x-6 mt-2 w-full p-3 bg-zinc-800 rounded-md'
+            className='flex flex-col space-y-4 md:space-y-0 md:flex-row md:space-x-6 mt-2 w-full p-3 bg-gray-300 rounded-md'
           >
             {!!storeId && storeId !== '' ? (
               <SelectProducts {...{ index, setValue, errors, storeId, defaultValues, property }} />
@@ -123,8 +123,8 @@ const InputArray = ({
       <button
         type='button'
         disabled={!storeId || storeId === ''}
-        className={`${
-          !storeId || storeId === '' ? 'bg-gray-500' : 'bg-blue-500'
+        className={`text-white ${
+          !storeId || storeId === '' ? 'bg-gray-500' : 'bg-primarylight'
         } bg rounded-sm py-1 px-5 text-md mt-3 text-xl font-raleway font-semibold`}
         onClick={() => append(property === 'returnSlip' ? { size: '', quantity: 0 } : { size: '', quantity: 0, price: 0 })}
       >

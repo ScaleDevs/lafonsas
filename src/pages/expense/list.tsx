@@ -86,7 +86,7 @@ export default function ListExpenses() {
         ''
       )}
 
-      <div className='bg-zinc-900 shadow-lg px-5 py-7 rounded-md'>
+      <div className='bg-white shadow-lg px-5 py-7 rounded-md'>
         {isLoading ? (
           <TableLoader />
         ) : (

@@ -3,7 +3,7 @@ import Loader from './Loader';
 
 export interface IButtonProps {
   type?: 'button' | 'submit';
-  color?: 'blue' | 'red' | 'green';
+  color?: 'blue' | 'red' | 'green' | 'primary';
   isLoading?: boolean;
   size?: 'sm' | 'md' | 'lg';
   onClick?: () => void;
@@ -13,7 +13,7 @@ export interface IButtonProps {
 
 export default function Button({
   type = 'button',
-  color = 'blue',
+  color = 'primary',
   size = 'md',
   isLoading,
   onClick,
@@ -24,6 +24,7 @@ export default function Button({
     blue: 'bg-blue-600 hover:bg-blue-400',
     red: 'bg-red-500 hover:bg-red-400',
     green: 'bg-green-600 hover:bg-green-500',
+    primary: 'bg-primary hover:bg-primarylight text-white',
   };
 
   const buttonSize = {

@@ -13,25 +13,33 @@ export default function LoginForm() {
   const toggleShowPass = () => setShowPassword((val) => !val);
 
   return (
-    <div className='bg-zinc-800 p-10 rounded-md text-center w-3/4 md:w-auto'>
-      <h1 className='font-roboto text-4xl pb-6'>LOGIN</h1>
+    <div className='lg:pt-32'>
+      <h1 className='font-roboto text-4xl pb-6'>SIGN IN</h1>
       {!!errMessage && (
         <>
           <FadeIn>
-            <div className='bg-rose-600 rounded-sm p-4 opacity-90 text-center md:w-96 break-words'>{errMessage}</div>
+            <div className='bg-rose-500 rounded-sm p-4 opacity-90 text-center w-full break-words text-white'>{errMessage}</div>
           </FadeIn>
           <br />
         </>
       )}
-      <form className='flex flex-col space-y-6 md:w-96' onSubmit={handleSubmit(signIn)}>
-        <TextField size='md' placeholder='enter email' formInput={{ register, property: 'username' }} />
+      <form className='flex flex-col space-y-6 md:w-full' onSubmit={handleSubmit(signIn)}>
+        <TextField
+          formInput={{ register, property: 'username' }}
+          placeholder='enter email'
+          size='md'
+          color='secondary'
+          rounded='lg'
+        />
 
         <div className='w-full relative'>
           <TextField
-            size='md'
-            type={showPassword ? 'text' : 'password'}
-            placeholder='enter password'
             formInput={{ register, property: 'password' }}
+            type={showPassword ? 'text' : 'password'}
+            size='md'
+            placeholder='enter password'
+            color='secondary'
+            rounded='lg'
           />
           {showPassword ? (
             <div
@@ -51,9 +59,9 @@ export default function LoginForm() {
         </div>
         <button
           type='submit'
-          className='mt-5 bg-purple-500 p-4 w-full rounded-sm hover:bg-purple-600 transition-colors duration-300'
+          className='mt-5 bg-primary p-4 w-full rounded-lg hover:bg-primarylight transition-colors duration-300 text-white'
         >
-          {isSignInLoading ? <Loader /> : 'LOGIN'}
+          {isSignInLoading ? <Loader /> : 'SIGN IN'}
         </button>
       </form>
       <h1 className='text-lg font-roboto text-left pt-4'>Forgot Password?</h1>

@@ -55,7 +55,8 @@ export default function useLogin() {
           });
       },
       onError(error) {
-        setErrMessage(error.message);
+        const errorMsg = JSON.parse(error.message);
+        setErrMessage(errorMsg[0].message);
 
         setTimeout(() => {
           setErrMessage(null);

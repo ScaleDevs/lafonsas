@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { trpc } from '@/utils/trpc';
 import TextField from '@/components/TextField';
 import SelectField from '@/components/SelectField';
+import Button from '@/components/Button';
 import InputArray from '@/modules/delivery/components/InputArray';
 import { HandleChangeStepParams } from './types';
 
@@ -118,7 +119,7 @@ export default function CreateDeliveryForm({ defaultValues, changeStep }: Create
 
   return (
     <form
-      className='flex flex-col space-y-4 md:w-[100%] bg-zinc-900 p-8 rounded-md shadow-md overflow-hidden'
+      className='flex flex-col space-y-4 md:w-[100%] bg-white p-8 rounded-md shadow-md overflow-hidden text-black'
       onSubmit={handleSubmit(createDelivery)}
     >
       <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>Create Delivery</h1>
@@ -233,13 +234,7 @@ export default function CreateDeliveryForm({ defaultValues, changeStep }: Create
         property='returnSlip'
         defaultValues={formDefaultValues?.returnSlip}
       />
-
-      <button
-        type='submit'
-        className='p-3 rounded-sm font-comfortaa transition-colors duration-500 bg-blue-600 hover:bg-blue-400'
-      >
-        REVIEW
-      </button>
+      <Button buttonTitle='REVIEW' type='submit' />
     </form>
   );
 }
