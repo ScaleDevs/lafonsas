@@ -21,7 +21,7 @@ const NavLinkHouse = ({ title, Icon, links }: INavLinkHouseProps) => {
 
   const LinkItem = ({ children, path }: { children: any; path: string }) => (
     <Link href={path} passHref>
-      <div className='text-md p-3 rounded-md hover:bg-zinc-700 hover:cursor-pointer'>{children}</div>
+      <div className='text-md p-3 rounded-md hover:bg-gray-300 hover:cursor-pointer text-black'>{children}</div>
     </Link>
   );
 
@@ -41,10 +41,10 @@ const NavLinkHouse = ({ title, Icon, links }: INavLinkHouseProps) => {
     <li>
       <FadeIn>
         <div
-          className='flex flex-row justify-between p-3 w-full rounded-md hover:bg-zinc-700 hover:cursor-pointer'
+          className='flex flex-row justify-between p-3 w-full rounded-md hover:bg-gray-300 hover:cursor-pointer'
           onClick={() => setCollapse((curr) => !curr)}
         >
-          <div className='flex flex-row items-center'>
+          <div className='flex flex-row items-center text-black'>
             <IconTitle />
             {title}
           </div>
@@ -59,7 +59,7 @@ const NavLinkHouse = ({ title, Icon, links }: INavLinkHouseProps) => {
       <div
         className={`ml-4 border-l-2 transition-[max-height] duration-500 ${
           collapse ? 'max-h-56 ease-in' : 'max-h-0'
-        } overflow-hidden`}
+        } overflow-hidden border-gray-600`}
       >
         {links.map(({ title, path }, index) => (
           <LinkItem key={index} path={path}>
@@ -97,7 +97,7 @@ const NavLink = ({ children, path, logout, Icon }: INavLinkProps) => {
   if (logout)
     return (
       <li onClick={() => signOutWithMutate()}>
-        <FadeIn cssText='p-3 w-full rounded-md hover:bg-zinc-700 hover:cursor-pointer flex flex-row items-center'>
+        <FadeIn cssText='p-3 w-full rounded-md hover:bg-gray-300 hover:cursor-pointer flex flex-row items-center text-black'>
           <IconComp />
           {children}
         </FadeIn>
@@ -106,7 +106,7 @@ const NavLink = ({ children, path, logout, Icon }: INavLinkProps) => {
 
   return (
     <li>
-      <FadeIn cssText='rounded-md hover:bg-zinc-700 hover:cursor-pointer'>
+      <FadeIn cssText='rounded-md hover:bg-gray-300 hover:cursor-pointer text-black'>
         <Link href={path} passHref>
           <a className='p-3 flex flex-row items-center'>
             <IconComp />
@@ -131,7 +131,7 @@ export default function SideNav() {
       <div
         className={`${
           sideNavOpen ? 'w-[70%] sm:w-64' : 'w-0 sm:w-12'
-        } absolute w-[70%] sm:w-64 shadow-lg h-full bg-zinc-900 transition-[width] duration-500 sm:relative overflow-hidden z-10`}
+        } absolute w-[70%] sm:w-64 shadow-lg h-full bg-white transition-[width] duration-500 sm:relative overflow-hidden z-10`}
       >
         {sideNavOpen ? (
           ''
@@ -146,9 +146,7 @@ export default function SideNav() {
         )}
 
         <div className={sideNavOpen ? 'divide-y text-gray-200' : ''}>
-          <div className={sideNavOpen ? 'text-blue-500 p-5 font-comfortaa font-bold text-3xl' : 'hidden'}>
-            Scale<span className='text-gray-300'>Devs</span>
-          </div>
+          <div className={sideNavOpen ? 'text-primary p-5 font-comfortaa font-bold text-3xl' : 'hidden'}>Lafonsas</div>
 
           <div className={sideNavOpen ? 'w-full py-3' : 'hidden'}>
             <ul className='w-[90%] mx-auto font-comfortaa font- text-lg'>

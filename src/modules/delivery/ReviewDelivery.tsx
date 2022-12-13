@@ -66,7 +66,7 @@ export default function ReviewDelivery({ deliveryDetails, changeStep }: ReviewDe
       <div className='w-36 pb-4'>
         <Button buttonTitle='Back to Form' size='sm' onClick={backToStep1} />
       </div>
-      <div className='flex flex-col space-y-4 md:w-[100%] bg-zinc-900 p-8 rounded-md shadow-md overflow-hidden font-comfortaa'>
+      <div className='flex flex-col space-y-4 md:w-[100%] bg-white p-8 rounded-md shadow-md overflow-hidden font-comfortaa text-black'>
         <h1 className='text-3xl md:text-4xl font-bold'>Review Delivery</h1>
         <br />
 

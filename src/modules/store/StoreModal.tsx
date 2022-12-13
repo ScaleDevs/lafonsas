@@ -100,7 +100,7 @@ export default function StoreModal({ storeId, resetStoreState, storesRefetch }: 
                   </button>
                 </div>
               ) : (
-                <div className='space-x-3 mt-3 font-comfortaa'>
+                <div className='space-x-3 mt-3 font-comfortaa text-white'>
                   <button className='bg-blue-500 px-5 py-2 rounded-sm hover:bg-blue-400' onClick={() => setIsUpdate(true)}>
                     UPDATE
                   </button>

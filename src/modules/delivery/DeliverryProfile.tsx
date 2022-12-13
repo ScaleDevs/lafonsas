@@ -71,7 +71,7 @@ export default function DeliveryProfile({ deliveryId, setDeliveryId }: IDelivery
       ) : (
         ''
       )}
-      <div className='bg-zinc-900 shadow-lg px-5 py-7 rounded-md'>
+      <div className='bg-white shadow-lg px-5 py-7 rounded-md'>
         {isEdit ? (
           <>
             <div className='w-24'>

@@ -12,7 +12,7 @@ export interface IModalProps {
 export default function Modal({
   w,
   rounded = 'rounded-sm',
-  bg = 'bg-neutral-900',
+  bg = 'bg-white',
   opacity = 'opacity-90',
   p = 'p-5',
   children,

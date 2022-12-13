@@ -54,7 +54,7 @@ const TextField = ({
 
   const inputCss = `${radius[rounded]} ${padding[size]} ${
     errorMessage ? borderColor['error'] : borderColor[color]
-  } bg-gray-100 border rounded-sm outline-none duration-500 placeholder:text-sm`;
+  } bg-gray-200 border rounded-sm outline-none duration-500 placeholder:text-sm`;
 
   const onInputChange = (e: any) => {
     const inputVal = e.target.value;

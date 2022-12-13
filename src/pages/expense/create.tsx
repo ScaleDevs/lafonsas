@@ -9,6 +9,7 @@ import Layout from '@/layouts/index';
 import ModalLoader from '@/components/ModalLoader';
 import Notification from '@/components/Notification';
 import TextField from '@/components/TextField';
+import Button from '@/components/Button';
 
 const schema = z.object({
   name: z.string().min(1, 'Please input expense name!'),
@@ -60,7 +61,7 @@ export default function CreateExpense() {
       <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>Create Expense</h1>
       <br />
       <form
-        className='flex flex-col space-y-4 md:w-[100%] xl:w-[60%] 2xl:w-[800px] bg-zinc-900 p-8 rounded-md shadow-md overflow-hidden'
+        className='flex flex-col space-y-4 md:w-[100%] xl:w-[60%] 2xl:w-[800px] bg-white p-8 rounded-md shadow-md overflow-hidden'
         onSubmit={handleSubmit(createExpense)}
       >
         {isSuccess ? <Notification rounded='sm' type='success' message='Expense Saved' /> : ''}
@@ -108,12 +109,7 @@ export default function CreateExpense() {
 
         <br />
 
-        <button
-          type='submit'
-          className='p-3 rounded-sm font-comfortaa transition-colors duration-500 bg-blue-600 hover:bg-blue-400'
-        >
-          SUBMIT
-        </button>
+        <Button buttonTitle='SUBMIT' type='submit' />
       </form>
     </Layout>
   );

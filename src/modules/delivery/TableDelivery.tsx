@@ -77,7 +77,7 @@ export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
         ''
       )}
 
-      <div className='bg-zinc-900 shadow-lg px-5 py-7 rounded-md'>
+      <div className='bg-white shadow-lg px-5 py-7 rounded-md'>
         {isLoading ? (
           <TableLoader />
         ) : (
@@ -109,7 +109,7 @@ export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
           pageCount={data?.pageCount || 0}
           breakClassName=''
           containerClassName='flex flex-row space-x-7 items-center justify-center pt-10 font-comfortaa text-xl'
-          activeClassName='text-blue-400'
+          activeClassName='text-black'
           renderOnZeroPageCount={null as any}
         />
       </div>

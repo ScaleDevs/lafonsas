@@ -157,11 +157,11 @@ function SelectFieldComp({
           </div>
 
           {showMenu && !isLoading ? (
-            <ul className='absolute bg-slate-700 w-full p-2 rounded-sm space-y-1 mt-1 z-10 overflow-auto max-h-96 scrollbar'>
+            <ul className='absolute bg-gray-200 w-full p-2 rounded-sm space-y-1 mt-1 z-10 overflow-auto max-h-96 scrollbar'>
               {options
                 .filter((opt) => opt.label.includes(searchQry))
                 .map((opt, i) => (
-                  <li key={i} className='px-2 rounded-sm hover:cursor-pointer hover:bg-slate-600' onClick={() => onSelect(opt)}>
+                  <li key={i} className='px-2 rounded-sm hover:cursor-pointer hover:bg-gray-300' onClick={() => onSelect(opt)}>
                     {opt.label}
                   </li>
                 ))}

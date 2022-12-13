@@ -9,6 +9,7 @@ import TextField from '@/components/TextField';
 import SelectField from '@/components/SelectField';
 import InputArray from '@/modules/delivery/components/InputArray';
 import { IOrder } from './DeliveryDetailsReport';
+import Button from '@/components/Button';
 
 const schema = z.object({
   storeId: z.string().min(1, 'Please Choose Store'),
@@ -147,10 +148,7 @@ export default function EditDeliveryForm({ deliveryId, defaultValues, onSuccessf
   };
 
   return (
-    <form
-      className='flex flex-col space-y-4 md:w-[100%] bg-zinc-900 p-8 rounded-md shadow-md overflow-hidden'
-      onSubmit={handleSubmit(updateDelivery)}
-    >
+    <form className='flex flex-col space-y-4 md:w-[100%] p-8 overflow-hidden' onSubmit={handleSubmit(updateDelivery)}>
       <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>Edit Delivery</h1>
       <br />
 
@@ -264,12 +262,7 @@ export default function EditDeliveryForm({ deliveryId, defaultValues, onSuccessf
         defaultValues={formDefaultValues?.returnSlip}
       />
 
-      <button
-        type='submit'
-        className='p-3 rounded-sm font-comfortaa transition-colors duration-500 bg-blue-600 hover:bg-blue-400'
-      >
-        UPDATE
-      </button>
+      <Button buttonTitle='SUBMIT' type='submit' />
     </form>
   );
 }

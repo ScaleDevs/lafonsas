@@ -11,6 +11,7 @@ import Notification from '@/components/Notification';
 import TextField from '@/components/TextField';
 import IconComp from '@/components/Icon';
 import FadeIn from '@/components/FadeIn';
+import Button from '@/components/Button';
 
 const schema = z.object({
   name: z.string().min(1, 'Please input store name!'),
@@ -76,7 +77,7 @@ export default function CreateStore() {
       <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>Create Product</h1>
       <br />
       <form
-        className='flex flex-col space-y-4 md:w-[100%] xl:w-[60%] 2xl:w-[800px] bg-zinc-900 p-8 rounded-md shadow-md overflow-hidden'
+        className='flex flex-col space-y-4 md:w-[100%] xl:w-[60%] 2xl:w-[800px] bg-white p-8 rounded-md shadow-md overflow-hidden'
         onSubmit={handleSubmit(createStore)}
       >
         {isSuccess ? <Notification rounded='sm' type='success' message='Store Saved' /> : ''}
@@ -87,6 +88,7 @@ export default function CreateStore() {
           placeholder='enter store name here'
           formInput={{ register, property: 'name' }}
           errorMessage={errors.name?.message}
+          color='secondary'
         />
 
         <div>
@@ -105,6 +107,7 @@ export default function CreateStore() {
                     placeholder='Product size here'
                     formInput={{ register, property: `products.${index}.size` }}
                     errorMessage={errors?.products ? errors.products[index]?.size?.message : undefined}
+                    color='secondary'
                   />
                   <TextField
                     label='Price'
@@ -113,6 +116,7 @@ export default function CreateStore() {
                     placeholder='Product price here'
                     formInput={{ register, property: `products.${index}.price` }}
                     errorMessage={errors?.products ? errors.products[index]?.price?.message : undefined}
+                    color='secondary'
                   />
                   <button
                     type='button'
@@ -127,19 +131,13 @@ export default function CreateStore() {
           </div>
           <button
             type='button'
-            className='bg-blue-500 rounded-sm py-1 px-5 text-md mt-3 text-xl font-raleway font-semibold'
+            className='bg-primary text-white rounded-sm py-1 px-5 text-md mt-3 text-xl font-raleway font-semibold'
             onClick={() => append({ size: '', price: 0 })}
           >
             +
           </button>
         </div>
-
-        <button
-          type='submit'
-          className='p-3 rounded-sm font-comfortaa transition-colors duration-500 bg-blue-600 hover:bg-blue-400'
-        >
-          SUBMIT
-        </button>
+        <Button buttonTitle='SUBMIT' type='submit' />
       </form>
     </Layout>
   );

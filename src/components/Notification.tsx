@@ -35,7 +35,7 @@ export default function Notification({ message, rounded = 'sm', type = 'info', p
 
   return (
     <FadeIn>
-      <div className={`${borderRadius[rounded]} ${bgColor[type]} ${p}`}>
+      <div className={`text-white ${borderRadius[rounded]} ${bgColor[type]} ${p}`}>
         <div className='w-full flex flex-row space-x-3 items-center'>
           <GetIcon />
           <h1 className='font-raleway font-bold text-sm'>{message}</h1>
