@@ -23,6 +23,10 @@ module.exports = {
       comfortaa: ['Comfortaa', 'cursive'],
     },
     extend: {
+      colors: {
+        primary: '#15803d',
+        primarylight: '#16a34a',
+      },
       animationDuration: {
         1000: '1000ms',
         2000: '2000ms',

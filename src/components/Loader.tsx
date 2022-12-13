@@ -11,7 +11,7 @@ export default function Loader({ h, w, color }: ILoaderProps) {
     <div role='status'>
       <svg
         className={`inline mr-2 ${h && w ? h + ' ' + w : 'w-5 h-5'} text-gray-200 animate-spin dark:text-gray-600 ${
-          color || 'fill-blue-500'
+          color || 'fill-gray-500'
         }`}
         viewBox='0 0 100 101'
         fill='none'

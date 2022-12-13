@@ -31,7 +31,7 @@ export default function ForceChangePassword() {
   const [conditionsPassed, setConditionsPassed] = useState(0);
   const colorTransitionCss = 'transition-colors duration-200';
 
-  const pwdReqItemCss = (isPassed: boolean) => colorTransitionCss + ' ' + (isPassed ? 'text-green-400' : '');
+  const pwdReqItemCss = (isPassed: boolean) => colorTransitionCss + ' ' + (isPassed ? 'text-green-700 font-semibold' : '');
 
   const { handleSubmit, register } = useForm({
     resolver: zodResolver(schema),
@@ -127,7 +127,7 @@ export default function ForceChangePassword() {
   };
 
   return (
-    <div className='bg-zinc-800 p-10 rounded-md text-center w-3/4 md:w-[500px]'>
+    <div className='lg:pt-32'>
       <h1 className='font-roboto text-3xl pb-6'>CHANGE PASSWORD</h1>
       {!!errMessage && (
         <>
@@ -141,11 +141,13 @@ export default function ForceChangePassword() {
         <h1 className='text-center font-roboto text-xl'>You are required to change your password</h1>
         <div className='w-full relative'>
           <TextField
-            size='md'
-            type={showPassword ? 'text' : 'password'}
-            placeholder='enter password'
             formInput={{ register, property: 'newPassword' }}
             onChange={onPasswordValidation}
+            type={showPassword ? 'text' : 'password'}
+            size='md'
+            placeholder='enter password'
+            color='secondary'
+            rounded='lg'
           />
           {showPassword ? (
             <div
@@ -176,7 +178,7 @@ export default function ForceChangePassword() {
 
         <button
           type='submit'
-          className='mt-5 bg-purple-500 p-4 w-full rounded-sm hover:bg-purple-600 transition-colors duration-300'
+          className='mt-5 bg-primary p-4 w-full rounded-sm hover:bg-primarylight transition-colors duration-300 text-white'
         >
           {isLoading ? <Loader /> : 'SUBMIT'}
         </button>

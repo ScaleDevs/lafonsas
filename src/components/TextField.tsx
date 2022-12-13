@@ -10,7 +10,7 @@ interface InputWrapperProps {
   required?: boolean;
   rounded?: 'sm' | 'md' | 'lg';
   size?: 'sm' | 'md' | 'lg';
-  color?: 'primary';
+  color?: 'primary' | 'secondary';
   errorMessage?: string;
   formInput?: {
     setValue?: UseFormSetValue<any>;
@@ -32,7 +32,6 @@ const TextField = ({
   color = 'primary',
   formInput,
   onChange,
-  // defaultValue,
   errorMessage,
 }: InputWrapperProps) => {
   const radius = {
@@ -49,12 +48,13 @@ const TextField = ({
 
   const borderColor = {
     primary: 'border-zinc-600 hover:border-blue-500 focus:border-blue-500',
+    secondary: 'border-gray-300 hover:border-blue-500 focus:border-blue-500',
     error: 'border-red-500',
   };
 
   const inputCss = `${radius[rounded]} ${padding[size]} ${
     errorMessage ? borderColor['error'] : borderColor[color]
-  } bg-transparent border rounded-sm outline-none duration-500 placeholder:text-sm`;
+  } bg-gray-100 border rounded-sm outline-none duration-500 placeholder:text-sm`;
 
   const onInputChange = (e: any) => {
     const inputVal = e.target.value;
