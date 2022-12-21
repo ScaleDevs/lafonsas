@@ -19,10 +19,7 @@ const schema = z.object({
     .array(
       z.object({
         size: z.string().min(1, 'Please input size!'),
-        price: z.preprocess(
-          (input) => parseFloat(input as string),
-          z.number({ invalid_type_error: 'Must input a price!' }).min(1, 'Please input price!'),
-        ),
+        price: z.number({ invalid_type_error: 'Must input a price!' }).min(1, 'Please input price!'),
       }),
     )
     .min(1, 'Please add a product!'),

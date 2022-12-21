@@ -7,7 +7,7 @@ export const storeRouter = createRouter()
   .middleware(authMiddleware)
   .mutation('create', {
     input: z.object({
-      name: z.string(),
+      name: z.string().transform((val) => val.toUpperCase()),
       products: z.array(
         z.object({
           size: z.string(),

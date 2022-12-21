@@ -1,4 +1,5 @@
 // import { useState } from 'react';
+import { RegexValidations } from '@/utils/helper';
 import { UseFormSetValue, UseFormRegister } from 'react-hook-form';
 import FadeIn from './FadeIn';
 
@@ -63,7 +64,7 @@ const TextField = ({
 
   const setFormValue = (v: string) => {
     if (type === 'number' && v === '') return undefined;
-    return type === 'number' ? parseFloat(v) : v;
+    return type === 'number' ? (!!RegexValidations.NumberOnly.exec(v) ? parseFloat(v) : v) : v;
   };
 
   const useFormRegisterField = formInput?.register
@@ -84,7 +85,7 @@ const TextField = ({
       ) : (
         ''
       )}
-      <input {...useFormRegisterField} type={type} className={inputCss} placeholder={placeholder} />
+      <input {...useFormRegisterField} type={type === 'number' ? 'text' : type} className={inputCss} placeholder={placeholder} />
       {errorMessage ? (
         <FadeIn cssText='text-red-500' duration='animation-duration-200'>
           {errorMessage}
