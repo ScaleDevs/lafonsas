@@ -31,6 +31,7 @@ class Respository {
 
     const result = await prisma.store.findMany({
       where: whereFilter,
+      orderBy: { name: 'asc' },
       skip: page > 0 ? (page - 1) * limit : 0,
       take: limit,
     });
