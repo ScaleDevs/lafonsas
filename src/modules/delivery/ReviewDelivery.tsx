@@ -5,6 +5,7 @@ import ModalLoader from '@/components/ModalLoader';
 import Notification from '@/components/Notification';
 import { HandleChangeStepParams } from './types';
 import DeliveryDetailsReport, { IOrder } from './components/DeliveryDetailsReport';
+import { useState } from 'react';
 
 export interface ReviewDeliveryProps {
   deliveryDetails: FormSchemaType & { amount: number };
@@ -12,6 +13,7 @@ export interface ReviewDeliveryProps {
 }
 
 export default function ReviewDelivery({ deliveryDetails, changeStep }: ReviewDeliveryProps) {
+  const [errorMessage, setErrorMessage] = useState('Something went wrong');
   const { data } = trpc.useQuery(['store.getById', deliveryDetails.storeId]);
   const { mutate, isLoading: isCreating, isError } = trpc.useMutation('delivery.create');
 
@@ -49,6 +51,9 @@ export default function ReviewDelivery({ deliveryDetails, changeStep }: ReviewDe
           isSuccessfulSubmit: true,
         });
       },
+      onError(error) {
+        setErrorMessage(error.message);
+      },
     });
   };
 
@@ -57,7 +62,7 @@ export default function ReviewDelivery({ deliveryDetails, changeStep }: ReviewDe
       <ModalLoader open={isCreating}>Saving Delivery ...</ModalLoader>
       {isError ? (
         <>
-          <Notification rounded='sm' type='error' message='Something went wrong' />
+          <Notification rounded='sm' type='error' message={errorMessage} />
           <br />
         </>
       ) : (

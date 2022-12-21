@@ -5,8 +5,13 @@ import { TRPCError } from '@trpc/server';
 class Service {
   public async createDelivery(deliveryData: Omit<IDelivery, 'id'>) {
     try {
+      const isExist = await this.findDeliveryByDeliveryNumber(deliveryData.deliveryNumber);
+
+      if (!!isExist) throw new TRPCError({ code: 'CONFLICT' });
+
       return DeliveryRepository.createDelivery(deliveryData);
-    } catch (err) {
+    } catch (err: any) {
+      if (err.code === 'CONFLICT') throw new TRPCError({ code: 'CONFLICT', message: 'Delivery number already exist' });
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
     }
   }
