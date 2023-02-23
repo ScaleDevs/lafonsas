@@ -53,7 +53,6 @@ export default function CreateExpense() {
   });
 
   const createExpense = (formData: FormSchemaType) => {
-    console.log(formData);
     let entryTotal = 0;
 
     formData.entries.map((entry) => {

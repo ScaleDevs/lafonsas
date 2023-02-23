@@ -47,9 +47,20 @@ class Service {
     }
   }
 
-  public async updateExpense(expenseId: string, expensePartialData: Partial<IExpense>) {
+  public async updateExpense(expenseId: string, partialData: Partial<IExpense>) {
     try {
-      return ExpenseRepository.updateExpense(expenseId, expensePartialData);
+      const entries = partialData.entries?.map((entry) => {
+        return {
+          ...entry,
+          date: dayjs.tz(entry.date).toISOString(),
+        };
+      });
+
+      return ExpenseRepository.updateExpense(expenseId, {
+        ...partialData,
+        date: partialData.date ? dayjs.tz(partialData.date).toISOString() : undefined,
+        entries,
+      });
     } catch (err) {
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
     }

@@ -105,7 +105,7 @@ export default function ListProducts() {
           pageCount={data?.pageCount || 0}
           breakClassName=''
           containerClassName='flex flex-row space-x-7 items-center justify-center pt-10 font-comfortaa text-xl'
-          activeClassName='text-blue-400'
+          activeClassName='bg-green-700 p-[10px] rounded-sm text-white'
           renderOnZeroPageCount={null as any}
         />
       </div>

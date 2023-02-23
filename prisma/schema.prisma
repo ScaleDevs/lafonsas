@@ -53,7 +53,7 @@ model Expense {
   expenseId    String         @id @default(auto()) @map("_id") @db.ObjectId
   vendor       String
   date         DateTime
-  invoiceRefNo String
+  invoiceRefNo String         @unique
   amount       Int
   entries      ExpenseEntry[]
 }

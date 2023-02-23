@@ -8,6 +8,12 @@ import { AppRouter } from '@/server/routers/_app';
 import AuthGuard from '@/components/AuthGuard';
 import { useAuthStore } from '@/store/auth.store';
 
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
 import '../styles/globals.css';
 
 const MyApp: AppType = ({ Component, pageProps }) => {

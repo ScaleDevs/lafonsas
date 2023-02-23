@@ -30,20 +30,24 @@ export const expenseRouter = createRouter()
     input: z.object({
       expenseId: z.string(),
       partialData: z.object({
-        name: z.string().optional(),
-        description: z.string().optional().nullable(),
-        category: z.string().optional(),
-        expenseDate: z.string().optional(),
+        vendor: z.string().optional(),
+        date: z.string().optional(),
+        invoiceRefNo: z.string().optional(),
         amount: z.number().optional(),
+        entries: z
+          .array(
+            z.object({
+              date: z.string(),
+              account: z.string(),
+              amount: z.number(),
+              description: z.string(),
+            }),
+          )
+          .optional(),
       }),
     }),
     resolve({ input }) {
-      const partialData = {
-        ...input.partialData,
-        expenseDate: input.partialData.expenseDate === undefined ? undefined : new Date(input.partialData.expenseDate),
-      };
-
-      return ExpenseService.updateExpense(input.expenseId, partialData);
+      return ExpenseService.updateExpense(input.expenseId, input.partialData);
     },
   })
   .mutation('delete', {
@@ -66,8 +70,7 @@ export const expenseRouter = createRouter()
   })
   .query('getMany', {
     input: z.object({
-      name: z.string().optional(),
-      category: z.string().optional(),
+      vendor: z.string().optional(),
       startDate: z.string(),
       endDate: z.string(),
       page: z.number().optional().default(1),

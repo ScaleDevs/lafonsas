@@ -20,6 +20,7 @@ interface InputWrapperProps {
   };
   onChange?: (value: string) => void;
   defaultValue?: any;
+  disabled?: boolean;
 }
 
 const TextField = ({
@@ -34,6 +35,7 @@ const TextField = ({
   formInput,
   onChange,
   errorMessage,
+  disabled,
 }: InputWrapperProps) => {
   const radius = {
     sm: 'rounded-sm',
@@ -48,7 +50,9 @@ const TextField = ({
   };
 
   const borderColor = {
-    primary: 'border-zinc-600 hover:border-blue-500 focus:border-blue-500',
+    primary: `${
+      disabled ? 'border-gray-200  cursor-not-allowed' : 'border-zinc-600  hover:border-blue-500'
+    } focus:border-blue-500`,
     secondary: 'border-gray-300 hover:border-blue-500 focus:border-blue-500',
     error: 'border-red-500',
   };
@@ -85,7 +89,13 @@ const TextField = ({
       ) : (
         ''
       )}
-      <input {...useFormRegisterField} type={type === 'number' ? 'text' : type} className={inputCss} placeholder={placeholder} />
+      <input
+        {...useFormRegisterField}
+        type={type === 'number' ? 'text' : type}
+        className={inputCss}
+        placeholder={placeholder}
+        disabled={disabled}
+      />
       {errorMessage ? (
         <FadeIn cssText='text-red-500' duration='animation-duration-200'>
           {errorMessage}

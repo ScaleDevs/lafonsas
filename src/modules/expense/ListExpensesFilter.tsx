@@ -10,8 +10,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 const schema = z.object({
-  expenseName: z.string().optional(),
-  expenseCategory: z.string().optional(),
+  vendor: z.string().optional(),
   startDate: z.string(),
   endDate: z.string(),
 });
@@ -34,11 +33,10 @@ export default function ListExpensesFilter({ isOpen, closeModal, stateFilters, s
   });
 
   const onSearch = (formData: FormSchemaType) => {
-    const { expenseName, expenseCategory } = formData;
+    const { vendor } = formData;
     setStateFilters({
       ...formData,
-      expenseName: expenseName === '' ? undefined : expenseName,
-      expenseCategory: expenseCategory === '' ? undefined : expenseCategory,
+      vendor: vendor === '' ? undefined : vendor,
     });
     closeModal();
   };
@@ -53,13 +51,7 @@ export default function ListExpensesFilter({ isOpen, closeModal, stateFilters, s
           <h1 className='pb-5 font-raleway font-semibold text-2xl'>APPLY FILTERS</h1>
 
           <form onSubmit={handleSubmit(onSearch)} className='space-y-5'>
-            <TextField label='Expense Name' placeholder='expense name here' formInput={{ register, property: 'expenseName' }} />
-
-            <TextField
-              label='Expense Category'
-              placeholder='expense category here'
-              formInput={{ register, property: 'expenseCategory' }}
-            />
+            <TextField label='Vendor' placeholder='vendor here' formInput={{ register, property: 'vendor' }} />
 
             <div className='flex flex-row w-full space-x-3'>
               <TextField required type='date' label='From:' formInput={{ register, property: 'startDate' }} />
