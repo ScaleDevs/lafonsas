@@ -5,6 +5,12 @@ import { deliveryRouter } from './delivery.router';
 import { storeRouter } from './store.router';
 import { expenseRouter } from './expense.router';
 
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
 /**
  * Create your application's root router
  * If you want to use SSG, you need export this

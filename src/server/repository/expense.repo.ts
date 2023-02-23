@@ -1,15 +1,15 @@
+import { Prisma } from '@prisma/client';
 import prisma from './prisma.client';
 import { IExpense, IPaginationInputs } from '@/utils/types';
 
 export type IFindExpensesInput = {
-  name?: string;
-  category?: string;
+  vendor?: string;
   startDate: Date;
   endDate: Date;
 } & IPaginationInputs;
 
 class Respository {
-  public async createExpense(expenseData: Omit<IExpense, 'id'>) {
+  public async createExpense(expenseData: Omit<IExpense, 'expenseId'>) {
     return prisma.expense.create({
       data: {
         ...expenseData,
@@ -18,30 +18,26 @@ class Respository {
   }
 
   public async findExpenseById(expenseId: string) {
-    return prisma.expense.findFirst({ where: { id: expenseId } });
+    return prisma.expense.findFirst({ where: { expenseId } });
   }
 
-  public async findExpenses({ startDate, endDate, name, category, page, limit }: IFindExpensesInput) {
-    const whereFilter = {
-      expenseDate: {
+  public async findExpenses({ startDate, endDate, vendor, page, limit }: IFindExpensesInput) {
+    const whereFilter: Prisma.ExpenseWhereInput = {
+      date: {
         gte: startDate,
         lte: endDate,
       },
-      name,
-      category,
     };
+
+    if (!!vendor)
+      whereFilter['vendor'] = {
+        contains: vendor,
+      };
 
     const result = await prisma.expense.findMany({
       where: whereFilter,
       skip: page > 0 ? (page - 1) * limit : 0,
       take: limit,
-      select: {
-        id: true,
-        name: true,
-        category: true,
-        expenseDate: true,
-        amount: true,
-      },
     });
 
     const totalCount = await prisma.expense.count({ where: whereFilter });
@@ -55,7 +51,7 @@ class Respository {
   public async updateExpense(expenseId: string, expensePartialData: Partial<IExpense>) {
     return prisma.expense.update({
       where: {
-        id: expenseId,
+        expenseId,
       },
       data: expensePartialData,
     });
@@ -64,7 +60,7 @@ class Respository {
   public async deleteExpense(expenseId: string) {
     return prisma.expense.delete({
       where: {
-        id: expenseId,
+        expenseId,
       },
     });
   }

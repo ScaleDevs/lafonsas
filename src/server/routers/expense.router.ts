@@ -8,16 +8,22 @@ export const expenseRouter = createRouter()
   .middleware(authMiddleware)
   .mutation('create', {
     input: z.object({
-      name: z.string(),
-      description: z.string().nullable(),
-      category: z.string(),
-      expenseDate: z.string(),
+      vendor: z.string(),
+      date: z.date(),
+      invoiceRefNo: z.string(),
       amount: z.number(),
+      entries: z.array(
+        z.object({
+          date: z.date(),
+          account: z.string(),
+          amount: z.number(),
+          description: z.string(),
+        }),
+      ),
     }),
     resolve({ input }) {
-      const data: Omit<IExpense, 'id'> = {
+      const data: Omit<IExpense, 'expenseId'> = {
         ...input,
-        expenseDate: new Date(input.expenseDate),
       };
 
       return ExpenseService.createExpense(data);

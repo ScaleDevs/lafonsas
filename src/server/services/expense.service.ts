@@ -1,11 +1,23 @@
+import dayjs from 'dayjs';
 import { IExpense } from '@/utils/types';
 import { ExpenseRepository, IFindExpensesInput } from '@/repo/expense.repo';
 import { TRPCError } from '@trpc/server';
 
 class Service {
-  public async createExpense(expenseData: Omit<IExpense, 'id'>) {
+  public async createExpense(data: Omit<IExpense, 'expenseId'>) {
     try {
-      return ExpenseRepository.createExpense(expenseData);
+      const entries = data.entries.map((entry) => {
+        return {
+          ...entry,
+          date: dayjs.tz(entry.date).toISOString() as any,
+        };
+      });
+
+      return ExpenseRepository.createExpense({
+        ...data,
+        date: dayjs.tz(data.date).toISOString(),
+        entries,
+      });
     } catch (err) {
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
     }
