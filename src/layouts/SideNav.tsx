@@ -131,7 +131,7 @@ export default function SideNav() {
       <div
         className={`${
           sideNavOpen ? 'w-[70%] sm:w-64' : 'w-0 sm:w-12'
-        } absolute w-[70%] sm:w-64 shadow-lg h-full bg-white transition-[width] duration-500 sm:relative overflow-hidden z-10`}
+        } absolute  sm:w-64 shadow-lg h-full bg-white transition-[width] duration-500 sm:relative overflow-hidden z-10`}
       >
         {sideNavOpen ? (
           ''
