@@ -9,7 +9,7 @@ class Service {
       const entries = data.entries.map((entry) => {
         return {
           ...entry,
-          date: dayjs.tz(entry.date).toISOString() as any,
+          date: dayjs.tz(entry.date).toISOString(),
         };
       });
 

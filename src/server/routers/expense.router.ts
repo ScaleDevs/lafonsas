@@ -2,19 +2,18 @@ import { z } from 'zod';
 import { createRouter } from '../createRouter';
 import { authMiddleware } from '../util';
 import { ExpenseService } from '@/server/services/expense.service';
-import { IExpense } from '@/utils/types';
 
 export const expenseRouter = createRouter()
   .middleware(authMiddleware)
   .mutation('create', {
     input: z.object({
       vendor: z.string(),
-      date: z.date(),
+      date: z.string(),
       invoiceRefNo: z.string(),
       amount: z.number(),
       entries: z.array(
         z.object({
-          date: z.date(),
+          date: z.string(),
           account: z.string(),
           amount: z.number(),
           description: z.string(),
@@ -22,11 +21,9 @@ export const expenseRouter = createRouter()
       ),
     }),
     resolve({ input }) {
-      const data: Omit<IExpense, 'expenseId'> = {
+      return ExpenseService.createExpense({
         ...input,
-      };
-
-      return ExpenseService.createExpense(data);
+      });
     },
   })
   .mutation('update', {
