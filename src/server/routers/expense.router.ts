@@ -58,6 +58,12 @@ export const expenseRouter = createRouter()
       return ExpenseService.findExpenseById(input);
     },
   })
+  .query('getByRefNo', {
+    input: z.string(),
+    resolve({ input }) {
+      return ExpenseService.findExpenseByReferenceNumber(input);
+    },
+  })
   .query('getMany', {
     input: z.object({
       name: z.string().optional(),

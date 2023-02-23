@@ -31,6 +31,14 @@ class Service {
     }
   }
 
+  public async findExpenseByReferenceNumber(refNo: string) {
+    try {
+      return ExpenseRepository.findExpenseByReferenceNumber(refNo);
+    } catch (err) {
+      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
+    }
+  }
+
   public async findExpenses(inputs: IFindExpensesInput) {
     try {
       return ExpenseRepository.findExpenses(inputs);

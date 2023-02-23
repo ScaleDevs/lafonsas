@@ -21,6 +21,10 @@ class Respository {
     return prisma.expense.findFirst({ where: { expenseId } });
   }
 
+  public async findExpenseByReferenceNumber(refNo: string) {
+    return prisma.expense.findFirst({ where: { invoiceRefNo: refNo } });
+  }
+
   public async findExpenses({ startDate, endDate, vendor, page, limit }: IFindExpensesInput) {
     const whereFilter: Prisma.ExpenseWhereInput = {
       date: {
