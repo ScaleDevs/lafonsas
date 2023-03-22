@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import dayjs from 'dayjs';
 
 import { trpc } from '@/utils/trpc';
 import useDeliveryStoreTrack from '@/store/delivery.store';
@@ -8,6 +9,12 @@ import Notification from '@/components/Notification';
 import TableRow from './components/TableRow';
 import ListDeliveryFilter, { OnDeliverySearchParams } from './components/ListDeliveryFilter';
 import Paginator from '@/components/Paginator';
+
+const StoreTag = ({ storeId }: { storeId: string }) => {
+  const { data } = trpc.useQuery(['store.getById', storeId]);
+
+  return <div className='bg-gray-300 p-3 rounded-md text-md font-comfortaa'>{data?.name}</div>;
+};
 
 export interface ITableDeliveryProps {
   setDeliveryId: (id: string | null) => void;
@@ -62,6 +69,22 @@ export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
       <div className='w-[100px]'>
         <Button buttonTitle='Filter' size='sm' onClick={() => setOpenFilterModal(true)} />
       </div>
+
+      <br />
+
+      <div className='flex space-x-5'>
+        {storeId ? (
+          <StoreTag storeId={storeId} />
+        ) : (
+          <div className='bg-gray-300 p-3 rounded-md text-md font-comfortaa'>{'ALL STORES'}</div>
+        )}
+        <div className='flex'>
+          <div className='bg-gray-300 p-3 rounded-md text-md font-comfortaa'>{dayjs(startDate).format('MMM DD, YYYY')}</div>
+          <div className='px-3 flex items-center'>-</div>
+          <div className='bg-gray-300 p-3 rounded-md text-md font-comfortaa'>{dayjs(endDate).format('MMM DD, YYYY')}</div>
+        </div>
+      </div>
+
       <br />
 
       {!!deletedDelivery ? (
