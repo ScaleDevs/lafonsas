@@ -40,6 +40,7 @@ class Respository {
 
     const result = await prisma.expense.findMany({
       where: whereFilter,
+      orderBy: { date: 'asc' },
       skip: page > 0 ? (page - 1) * limit : 0,
       take: limit,
     });
