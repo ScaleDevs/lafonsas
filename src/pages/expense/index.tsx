@@ -2,7 +2,6 @@ import { useState } from 'react';
 import Head from 'next/head';
 import router from 'next/router';
 import dayjs from 'dayjs';
-import ReactPaginate from 'react-paginate';
 
 import { trpc } from '@/utils/trpc';
 import { getStartOfMonth, getEndOfMonth } from '@/utils/helper';
@@ -13,6 +12,7 @@ import { IExpense } from '@/utils/types';
 import Button from '@/components/Button';
 import ListExpensesFilter, { FormSchemaType } from '@/modules/expense/ListExpensesFilter';
 import ExpenseDetails from '@/modules/expense/ExpenseDetails';
+import Paginator from '@/components/Paginator';
 
 const initialFilters = {
   vendor: undefined,
@@ -38,7 +38,7 @@ export default function ListExpenses() {
   const onRecordClick = (data: Omit<IExpense, 'description'>) => {
     router.push(`/expense/?refNo=${data.invoiceRefNo}`, undefined, { shallow: true });
   };
-  const handlePageChange = ({ selected }: { selected: number }) => setPage(selected + 1);
+  const handlePageChange = (page: number) => setPage(page);
 
   return (
     <Layout>
@@ -69,6 +69,24 @@ export default function ListExpenses() {
           </div>
 
           <br />
+
+          <div className='flex space-x-5'>
+            <div className='bg-gray-300 p-3 rounded-md text-md font-comfortaa'>
+              {stateFilters.vendor ? stateFilters.vendor : 'ALL VENDORS'}
+            </div>
+            <div className='flex'>
+              <div className='bg-gray-300 p-3 rounded-md text-md font-comfortaa'>
+                {dayjs(stateFilters.startDate).format('MMM DD, YYYY')}
+              </div>
+              <div className='px-3 flex items-center'>-</div>
+              <div className='bg-gray-300 p-3 rounded-md text-md font-comfortaa'>
+                {dayjs(stateFilters.endDate).format('MMM DD, YYYY')}
+              </div>
+            </div>
+          </div>
+
+          <br />
+
           {isError ? (
             <>
               <Notification rounded='sm' type='error' message='Something went wrong! Try Again' />
@@ -119,18 +137,8 @@ export default function ListExpenses() {
                 </table>
               </>
             )}
-            <ReactPaginate
-              breakLabel='...'
-              nextLabel={page === data?.pageCount ? '' : '>'}
-              previousLabel={page === 1 ? '' : '<'}
-              onPageChange={handlePageChange}
-              pageRangeDisplayed={6}
-              pageCount={data?.pageCount || 0}
-              breakClassName=''
-              containerClassName='flex flex-row space-x-7 items-center justify-center pt-10 font-comfortaa text-xl'
-              activeClassName='bg-green-700 p-[10px] rounded-sm text-white'
-              renderOnZeroPageCount={null as any}
-            />
+
+            <Paginator currentPage={page} pageCount={data?.pageCount || 0} handlePageChange={handlePageChange} />
           </div>
         </>
       )}

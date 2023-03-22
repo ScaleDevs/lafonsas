@@ -29,7 +29,7 @@ export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
     { limit: 10, page, startDate, endDate, storeId, deliveryNumber },
   ]);
 
-  const handlePageChange1 = (page: number) => {
+  const handlePageChange = (page: number) => {
     setDeliveryState('page', page);
   };
 
@@ -120,7 +120,7 @@ export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
           </>
         )}
 
-        <Paginator currentPage={page} pageCount={data?.pageCount || 0} handlePageChange={handlePageChange1} />
+        <Paginator currentPage={page} pageCount={data?.pageCount || 0} handlePageChange={handlePageChange} />
       </div>
     </div>
   );

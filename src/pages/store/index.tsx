@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import Head from 'next/head';
-import ReactPaginate from 'react-paginate';
 
 import { trpc } from '@/utils/trpc';
 import Layout from '@/layouts/index';
@@ -10,6 +9,7 @@ import StoreModal from '@/modules/store/StoreModal';
 import InputSolo from '@/components/InputSolo';
 import IconComp from '@/components/Icon';
 import Button from '@/components/Button';
+import Paginator from '@/components/Paginator';
 
 export default function ListProducts() {
   const [storeData, setStoreData] = useState<IStore | null>(null);
@@ -19,10 +19,8 @@ export default function ListProducts() {
   const { data, isLoading, refetch } = trpc.useQuery(['store.getStores', { limit: 10, page, storeName }]);
 
   const onStoreClick = (data: IStore) => setStoreData({ ...data });
-
   const resetStoreState = () => setStoreData(null);
-
-  const handlePageChange = ({ selected }: { selected: number }) => setPage(selected + 1);
+  const handlePageChange = (page: number) => setPage(page);
 
   const handleSearchStore = (inputValue: string) => {
     if (!inputValue || inputValue === '' || inputValue.length < 3) {
@@ -96,18 +94,7 @@ export default function ListProducts() {
             </table>
           </>
         )}
-        <ReactPaginate
-          breakLabel='...'
-          nextLabel={page === data?.pageCount ? '' : '>'}
-          previousLabel={page === 1 ? '' : '<'}
-          onPageChange={handlePageChange}
-          pageRangeDisplayed={6}
-          pageCount={data?.pageCount || 0}
-          breakClassName=''
-          containerClassName='flex flex-row space-x-7 items-center justify-center pt-10 font-comfortaa text-xl'
-          activeClassName='bg-green-700 p-[10px] rounded-sm text-white'
-          renderOnZeroPageCount={null as any}
-        />
+        <Paginator currentPage={page} pageCount={data?.pageCount || 0} handlePageChange={handlePageChange} />
       </div>
     </Layout>
   );
