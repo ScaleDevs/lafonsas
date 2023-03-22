@@ -1,7 +1,5 @@
 import { useState } from 'react';
-import ReactPaginate from 'react-paginate';
 
-import { getEndOfMonth, getStartOfMonth } from '@/utils/helper';
 import { trpc } from '@/utils/trpc';
 import useDeliveryStoreTrack from '@/store/delivery.store';
 import Button from '@/components/Button';
@@ -9,36 +7,34 @@ import TableLoader from '@/components/TableLoader';
 import Notification from '@/components/Notification';
 import TableRow from './components/TableRow';
 import ListDeliveryFilter, { OnDeliverySearchParams } from './components/ListDeliveryFilter';
+import Paginator from '@/components/Paginator';
 
 export interface ITableDeliveryProps {
   setDeliveryId: (id: string | null) => void;
 }
 
 export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
-  const { deletedDelivery } = useDeliveryStoreTrack();
+  const { deletedDelivery, startDate, endDate, storeId, deliveryNumber, page, setDeliveryState } = useDeliveryStoreTrack();
   const [openFilterModal, setOpenFilterModal] = useState(false);
-  const [startDate, setStartDate] = useState(getStartOfMonth());
-  const [endDate, setEndDate] = useState(getEndOfMonth());
-  const [storeId, setStoreId] = useState<string | undefined>(undefined);
-  const [deliveryNumber, setDeliveryNumber] = useState<string | undefined>(undefined);
 
-  const [page, setPage] = useState(1);
   const { data, isLoading } = trpc.useQuery([
     'delivery.getDeliveries',
     { limit: 10, page, startDate, endDate, storeId, deliveryNumber },
   ]);
 
-  const handlePageChange = ({ selected }: { selected: number }) => setPage(selected + 1);
+  const handlePageChange1 = (page: number) => {
+    setDeliveryState('page', page);
+  };
 
   const onSearch = ({ date1, date2, storeId, dr }: OnDeliverySearchParams) => {
-    setStartDate(date1);
-    setEndDate(date2);
+    setDeliveryState('startDate', date1);
+    setDeliveryState('endDate', date2);
 
-    if (storeId === 'ALL') setStoreId(undefined);
-    else setStoreId(storeId);
+    if (storeId === 'ALL') setDeliveryState('storeId', undefined);
+    else setDeliveryState('storeId', storeId);
 
-    if (!!dr) setDeliveryNumber(dr);
-    else if (!dr || dr === '') setDeliveryNumber(undefined);
+    if (!!dr) setDeliveryState('deliveryNumber', dr);
+    else if (!dr || dr === '') setDeliveryState('deliveryNumber', undefined);
     setOpenFilterModal(false);
   };
 
@@ -100,18 +96,8 @@ export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
             </table>
           </>
         )}
-        <ReactPaginate
-          breakLabel='...'
-          nextLabel={page === data?.pageCount ? '' : '>'}
-          previousLabel={page === 1 ? '' : '<'}
-          onPageChange={handlePageChange}
-          pageRangeDisplayed={6}
-          pageCount={data?.pageCount || 0}
-          breakClassName=''
-          containerClassName='flex flex-row space-x-7 items-center justify-center pt-10 font-comfortaa text-xl'
-          activeClassName='bg-green-700 p-[10px] rounded-sm text-white'
-          renderOnZeroPageCount={null as any}
-        />
+
+        <Paginator currentPage={page} pageCount={data?.pageCount || 0} handlePageChange={handlePageChange1} />
       </div>
     </div>
   );

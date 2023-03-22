@@ -1,17 +1,27 @@
 import create, { StateCreator } from 'zustand';
 import { createTrackedSelector } from 'react-tracked';
 import { devtools } from 'zustand/middleware';
+import { getEndOfMonth, getStartOfMonth } from '@/utils/helper';
 
 export type DeliveryStates = {
   deletedDelivery: string | null;
+  startDate: string;
+  endDate: string;
+  storeId: string | undefined;
+  deliveryNumber: string | undefined;
+  page: number;
 
   setDeliveryState: (label: keyof Omit<DeliveryStates, 'setDeliveryState' | 'resetDeliveryState'>, value: any) => void;
-
   resetDeliveryState: () => void;
 };
 
 const initState: Omit<DeliveryStates, 'setDeliveryState' | 'resetDeliveryState'> = {
   deletedDelivery: null,
+  startDate: getStartOfMonth(),
+  endDate: getEndOfMonth(),
+  storeId: undefined,
+  deliveryNumber: undefined,
+  page: 1,
 };
 
 const stateStore = devtools((set) => ({

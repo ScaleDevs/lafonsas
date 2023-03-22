@@ -4,9 +4,11 @@ import { useRouter } from 'next/router';
 import Layout from '@/layouts/index';
 import TableDelivery from '@/modules/delivery/TableDelivery';
 import DeliveryProfile from '@/modules/delivery/DeliverryProfile';
+import useDeliveryStoreTrack from '@/store/delivery.store';
 
 export default function ListDeliveries() {
   const router = useRouter();
+  const { resetDeliveryState } = useDeliveryStoreTrack();
   const [deliveryId, setDeliveryId] = useState<string | null>(null);
 
   const onSetDeliveryId = (id: string | null) => {
@@ -18,6 +20,10 @@ export default function ListDeliveries() {
   useEffect(() => {
     if (router.query.deliveryId) setDeliveryId(router.query.deliveryId as string);
   }, [router.query.deliveryId]);
+
+  useEffect(() => {
+    return () => resetDeliveryState();
+  }, [resetDeliveryState]);
 
   return (
     <Layout>
