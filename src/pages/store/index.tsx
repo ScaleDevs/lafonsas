@@ -94,6 +94,8 @@ export default function ListProducts() {
             </table>
           </>
         )}
+
+        <br />
         <Paginator currentPage={page} pageCount={data?.pageCount || 0} handlePageChange={handlePageChange} />
       </div>
     </Layout>

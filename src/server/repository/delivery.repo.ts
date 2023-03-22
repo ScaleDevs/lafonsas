@@ -3,8 +3,8 @@ import { IDelivery, IPaginationInputs } from '@/utils/types';
 
 export type IFindDeliveriesInput = {
   storeId?: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: Date | string;
+  endDate: Date | string;
 } & IPaginationInputs;
 
 class Respository {

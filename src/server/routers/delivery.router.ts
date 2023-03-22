@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { z } from 'zod';
 import { createRouter } from '../createRouter';
 import { authMiddleware } from '../util';
@@ -126,8 +127,8 @@ export const deliveryRouter = createRouter()
       }
       return DeliveryService.findDeliveries({
         ...input,
-        startDate: new Date(input.startDate),
-        endDate: new Date(input.endDate + ' 23:59:59'),
+        startDate: dayjs(input.startDate).startOf('day').toISOString(),
+        endDate: dayjs(input.endDate).endOf('day').toISOString(),
       });
     },
   });

@@ -121,6 +121,7 @@ export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
           </>
         )}
 
+        <br />
         <Paginator currentPage={page} pageCount={data?.pageCount || 0} handlePageChange={handlePageChange} />
       </div>
     </div>

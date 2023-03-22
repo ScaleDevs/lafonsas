@@ -139,6 +139,8 @@ export default function ListExpenses() {
               </>
             )}
 
+            <br />
+
             <Paginator currentPage={page} pageCount={data?.pageCount || 0} handlePageChange={handlePageChange} />
           </div>
         </>

@@ -4,8 +4,8 @@ import { IExpense, IPaginationInputs } from '@/utils/types';
 
 export type IFindExpensesInput = {
   vendor?: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: Date | string;
+  endDate: Date | string;
 } & IPaginationInputs;
 
 class Respository {
@@ -26,6 +26,9 @@ class Respository {
   }
 
   public async findExpenses({ startDate, endDate, vendor, page, limit }: IFindExpensesInput) {
+    console.log('startDate', startDate);
+    console.log('endDate', endDate);
+
     const whereFilter: Prisma.ExpenseWhereInput = {
       date: {
         gte: startDate,
