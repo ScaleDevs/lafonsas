@@ -42,6 +42,7 @@ export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
 
     if (!!dr) setDeliveryState('deliveryNumber', dr);
     else if (!dr || dr === '') setDeliveryState('deliveryNumber', undefined);
+    setDeliveryState('page', 1);
     setOpenFilterModal(false);
   };
 

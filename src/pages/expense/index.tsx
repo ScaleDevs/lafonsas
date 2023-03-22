@@ -53,6 +53,7 @@ export default function ListExpenses() {
         closeModal={() => setFilterModal(false)}
         stateFilters={stateFilters}
         setStateFilters={setStateFilters}
+        handlePageChange={handlePageChange}
       />
 
       {!!router.query.refNo && typeof router.query.refNo === 'string' ? (

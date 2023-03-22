@@ -22,9 +22,16 @@ export interface IListDeliveryFilterProps {
   closeModal: () => void;
   stateFilters: FormSchemaType;
   setStateFilters: Dispatch<SetStateAction<FormSchemaType>>;
+  handlePageChange: (page: number) => void;
 }
 
-export default function ListExpensesFilter({ isOpen, closeModal, stateFilters, setStateFilters }: IListDeliveryFilterProps) {
+export default function ListExpensesFilter({
+  isOpen,
+  closeModal,
+  stateFilters,
+  setStateFilters,
+  handlePageChange,
+}: IListDeliveryFilterProps) {
   const { handleSubmit, register } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -38,6 +45,8 @@ export default function ListExpensesFilter({ isOpen, closeModal, stateFilters, s
       ...formData,
       vendor: vendor === '' ? undefined : vendor,
     });
+
+    handlePageChange(1);
     closeModal();
   };
 
