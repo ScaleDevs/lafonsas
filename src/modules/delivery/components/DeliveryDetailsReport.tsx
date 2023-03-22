@@ -6,7 +6,8 @@ import { IDelivery } from '@/utils/types';
 import dayjs from 'dayjs';
 
 const displayData = (data: any) => {
-  if (['postingDate', 'checkDate'].includes(data[0]) && typeof data[1] !== 'string') return dayjs(data).format('MMM DD, YYYY');
+  if (!data[1]) return 'N/A';
+  if (['postingDate', 'checkDate'].includes(data[0]) && typeof data[1] !== 'string') return dayjs(data[1]).format('MMM DD, YYYY');
   return !data[1] || data[1] === '' ? 'N/A' : data[1];
 };
 
