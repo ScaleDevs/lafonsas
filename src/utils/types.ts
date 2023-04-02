@@ -1,18 +1,18 @@
-import { Delivery, Expense, Store, ExpenseEntry } from '@prisma/client';
-
-// sub types
-export type IExpenseEntry = Omit<ExpenseEntry, 'date'> & {
-  date: string | Date;
-};
+import { Delivery, Bill, Expense, Account, Store } from '@prisma/client';
 
 // models
 export type IDelivery = Delivery;
 
 export type IStore = Store;
 
-export type IExpense = Omit<Expense, 'date' | 'entries'> & {
+export type IAccount = Account;
+
+export type IBill = Omit<Bill, 'date'> & {
   date: string | Date;
-  entries: IExpenseEntry[];
+};
+
+export type IExpense = Omit<Expense, 'date'> & {
+  date: string | Date;
 };
 
 // inputs
