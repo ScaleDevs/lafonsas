@@ -18,13 +18,6 @@ type Product {
   price Float
 }
 
-type ExpenseEntry {
-  date        DateTime
-  account     String
-  amount      Int
-  description String
-}
-
 model Store {
   id         String     @id @default(auto()) @map("_id") @db.ObjectId
   name       String     @unique
@@ -49,11 +42,24 @@ model Delivery {
   storeId         String    @db.ObjectId
 }
 
-model Expense {
-  expenseId    String         @id @default(auto()) @map("_id") @db.ObjectId
+model Account {
+  accountId   String @id @default(auto()) @map("_id") @db.ObjectId
+  accountName String
+}
+
+model Bill {
+  billId       String   @id @default(auto()) @map("_id") @db.ObjectId
   vendor       String
   date         DateTime
-  invoiceRefNo String         @unique
+  invoiceRefNo String   @unique
   amount       Int
-  entries      ExpenseEntry[]
+}
+
+model Expense {
+  expenseId   String   @id @default(auto()) @map("_id") @db.ObjectId
+  date        DateTime
+  amount      Int
+  description String
+  accountId   String
+  billId      String
 }
