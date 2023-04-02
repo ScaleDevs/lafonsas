@@ -1,11 +1,14 @@
+import { TRPCError } from '@trpc/server';
 import { Prisma } from '@prisma/client';
 import prisma from './prisma.client';
 import { IExpense, IPaginationInputs } from '@/utils/types';
 
 export type IFindExpensesInput = {
-  vendor?: string;
-  startDate: Date | string;
-  endDate: Date | string;
+  accountId?: string;
+  dateFilter: {
+    startDate: Date | string;
+    endDate: Date | string;
+  };
 } & IPaginationInputs;
 
 class Respository {
@@ -21,24 +24,20 @@ class Respository {
     return prisma.expense.findFirst({ where: { expenseId } });
   }
 
-  public async findExpenseByReferenceNumber(refNo: string) {
-    return prisma.expense.findFirst({ where: { invoiceRefNo: refNo } });
-  }
+  public async findExpenses({ dateFilter, accountId, page, limit }: IFindExpensesInput) {
+    const whereFilter: Prisma.ExpenseWhereInput = {};
 
-  public async findExpenses({ startDate, endDate, vendor, page, limit }: IFindExpensesInput) {
-    console.log('startDate', startDate);
-    console.log('endDate', endDate);
+    if (!dateFilter && !accountId) throw new TRPCError({ code: 'BAD_REQUEST', message: 'There are no filters applied!' });
 
-    const whereFilter: Prisma.ExpenseWhereInput = {
-      date: {
-        gte: startDate,
-        lte: endDate,
-      },
-    };
+    if (!!dateFilter)
+      whereFilter['date'] = {
+        gte: dateFilter.startDate,
+        lte: dateFilter.endDate,
+      };
 
-    if (!!vendor)
-      whereFilter['vendor'] = {
-        contains: vendor,
+    if (!!accountId)
+      whereFilter['accountId'] = {
+        equals: accountId,
       };
 
     const result = await prisma.expense.findMany({
