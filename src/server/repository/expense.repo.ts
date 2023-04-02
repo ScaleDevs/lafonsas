@@ -5,7 +5,8 @@ import { IExpense, IPaginationInputs } from '@/utils/types';
 
 export type IFindExpensesInput = {
   accountId?: string;
-  dateFilter: {
+  billId?: string;
+  dateFilter?: {
     startDate: Date | string;
     endDate: Date | string;
   };
@@ -20,14 +21,21 @@ class Respository {
     });
   }
 
+  public async createManyExpense(records: Omit<IExpense, 'expenseId'>[]) {
+    return prisma.expense.createMany({
+      data: records,
+    });
+  }
+
   public async findExpenseById(expenseId: string) {
     return prisma.expense.findFirst({ where: { expenseId } });
   }
 
-  public async findExpenses({ dateFilter, accountId, page, limit }: IFindExpensesInput) {
+  public async findExpenses({ dateFilter, accountId, billId, page, limit }: IFindExpensesInput) {
     const whereFilter: Prisma.ExpenseWhereInput = {};
 
-    if (!dateFilter && !accountId) throw new TRPCError({ code: 'BAD_REQUEST', message: 'There are no filters applied!' });
+    if (!dateFilter && !accountId && !billId)
+      throw new TRPCError({ code: 'BAD_REQUEST', message: 'There are no filters applied!' });
 
     if (!!dateFilter)
       whereFilter['date'] = {
@@ -38,6 +46,11 @@ class Respository {
     if (!!accountId)
       whereFilter['accountId'] = {
         equals: accountId,
+      };
+
+    if (!!billId)
+      whereFilter['billId'] = {
+        equals: billId,
       };
 
     const result = await prisma.expense.findMany({
