@@ -173,6 +173,14 @@ export default function SideNav() {
                 ]}
               />
               <NavLinkHouse
+                title='Accounts'
+                Icon={() => <IconComp iconName='BoxIcon' iconProps={{}} />}
+                links={[
+                  { title: 'Create Accounts', path: '/accounts/create' },
+                  { title: 'List Accounts', path: '/accounts' },
+                ]}
+              />
+              <NavLinkHouse
                 title='Expenses'
                 Icon={() => <IconComp iconName='BoxIcon' iconProps={{}} />}
                 links={[

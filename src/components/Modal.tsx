@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 export interface IModalProps {
   rounded?: 'rounded-sm' | 'rounded-md' | 'rounded-lg';
   bg?: string;

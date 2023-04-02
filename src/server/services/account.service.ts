@@ -5,7 +5,9 @@ import { TRPCError } from '@trpc/server';
 class Service {
   public async createAccount(accountData: Omit<IAccount, 'accountId'>) {
     try {
-      return AccountRepository.createAccount(accountData);
+      return AccountRepository.createAccount({
+        accountName: accountData.accountName.toLowerCase().trim(),
+      });
     } catch (err) {
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
     }

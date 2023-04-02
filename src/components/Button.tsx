@@ -21,9 +21,9 @@ export default function Button({
   font = 'comfortaa',
 }: IButtonProps) {
   const buttonColor = {
-    blue: 'bg-blue-600 hover:bg-blue-400',
-    red: 'bg-red-500 hover:bg-red-400',
-    green: 'bg-green-600 hover:bg-green-500',
+    blue: 'bg-blue-600 hover:bg-blue-400 text-white',
+    red: 'bg-red-500 hover:bg-red-400 text-white',
+    green: 'bg-green-600 hover:bg-green-500 text-white',
     primary: 'bg-primary hover:bg-primarylight text-white',
   };
 
@@ -49,9 +49,10 @@ export default function Button({
         ' ' +
         buttonFont[font]
       }
+      disabled={isLoading}
       onClick={onClick}
     >
-      {isLoading ? <Loader /> : ''} {buttonTitle ? buttonTitle : 'SUBMIT'}
+      {isLoading ? <Loader /> : buttonTitle ? buttonTitle : 'SUBMIT'}
     </button>
   );
 }
