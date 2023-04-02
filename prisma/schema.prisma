@@ -62,4 +62,7 @@ model Expense {
   description String
   accountId   String
   billId      String
+
+  @@index([accountId])
+  @@index([billId])
 }
