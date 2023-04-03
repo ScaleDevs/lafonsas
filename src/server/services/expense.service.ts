@@ -3,6 +3,7 @@ import { IExpense } from '@/utils/types';
 import { ExpenseRepository, IFindExpensesInput } from '@/repo/expense.repo';
 import { AccountRepository } from '@/repo/account.repo';
 import { TRPCError } from '@trpc/server';
+import { BillRepository } from '../repository/bill.repo';
 
 class Service {
   public async createExpense(data: Omit<IExpense, 'expenseId'>) {
@@ -28,9 +29,14 @@ class Service {
 
       for (const expense of expensesResult.records) {
         const account = await AccountRepository.findAccountById(expense.accountId);
+        const bill = await BillRepository.findBillById(expense.billId);
+
+        if (!bill) throw new TRPCError({ code: 'NOT_FOUND', message: 'No Bill Found' });
+
         expenses.push({
           ...expense,
           accountName: account?.accountName || '',
+          billInvoiceRefNo: bill.invoiceRefNo,
         });
       }
 

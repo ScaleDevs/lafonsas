@@ -7,7 +7,7 @@ import { Overlay } from '@/components/Overlay';
 import { trpc } from '@/utils/trpc';
 import Loader from '@/components/Loader';
 import UpdateForm from './UpdateForm';
-import { PHpeso, tableFormatTimeDisplay } from '../utils';
+import { capFirstLetters, PHpeso, tableFormatTimeDisplay } from '../utils';
 import Button from '@/components/Button';
 
 export interface IDetailsProps {
@@ -114,7 +114,7 @@ export default function Details({ referenceNo, billsRefetch }: IDetailsProps) {
                           className='h-14 text-center hover:cursor-pointer hover:bg-gray-300 transition-colors duration-200'
                         >
                           <td>{dayjs(entry.date).format('MMM DD, YYYY')}</td>
-                          <td>{entry.accountName}</td>
+                          <td>{capFirstLetters(entry.accountName)}</td>
                           <td>{PHpeso.format(entry.amount)}</td>
                           <td>{entry.description}</td>
                         </tr>

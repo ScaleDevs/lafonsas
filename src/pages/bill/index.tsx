@@ -21,7 +21,7 @@ const initialFilters = {
   endDate: getEndOfMonth('YYYY-MM-DD'),
 };
 
-export default function ListExpenses() {
+export default function ListBills() {
   const [filterModal, setFilterModal] = useState(false);
   const [stateFilters, setStateFilters] = useState<FormSchemaType>(initialFilters);
   const [page, setPage] = useState(1);

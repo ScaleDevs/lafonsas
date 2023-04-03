@@ -1,0 +1,145 @@
+import { useState } from 'react';
+import Head from 'next/head';
+import router from 'next/router';
+import dayjs from 'dayjs';
+
+import { trpc } from '@/utils/trpc';
+import { getStartOfMonth, getEndOfMonth } from '@/utils/helper';
+import Layout from '@/layouts/index';
+import TableLoader from '@/components/TableLoader';
+import Notification from '@/components/Notification';
+import Button from '@/components/Button';
+import ListFilter, { FormSchemaType } from '@/modules/bill/ListFilter.expenses';
+import Paginator from '@/components/Paginator';
+import { capFirstLetters, PHpeso } from '@/modules/utils';
+
+const initialFilters = {
+  accountId: undefined,
+  startDate: getStartOfMonth('YYYY-MM-DD'),
+  endDate: getEndOfMonth('YYYY-MM-DD'),
+};
+
+export default function ListExpenses() {
+  const [filterModal, setFilterModal] = useState(false);
+  const [stateFilters, setStateFilters] = useState<FormSchemaType>(initialFilters);
+  const [accountName, setAccountName] = useState('ALL ACCOUNTS');
+  const [page, setPage] = useState(1);
+  const { data, isLoading, isError } = trpc.useQuery([
+    'expense.getMany',
+    {
+      limit: 10,
+      page,
+      dateFilters: {
+        startDate: stateFilters.startDate,
+        endDate: stateFilters.endDate,
+      },
+      accountId: stateFilters.accountId,
+    },
+  ]);
+
+  const onRecordClick = (invoiceRefNo: string) => {
+    router.push(`/bill/?refNo=${invoiceRefNo}`, undefined, { shallow: true });
+  };
+
+  const handlePageChange = (page: number) => setPage(page);
+
+  return (
+    <Layout>
+      <Head>
+        <title>Expenses</title>
+        <meta name='description' content='lafonsas expenses list page' />
+        <link rel='icon' href='/favicon.ico' />
+      </Head>
+
+      <ListFilter
+        isOpen={filterModal}
+        closeModal={() => setFilterModal(false)}
+        stateFilters={stateFilters}
+        setStateFilters={setStateFilters}
+        setAccountName={setAccountName}
+        handlePageChange={handlePageChange}
+      />
+      <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>List Expenses</h1>
+
+      <br />
+      <br />
+      <br />
+      <div className='w-[100px]'>
+        <Button buttonTitle='Filter' size='sm' onClick={() => setFilterModal(true)} />
+      </div>
+
+      <br />
+
+      <div className='flex space-x-5'>
+        <div className='bg-gray-300 p-3 rounded-md text-md font-comfortaa'>{capFirstLetters(accountName)}</div>
+        <div className='flex'>
+          <div className='bg-gray-300 p-3 rounded-md text-md font-comfortaa'>
+            {dayjs(stateFilters.startDate).format('MMM DD, YYYY')}
+          </div>
+          <div className='px-3 flex items-center'>-</div>
+          <div className='bg-gray-300 p-3 rounded-md text-md font-comfortaa'>
+            {dayjs(stateFilters.endDate).format('MMM DD, YYYY')}
+          </div>
+        </div>
+      </div>
+
+      <br />
+
+      {isError ? (
+        <>
+          <Notification rounded='sm' type='error' message='Something went wrong! Try Again' />
+          <br />
+        </>
+      ) : (
+        ''
+      )}
+
+      <div className='bg-white shadow-lg px-5 py-7 rounded-md'>
+        {isLoading ? (
+          <TableLoader />
+        ) : (
+          <>
+            <table className='w-full'>
+              <thead>
+                <tr className='border-gray-500 border-b font-raleway text-xl text-center'>
+                  <th className='pb-3'>ACCOUNT</th>
+                  <th className='pb-3'>DATE</th>
+                  <th className='pb-3'>AMOUNT</th>
+                  <th className='pb-3'>DESCRIPTION</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data ? (
+                  data.records.length === 0 ? (
+                    <tr className='font-comfortaa h-14 text-center'>
+                      <td className='show-modal-ref text-red-500' colSpan={4}>
+                        NO RECORD
+                      </td>
+                    </tr>
+                  ) : (
+                    data.records.map((expense) => (
+                      <tr
+                        key={expense.expenseId}
+                        className='font-comfortaa h-14 text-center hover:cursor-pointer hover:bg-gray-300 transition-colors duration-200'
+                        onClick={() => onRecordClick(expense.billInvoiceRefNo)}
+                      >
+                        <td className='show-modal-ref'>{capFirstLetters(expense.accountName)}</td>
+                        <td className='show-modal-ref'>{dayjs(expense.date).format('MMM DD, YYYY')}</td>
+                        <td className='show-modal-ref'>{PHpeso.format(expense.amount)}</td>
+                        <td className='show-modal-ref'>{expense.description}</td>
+                      </tr>
+                    ))
+                  )
+                ) : null}
+              </tbody>
+            </table>
+          </>
+        )}
+
+        <br />
+
+        <Paginator currentPage={page} pageCount={data?.pageCount || 0} handlePageChange={handlePageChange} />
+      </div>
+    </Layout>
+  );
+}
