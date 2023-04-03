@@ -15,10 +15,10 @@ import FadeIn from '@/components/FadeIn';
 import SelectField from '@/components/SelectField';
 
 const schema = z.object({
-  vendor: z.string().min(1, 'Please input expense name!'),
-  date: z.string().min(1, 'Please input expense name!'),
-  invoiceRefNo: z.string().min(1, 'Please input category!'),
-  amount: z.number().min(1, 'Please input expense amount!'),
+  vendor: z.string().min(1, 'Required!'),
+  date: z.string().min(1, 'Required!'),
+  invoiceRefNo: z.string().min(1, 'Required!'),
+  amount: z.number().min(1, 'Required!'),
   entries: z.array(
     z.object({
       date: z.string().min(1, 'Required!'),
@@ -31,7 +31,7 @@ const schema = z.object({
 
 type FormSchemaType = z.infer<typeof schema>;
 
-export default function CreateExpense() {
+export default function CreateBill() {
   const [error, setError] = useState('');
   const { mutate, isLoading, isSuccess, isError } = trpc.useMutation('bill.create');
   const { data, isLoading: getAccountLoader } = trpc.useQuery(['account.getMany', { limit: 2000, page: 1 }]);
@@ -54,7 +54,7 @@ export default function CreateExpense() {
       required: 'Please add an entry',
     },
   });
-  const createExpense = (formData: FormSchemaType) => {
+  const createBill = (formData: FormSchemaType) => {
     let entryTotal = 0;
 
     formData.entries.map((entry) => {
@@ -94,19 +94,19 @@ export default function CreateExpense() {
   return (
     <Layout>
       <Head>
-        <title>Expense | Create</title>
+        <title>Bill | Create</title>
         <meta name='description' content='Sample Home page with nextjs' />
         <link rel='icon' href='/favicon.ico' />
       </Head>
 
-      <ModalLoader open={isLoading}>Saving Expense ...</ModalLoader>
-      <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>Create Expense</h1>
+      <ModalLoader open={isLoading}>Saving Bill ...</ModalLoader>
+      <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>Create Bill</h1>
       <br />
       <form
         className='flex flex-col space-y-4 md:w-[100%] bg-white p-8 rounded-md shadow-md overflow-hidden'
-        onSubmit={handleSubmit(createExpense)}
+        onSubmit={handleSubmit(createBill)}
       >
-        {isSuccess && !error ? <Notification rounded='sm' type='success' message='Expense Saved' /> : ''}
+        {isSuccess && !error ? <Notification rounded='sm' type='success' message='Bill Saved' /> : ''}
         {isError ? <Notification rounded='sm' type='error' message='Something went wrong' /> : ''}
         {!!error ? <Notification rounded='sm' type='error' message={error} /> : ''}
         <TextField
@@ -136,15 +136,15 @@ export default function CreateExpense() {
         <TextField
           required
           type='number'
-          label='Expense Amount'
-          placeholder='enter expense amount here'
+          label='Bill Amount'
+          placeholder='enter bill amount here'
           formInput={{ register, property: 'amount' }}
           errorMessage={errors.amount?.message}
         />
 
         <div>
           <h1 className='text-md md:text-lg font-semibold font-raleway'>
-            Entries : <span className='text-red-500'>*</span>
+            Expenses : <span className='text-red-500'>*</span>
           </h1>
           {errors.entries?.message ? <FadeIn cssText='font-raleway text-red-500'>{errors.entries?.message}</FadeIn> : ''}
           <div className='space-y-3'>
