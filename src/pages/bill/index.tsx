@@ -13,6 +13,7 @@ import Button from '@/components/Button';
 import ListFilter, { FormSchemaType } from '@/modules/bill/ListFilter';
 import ExpenseDetails from '@/modules/bill/Details';
 import Paginator from '@/components/Paginator';
+import { PHpeso } from '@/modules/utils';
 
 const initialFilters = {
   vendor: undefined,
@@ -131,7 +132,7 @@ export default function ListExpenses() {
                             <td className='show-modal-ref'>{dayjs(bill.date).format('MMM DD, YYYY')}</td>
                             <td className='show-modal-ref'>{bill.vendor}</td>
                             <td className='show-modal-ref'>{bill.invoiceRefNo}</td>
-                            <td className='show-modal-ref'>₱{bill.amount}</td>
+                            <td className='show-modal-ref'>{PHpeso.format(bill.amount)}</td>
                           </tr>
                         ))
                       )
