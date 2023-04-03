@@ -29,7 +29,7 @@ const inputCssGenerate = ({
   };
 
   const borderColor = {
-    primary: 'border-zinc-600 hover:border-blue-500 focus:border-blue-500 pr-10',
+    primary: `border-zinc-600 hover:border-blue-500 focus:border-blue-500 pr-10`,
     error: 'border-red-500',
   };
 
@@ -62,6 +62,7 @@ export interface ISelectProps {
   onChange?: (value: string) => void;
   defaultValue?: string;
   isLoading?: boolean;
+  disabled?: boolean;
 }
 
 function SelectFieldComp({
@@ -78,6 +79,7 @@ function SelectFieldComp({
   defaultValue,
   errorMessage,
   isLoading,
+  disabled,
 }: ISelectProps) {
   const [showMenu, setShowMenu] = useState(false);
   const [value, setValue] = useState(!!defaultValue ? options.find((opt) => opt.value === defaultValue)?.label || '' : '');
@@ -146,11 +148,16 @@ function SelectFieldComp({
               value={value}
               onChange={onInputChange}
               onBlur={onBlurHandler}
-              disabled={isLoading}
+              disabled={isLoading || disabled}
             />
             <div
-              className='absolute top-0 right-0 flex h-full justify-center items-center p-3 z-10 border-0 hover:cursor-pointer'
-              onClick={() => setShowMenu(!showMenu)}
+              className={`absolute top-0 right-0 flex h-full justify-center items-center p-3 z-10 border-0 ${
+                disabled ? '' : 'hover:cursor-pointer'
+              }`}
+              onClick={() => {
+                if (disabled) return;
+                setShowMenu(!showMenu);
+              }}
             >
               {isLoading ? <Loader /> : <IconComp iconName='ChevronDownIcon' iconProps={{}} />}
             </div>

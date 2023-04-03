@@ -12,6 +12,7 @@ import TextField from '@/components/TextField';
 import Button from '@/components/Button';
 import IconComp from '@/components/Icon';
 import FadeIn from '@/components/FadeIn';
+import SelectField from '@/components/SelectField';
 
 const schema = z.object({
   vendor: z.string().min(1, 'Please input expense name!'),
@@ -21,7 +22,7 @@ const schema = z.object({
   entries: z.array(
     z.object({
       date: z.string().min(1, 'Required!'),
-      account: z.string().min(1, 'Required!'),
+      accountId: z.string().min(1, 'Required!'),
       amount: z.number().min(1, 'Required!'),
       description: z.string().min(1, 'Required!'),
     }),
@@ -32,13 +33,15 @@ type FormSchemaType = z.infer<typeof schema>;
 
 export default function CreateExpense() {
   const [error, setError] = useState('');
-  const { mutate, isLoading, isSuccess, isError } = trpc.useMutation('expense.create');
+  const { mutate, isLoading, isSuccess, isError } = trpc.useMutation('bill.create');
+  const { data, isLoading: getAccountLoader } = trpc.useQuery(['account.getMany', { limit: 2000, page: 1 }]);
 
   const {
     register,
     handleSubmit,
     control,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<FormSchemaType>({
     resolver: zodResolver(schema),
@@ -51,7 +54,6 @@ export default function CreateExpense() {
       required: 'Please add an entry',
     },
   });
-
   const createExpense = (formData: FormSchemaType) => {
     let entryTotal = 0;
 
@@ -60,20 +62,33 @@ export default function CreateExpense() {
     });
 
     if (entryTotal !== formData.amount) {
-      setError('Entries Total does not match Expense Amount!');
+      setError('Entries Total does not match Bill Amount!');
       return;
     }
 
     if (error !== '') setError('');
 
-    mutate(formData, {
-      onSuccess() {
-        reset();
+    const billData = {
+      vendor: formData.vendor,
+      date: formData.date,
+      invoiceRefNo: formData.invoiceRefNo,
+      amount: formData.amount,
+    };
+
+    mutate(
+      {
+        billData,
+        expenses: formData.entries,
       },
-      onError(err) {
-        console.log(err);
+      {
+        onSuccess() {
+          reset();
+        },
+        onError(err) {
+          console.log(err);
+        },
       },
-    });
+    );
   };
 
   return (
@@ -147,12 +162,18 @@ export default function CreateExpense() {
                     errorMessage={errors?.entries ? errors.entries[index]?.date?.message : undefined}
                   />
 
-                  <TextField
+                  <SelectField
+                    required
                     label='Account'
-                    type='text'
-                    placeholder='enter account her'
-                    formInput={{ register, property: `entries.${index}.account` }}
-                    errorMessage={errors?.entries ? errors.entries[index]?.account?.message : undefined}
+                    options={
+                      data?.records.map((account) => {
+                        return { label: account.accountName, value: account.accountId };
+                      }) || []
+                    }
+                    formInput={{ setValue, property: `entries.${index}.accountId` }}
+                    isLoading={getAccountLoader}
+                    defaultValue={''}
+                    errorMessage={errors?.entries ? errors.entries[index]?.accountId?.message : undefined}
                   />
 
                   <TextField
@@ -185,7 +206,7 @@ export default function CreateExpense() {
           <button
             type='button'
             className='bg-primary text-white rounded-sm py-1 px-5 text-md mt-3 text-xl font-raleway font-semibold'
-            onClick={() => append({ date: '', amount: 0, description: '', account: '' })}
+            onClick={() => append({ date: '', amount: 0, description: '', accountId: '' })}
           >
             +
           </button>

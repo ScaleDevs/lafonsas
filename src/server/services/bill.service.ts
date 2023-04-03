@@ -7,16 +7,21 @@ import { TRPCError } from '@trpc/server';
 class Service {
   public async createBill(billData: Omit<IBill, 'billId'>, expensesData: Omit<IExpense, 'expenseId' | 'billId'>[]) {
     try {
-      const billResult = await BillRepository.createBill(billData);
+      const billResult = await BillRepository.createBill({
+        ...billData,
+        date: new Date(billData.date),
+      });
       const createExpensesParams = expensesData.map((expense) => {
         return {
           ...expense,
+          date: new Date(expense.date),
           billId: billResult.billId,
         };
       });
       await ExpenseRepository.createManyExpense(createExpensesParams);
       return true;
     } catch (err) {
+      console.log(err);
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
     }
   }

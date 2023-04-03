@@ -17,7 +17,7 @@ const schema = z.object({
 
 export type FormSchemaType = z.infer<typeof schema>;
 
-export interface IListDeliveryFilterProps {
+export interface IListFilterProps {
   isOpen: boolean;
   closeModal: () => void;
   stateFilters: FormSchemaType;
@@ -25,13 +25,7 @@ export interface IListDeliveryFilterProps {
   handlePageChange: (page: number) => void;
 }
 
-export default function ListExpensesFilter({
-  isOpen,
-  closeModal,
-  stateFilters,
-  setStateFilters,
-  handlePageChange,
-}: IListDeliveryFilterProps) {
+export default function ListFilter({ isOpen, closeModal, stateFilters, setStateFilters, handlePageChange }: IListFilterProps) {
   const { handleSubmit, register } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {

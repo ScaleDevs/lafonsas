@@ -8,10 +8,10 @@ import { getStartOfMonth, getEndOfMonth } from '@/utils/helper';
 import Layout from '@/layouts/index';
 import TableLoader from '@/components/TableLoader';
 import Notification from '@/components/Notification';
-import { IExpense } from '@/utils/types';
+import { IBill } from '@/utils/types';
 import Button from '@/components/Button';
-import ListExpensesFilter, { FormSchemaType } from '@/modules/expense/ListExpensesFilter';
-import ExpenseDetails from '@/modules/expense/ExpenseDetails';
+import ListFilter, { FormSchemaType } from '@/modules/bill/ListFilter';
+import ExpenseDetails from '@/modules/bill/Details';
 import Paginator from '@/components/Paginator';
 
 const initialFilters = {
@@ -25,30 +25,32 @@ export default function ListExpenses() {
   const [stateFilters, setStateFilters] = useState<FormSchemaType>(initialFilters);
   const [page, setPage] = useState(1);
   const { data, isLoading, isError, refetch } = trpc.useQuery([
-    'expense.getMany',
+    'bill.getMany',
     {
       limit: 10,
       page,
-      startDate: stateFilters.startDate,
-      endDate: stateFilters.endDate,
       vendor: stateFilters.vendor,
+      dateFilter: {
+        startDate: stateFilters.startDate,
+        endDate: stateFilters.endDate,
+      },
     },
   ]);
 
-  const onRecordClick = (data: Omit<IExpense, 'description'>) => {
-    router.push(`/expense/?refNo=${data.invoiceRefNo}`, undefined, { shallow: true });
+  const onRecordClick = (data: Omit<IBill, 'description'>) => {
+    router.push(`/bill/?refNo=${data.invoiceRefNo}`, undefined, { shallow: true });
   };
   const handlePageChange = (page: number) => setPage(page);
 
   return (
     <Layout>
       <Head>
-        <title>Store</title>
-        <meta name='description' content='Sample Home page with nextjs' />
+        <title>Bill</title>
+        <meta name='description' content='lafonsas bill list page' />
         <link rel='icon' href='/favicon.ico' />
       </Head>
 
-      <ListExpensesFilter
+      <ListFilter
         isOpen={filterModal}
         closeModal={() => setFilterModal(false)}
         stateFilters={stateFilters}
@@ -57,10 +59,10 @@ export default function ListExpenses() {
       />
 
       {!!router.query.refNo && typeof router.query.refNo === 'string' ? (
-        <ExpenseDetails referenceNo={router.query.refNo} expensesRefetch={refetch} />
+        <ExpenseDetails referenceNo={router.query.refNo} billsRefetch={refetch} />
       ) : (
         <>
-          <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>List Expenses</h1>
+          <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>List Bills</h1>
 
           <br />
           <br />
@@ -120,16 +122,16 @@ export default function ListExpenses() {
                           </td>
                         </tr>
                       ) : (
-                        data.records.map((expense) => (
+                        data.records.map((bill) => (
                           <tr
-                            key={expense.expenseId}
+                            key={bill.billId}
                             className='font-comfortaa h-14 text-center hover:cursor-pointer hover:bg-gray-300 transition-colors duration-200'
-                            onClick={() => onRecordClick(expense)}
+                            onClick={() => onRecordClick(bill)}
                           >
-                            <td className='show-modal-ref'>{dayjs(expense.date).format('MMM DD, YYYY')}</td>
-                            <td className='show-modal-ref'>{expense.vendor}</td>
-                            <td className='show-modal-ref'>{expense.invoiceRefNo}</td>
-                            <td className='show-modal-ref'>₱{expense.amount}</td>
+                            <td className='show-modal-ref'>{dayjs(bill.date).format('MMM DD, YYYY')}</td>
+                            <td className='show-modal-ref'>{bill.vendor}</td>
+                            <td className='show-modal-ref'>{bill.invoiceRefNo}</td>
+                            <td className='show-modal-ref'>₱{bill.amount}</td>
                           </tr>
                         ))
                       )

@@ -6,42 +6,42 @@ import Modal from '@/components/Modal';
 import { Overlay } from '@/components/Overlay';
 import { trpc } from '@/utils/trpc';
 import Loader from '@/components/Loader';
-import ExpenseUpdateForm from './ExpenseUpdateForm';
+import UpdateForm from './UpdateForm';
 import { PHpeso, tableFormatTimeDisplay } from '../utils';
 import Button from '@/components/Button';
 
-export interface IExpenseDetailsProps {
+export interface IDetailsProps {
   referenceNo: string;
-  expensesRefetch: any;
+  billsRefetch: any;
 }
 
-export default function ExpenseDetails({ referenceNo, expensesRefetch }: IExpenseDetailsProps) {
+export default function Details({ referenceNo, billsRefetch }: IDetailsProps) {
   const [isUpdate, setIsUpdate] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const { data, refetch } = trpc.useQuery(['expense.getByRefNo', referenceNo]);
-  const { mutate, isSuccess, isLoading: isDeleting } = trpc.useMutation('expense.delete');
+  const { data, refetch } = trpc.useQuery(['bill.getBill', { refNo: referenceNo }]);
+  const { mutate, isSuccess, isLoading: isDeleting } = trpc.useMutation('bill.delete');
 
   const onDelete = () => {
-    if (data?.expenseId)
-      mutate(data.expenseId, {
+    if (data?.billId)
+      mutate(data.billId, {
         onSuccess() {
-          expensesRefetch();
+          billsRefetch();
         },
       });
   };
 
   const resetIsUpdate = () => setIsUpdate(false);
 
-  const backToList = () => router.push(`/expense`, undefined, { shallow: true });
+  const backToList = () => router.push(`/bill`, undefined, { shallow: true });
 
   const refetchCalls = () => {
-    expensesRefetch();
+    billsRefetch();
     refetch();
   };
 
   if (!data) return <></>;
 
-  if (isUpdate) return <ExpenseUpdateForm data={data} refetchCalls={refetchCalls} resetIsUpdate={resetIsUpdate} />;
+  if (isUpdate) return <UpdateForm data={data} refetchCalls={refetchCalls} resetIsUpdate={resetIsUpdate} />;
 
   if (isDeleting)
     return (
@@ -50,7 +50,7 @@ export default function ExpenseDetails({ referenceNo, expensesRefetch }: IExpens
         <Modal w='w-[80%] md: w-[520px]' p='p-8'>
           <div className='flex flex-row justify-center'>
             <Loader h='h-7' w='w-7' />
-            <h1 className='text-xl font-comfortaa'>Removing Expense Record ...</h1>
+            <h1 className='text-xl font-comfortaa'>Removing Bill Record ...</h1>
           </div>
         </Modal>
       </>
@@ -63,10 +63,10 @@ export default function ExpenseDetails({ referenceNo, expensesRefetch }: IExpens
       </div>
 
       {isSuccess ? (
-        <h1 className='text-red-500 text-lg font-comfortaa'>{data.invoiceRefNo} expense removed from list successfuly !</h1>
+        <h1 className='text-red-500 text-lg font-comfortaa'>{data.invoiceRefNo} bill removed from list successfuly !</h1>
       ) : (
         <div className='space-y-5'>
-          <h1 className='font-comfortaa font-bold text-3xl'>Expense Details:</h1>
+          <h1 className='font-comfortaa font-bold text-3xl'>Bill Details:</h1>
           <br />
           <div className='border-b-[1px] border-gray-500 flex flex-row justify-between'>
             <h1 className='font-comfortaa font-bold text-2xl'>Date</h1>
@@ -101,20 +101,20 @@ export default function ExpenseDetails({ referenceNo, expensesRefetch }: IExpens
                 </thead>
                 <tbody>
                   {data ? (
-                    data.entries.length === 0 ? (
+                    data.expenses.length === 0 ? (
                       <tr className='font-comfortaa h-14 text-center'>
                         <td className='show-modal-ref text-red-500' colSpan={4}>
                           NO RECORD
                         </td>
                       </tr>
                     ) : (
-                      data.entries.map((entry, index) => (
+                      data.expenses.map((entry, index) => (
                         <tr
                           key={index}
                           className='h-14 text-center hover:cursor-pointer hover:bg-gray-300 transition-colors duration-200'
                         >
                           <td>{dayjs(entry.date).format('MMM DD, YYYY')}</td>
-                          <td>{entry.account}</td>
+                          <td>{entry.accountName}</td>
                           <td>{PHpeso.format(entry.amount)}</td>
                           <td>{entry.description}</td>
                         </tr>
@@ -130,7 +130,7 @@ export default function ExpenseDetails({ referenceNo, expensesRefetch }: IExpens
 
           {confirmDelete ? (
             <div className='flex flex-row space-x-2 items-end'>
-              <h1 className='font-comfortaa font-bold text-red-500'>Are you sure you want to delete this expense?</h1>
+              <h1 className='font-comfortaa font-bold text-red-500'>Are you sure you want to delete this bill?</h1>
               <button className='bg-red-500 px-5 py-2 rounded-sm hover:bg-red-400' onClick={onDelete}>
                 YES
               </button>

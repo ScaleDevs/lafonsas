@@ -5,6 +5,14 @@ import { AccountRepository } from '@/repo/account.repo';
 import { TRPCError } from '@trpc/server';
 
 class Service {
+  public async createExpense(data: Omit<IExpense, 'expenseId'>) {
+    try {
+      return ExpenseRepository.createExpense(data);
+    } catch (err) {
+      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
+    }
+  }
+
   public async findExpenseById(expenseId: string) {
     try {
       return ExpenseRepository.findExpenseById(expenseId);

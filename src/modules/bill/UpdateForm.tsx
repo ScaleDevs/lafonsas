@@ -1,26 +1,28 @@
+import { useState } from 'react';
 import z from 'zod';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import dayjs from 'dayjs';
 
-import { IExpense } from '@/utils/types';
+import { IBill } from '@/utils/types';
 import { trpc } from '@/utils/trpc';
 import TextField from '@/components/TextField';
 import Notification from '@/components/Notification';
 import Button from '@/components/Button';
-import IconComp from '@/components/Icon';
 import FadeIn from '@/components/FadeIn';
-import { useState } from 'react';
+import IconComp from '@/components/Icon';
+import SelectField from '@/components/SelectField';
 
 const schema = z.object({
-  vendor: z.string().min(1, 'Please input expense name!'),
-  date: z.string().min(1, 'Please input expense name!'),
-  invoiceRefNo: z.string().min(1, 'Please input category!'),
-  amount: z.number().min(1, 'Please input expense amount!'),
-  entries: z.array(
+  vendor: z.string().min(1, 'Required!'),
+  date: z.string().min(1, 'Required!'),
+  invoiceRefNo: z.string().min(1, 'Required!'),
+  amount: z.number().min(1, 'Required!'),
+  expenses: z.array(
     z.object({
+      expenseId: z.string().optional(),
       date: z.string().min(1, 'Required!'),
-      account: z.string().min(1, 'Required!'),
+      accountId: z.string().min(1, 'Required!'),
       amount: z.number().min(1, 'Required!'),
       description: z.string().min(1, 'Required!'),
     }),
@@ -29,53 +31,68 @@ const schema = z.object({
 
 type FormSchemaType = z.infer<typeof schema>;
 
-export interface IExpenseUpdateProps {
-  data: IExpense;
+export interface IUpdateProps {
+  data: IBill & {
+    expenses: {
+      accountName: string;
+      expenseId: string;
+      date: Date;
+      amount: number;
+      description: string;
+      accountId: string;
+      billId: string;
+    }[];
+  };
   refetchCalls: any;
   resetIsUpdate: () => void;
 }
 
-export default function ExpenseUpdateForm({ data, refetchCalls, resetIsUpdate }: IExpenseUpdateProps) {
-  const { mutate, isLoading, isSuccess, isError } = trpc.useMutation('expense.update');
+export default function UpdateForm({ data, refetchCalls, resetIsUpdate }: IUpdateProps) {
+  const { mutate, isLoading, isSuccess, isError } = trpc.useMutation('bill.update');
+  const { data: accountsData, isLoading: getAccountLoader } = trpc.useQuery(['account.getMany', { limit: 2000, page: 1 }]);
   const [error, setError] = useState('');
 
   const {
     register,
     handleSubmit,
-    control,
     formState: { errors, dirtyFields },
+    setValue,
+    control,
     reset,
   } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
       ...data,
       date: dayjs(data.date).format('YYYY-MM-DD'),
-      entries: data.entries.map((entry) => {
+      expenses: data.expenses.map((expense) => {
         return {
-          ...entry,
-          date: dayjs(entry.date).format('YYYY-MM-DD'),
+          expenseId: expense.expenseId,
+          accountId: expense.accountId,
+          amount: expense.amount,
+          description: expense.description,
+          date: dayjs(expense.date).format('YYYY-MM-DD'),
         };
       }),
     },
   });
 
   const { fields, append, remove } = useFieldArray({
-    name: 'entries',
+    name: 'expenses',
     control,
     rules: {
       required: 'Please add an entry',
     },
   });
 
-  const updateExpense = (formData: FormSchemaType) => {
+  const updateBill = (formData: FormSchemaType) => {
     let entryTotal = 0;
 
-    formData.entries.map((entry) => {
-      entryTotal += entry.amount;
+    formData.expenses.map((expense) => {
+      entryTotal += expense.amount;
     });
 
     if (entryTotal !== formData.amount) {
-      setError('Entries Total does not match Expense Amount!');
+      setError('Expenses Total does not match Bill Amount!');
       return;
     }
 
@@ -88,10 +105,17 @@ export default function ExpenseUpdateForm({ data, refetchCalls, resetIsUpdate }:
       if (!dirtyFields[keyField]) delete partialData[keyField];
     });
 
+    const billPartialData = { ...partialData };
+
+    delete billPartialData.expenses;
+
     const mutateParams = {
-      expenseId: data.expenseId,
-      partialData: partialData,
+      billId: data.billId,
+      partialData: billPartialData,
+      expenses: partialData.expenses,
     };
+
+    console.log(partialData.expenses);
 
     mutate(mutateParams, {
       onSuccess() {
@@ -111,7 +135,7 @@ export default function ExpenseUpdateForm({ data, refetchCalls, resetIsUpdate }:
 
       {isSuccess && !error ? (
         <div className='py-3'>
-          <Notification rounded='sm' type='success' message='Expense updated' />
+          <Notification rounded='sm' type='success' message='Bill updated' />
         </div>
       ) : (
         ''
@@ -124,11 +148,11 @@ export default function ExpenseUpdateForm({ data, refetchCalls, resetIsUpdate }:
         ''
       )}
 
-      <h1 className='text-3xl font-raleway font-semibold'>UPDATE EXPENSE DETAILS</h1>
+      <h1 className='text-3xl font-raleway font-semibold'>UPDATE BILL DETAILS</h1>
 
       <br />
 
-      <form onSubmit={handleSubmit(updateExpense)} className='space-y-5'>
+      <form onSubmit={handleSubmit(updateBill)} className='space-y-5'>
         <TextField
           required
           label='Vendor'
@@ -157,17 +181,19 @@ export default function ExpenseUpdateForm({ data, refetchCalls, resetIsUpdate }:
         <TextField
           required
           type='number'
-          label='Expense Amount'
-          placeholder='enter expense amount here'
+          label='Bill Amount'
+          placeholder='enter bill amount here'
           formInput={{ register, property: 'amount' }}
           errorMessage={errors.amount?.message}
         />
 
+        <br />
+
         <div>
           <h1 className='text-md md:text-lg font-semibold font-raleway'>
-            Entries : <span className='text-red-500'>*</span>
+            Expenses : <span className='text-red-500'>*</span>
           </h1>
-          {errors.entries?.message ? <FadeIn cssText='font-raleway text-red-500'>{errors.entries?.message}</FadeIn> : ''}
+          {errors.expenses?.message ? <FadeIn cssText='font-raleway text-red-500'>{errors.expenses?.message}</FadeIn> : ''}
           <div className='space-y-3'>
             {fields.map((field, index) => {
               return (
@@ -179,24 +205,31 @@ export default function ExpenseUpdateForm({ data, refetchCalls, resetIsUpdate }:
                     required
                     type='date'
                     label='Date'
-                    formInput={{ register, property: `entries.${index}.date` }}
-                    errorMessage={errors?.entries ? errors.entries[index]?.date?.message : undefined}
+                    formInput={{ register, property: `expenses.${index}.date` }}
+                    errorMessage={errors?.expenses ? errors.expenses[index]?.date?.message : undefined}
                   />
 
-                  <TextField
+                  <SelectField
+                    required
                     label='Account'
-                    type='text'
-                    placeholder='enter account her'
-                    formInput={{ register, property: `entries.${index}.account` }}
-                    errorMessage={errors?.entries ? errors.entries[index]?.account?.message : undefined}
+                    disabled={!!field.accountId}
+                    options={
+                      accountsData?.records.map((account) => {
+                        return { label: account.accountName, value: account.accountId };
+                      }) || []
+                    }
+                    formInput={{ setValue, property: `expenses.${index}.accountId` }}
+                    isLoading={getAccountLoader}
+                    defaultValue={field.accountId}
+                    errorMessage={errors?.expenses ? errors.expenses[index]?.accountId?.message : undefined}
                   />
 
                   <TextField
                     label='Description'
                     type='text'
                     placeholder='enter description here'
-                    formInput={{ register, property: `entries.${index}.description` }}
-                    errorMessage={errors?.entries ? errors.entries[index]?.description?.message : undefined}
+                    formInput={{ register, property: `expenses.${index}.description` }}
+                    errorMessage={errors?.expenses ? errors.expenses[index]?.description?.message : undefined}
                   />
 
                   <TextField
@@ -204,8 +237,8 @@ export default function ExpenseUpdateForm({ data, refetchCalls, resetIsUpdate }:
                     labelCss='text-sm font-bold'
                     type='number'
                     placeholder='enter amount here'
-                    formInput={{ register, property: `entries.${index}.amount` }}
-                    errorMessage={errors?.entries ? errors.entries[index]?.amount?.message : undefined}
+                    formInput={{ register, property: `expenses.${index}.amount` }}
+                    errorMessage={errors?.expenses ? errors.expenses[index]?.amount?.message : undefined}
                   />
                   <button
                     type='button'
@@ -221,13 +254,11 @@ export default function ExpenseUpdateForm({ data, refetchCalls, resetIsUpdate }:
           <button
             type='button'
             className='bg-primary text-white rounded-sm py-1 px-5 text-md mt-3 text-xl font-raleway font-semibold'
-            onClick={() => append({ date: '', amount: 0, description: '', account: '' })}
+            onClick={() => append({ expenseId: '', date: '', amount: 0, description: '', accountId: '' })}
           >
             +
           </button>
         </div>
-
-        <br />
 
         <Button type='submit' size='md' isLoading={isLoading} />
       </form>

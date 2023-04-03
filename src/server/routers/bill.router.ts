@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { createRouter } from '../createRouter';
 import { authMiddleware } from '../util';
 import { BillService } from '@/server/services/bill.service';
+import { ExpenseService } from '@/server/services/expense.service';
 
 export const billRouter = createRouter()
   .middleware(authMiddleware)
@@ -36,9 +37,38 @@ export const billRouter = createRouter()
         invoiceRefNo: z.string().optional(),
         amount: z.number().optional(),
       }),
+      expenses: z
+        .array(
+          z.object({
+            expenseId: z.string().optional(),
+            date: z.string(),
+            accountId: z.string(),
+            description: z.string(),
+            amount: z.number(),
+          }),
+        )
+        .optional(),
     }),
-    resolve({ input }) {
-      return BillService.updateBill(input.billId, input.partialData);
+    async resolve({ input }) {
+      console.log(input);
+
+      const result = await BillService.updateBill(input.billId, input.partialData);
+
+      if (input.expenses)
+        for (const expense of input.expenses) {
+          const partialData = { ...expense };
+          const expenseId = expense.expenseId;
+          delete partialData.expenseId;
+
+          if (!!expenseId) {
+            await ExpenseService.updateExpense(expenseId, { ...partialData });
+          } else
+            await ExpenseService.createExpense({
+              ...partialData,
+              date: new Date(expense.date),
+              billId: result.billId,
+            });
+        }
     },
   })
   .mutation('delete', {
@@ -47,7 +77,7 @@ export const billRouter = createRouter()
       return BillService.deleteBill(input);
     },
   })
-  .query('getById', {
+  .query('getBill', {
     input: z.object({
       refNo: z.string().optional(),
       billId: z.string().optional(),
