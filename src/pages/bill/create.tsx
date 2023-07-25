@@ -33,7 +33,7 @@ type FormSchemaType = z.infer<typeof schema>;
 
 export default function CreateBill() {
   const [error, setError] = useState('');
-  const { mutate, isLoading, isSuccess, isError } = trpc.useMutation('bill.create');
+  const { mutate, isLoading, isSuccess, isError, error: errs } = trpc.useMutation('bill.create');
   const { data, isLoading: getAccountLoader } = trpc.useQuery(['account.getMany', { limit: 2000, page: 1 }]);
 
   const {
@@ -107,7 +107,7 @@ export default function CreateBill() {
         onSubmit={handleSubmit(createBill)}
       >
         {isSuccess && !error ? <Notification rounded='sm' type='success' message='Bill Saved' /> : ''}
-        {isError ? <Notification rounded='sm' type='error' message='Something went wrong' /> : ''}
+        {isError ? <Notification rounded='sm' type='error' message={errs.message} /> : ''}
         {!!error ? <Notification rounded='sm' type='error' message={error} /> : ''}
         <TextField
           required

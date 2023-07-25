@@ -58,7 +58,7 @@ model Bill {
 model Expense {
   expenseId   String   @id @default(auto()) @map("_id") @db.ObjectId
   date        DateTime
-  amount      Int
+  amount      Float
   description String
   accountId   String
   billId      String
