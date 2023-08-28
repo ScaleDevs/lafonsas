@@ -52,7 +52,7 @@ model Bill {
   vendor       String
   date         DateTime
   invoiceRefNo String   @unique
-  amount       Int
+  amount       Float
 }
 
 model Expense {
