@@ -38,6 +38,7 @@ class Respository {
       orderBy: { postingDate: 'asc' },
       skip: page > 0 ? (page - 1) * limit : 0,
       take: limit,
+      distinct: ['id'],
       select: {
         id: true,
         storeId: true,
