@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { useFieldArray, useForm } from 'react-hook-form';
 import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { round } from 'lodash';
 
 import { trpc } from '@/utils/trpc';
 import Layout from '@/layouts/index';
@@ -61,7 +62,7 @@ export default function CreateBill() {
       entryTotal += entry.amount;
     });
 
-    if (entryTotal !== formData.amount) {
+    if (round(entryTotal, 2) !== round(formData.amount, 2)) {
       setError('Entries Total does not match Bill Amount!');
       return;
     }
