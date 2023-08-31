@@ -6,6 +6,7 @@ import { storeRouter } from './store.router';
 import { billRouter } from './bill.router';
 import { expenseRouter } from './expense.router';
 import { accountRouter } from './account.router';
+import { paymentRouter } from './payment.router';
 
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -34,6 +35,7 @@ export const appRouter = createRouter()
   .merge('store.', storeRouter)
   .merge('bill.', billRouter)
   .merge('expense.', expenseRouter)
-  .merge('account.', accountRouter);
+  .merge('account.', accountRouter)
+  .merge('payment.', paymentRouter);
 
 export type AppRouter = typeof appRouter;

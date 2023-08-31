@@ -36,6 +36,7 @@ export const deliveryRouter = createRouter()
     resolve({ input }) {
       return DeliveryService.createDelivery({
         ...input,
+        paymentId: null,
         postingDate: new Date(input.postingDate),
         checkDate: !!input.checkDate ? new Date(input.checkDate) : null,
       });

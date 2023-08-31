@@ -6,7 +6,7 @@ import { trpc } from '@/utils/trpc';
 export interface ITableRowProps {
   delivery: Omit<
     Delivery,
-    'badOrder' | 'widthHoldingTax' | 'otherDeduction' | 'checkNumber' | 'checkDate' | 'orders' | 'returnSlip'
+    'badOrder' | 'widthHoldingTax' | 'otherDeduction' | 'checkNumber' | 'checkDate' | 'orders' | 'returnSlip' | 'paymentId'
   >;
   onClick: (deliveryId: string) => void;
 }

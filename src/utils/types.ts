@@ -1,4 +1,4 @@
-import { Delivery, Bill, Expense, Account, Store } from '@prisma/client';
+import { Delivery, Bill, Expense, Account, Store, Payment } from '@prisma/client';
 
 // models
 export type IDelivery = Delivery;
@@ -9,6 +9,10 @@ export type IAccount = Account;
 
 export type IBill = Omit<Bill, 'date'> & {
   date: string | Date;
+};
+
+export type IPayment = Omit<Payment, 'checkDate'> & {
+  checkDate: string | Date;
 };
 
 export type IExpense = Omit<Expense, 'date'> & {

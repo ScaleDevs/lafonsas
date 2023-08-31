@@ -40,6 +40,7 @@ model Delivery {
   returnSlip      Order[]
   store           Store     @relation(fields: [storeId], references: [id])
   storeId         String    @db.ObjectId
+  paymentId       String?   @db.ObjectId
 }
 
 model Account {
@@ -53,6 +54,17 @@ model Bill {
   date         DateTime
   invoiceRefNo String   @unique
   amount       Float
+}
+
+model Payment {
+  paymentId       String   @id @default(auto()) @map("_id") @db.ObjectId
+  vendor          String
+  checkNumber     String   @unique
+  checkDate       DateTime
+  amount          Float
+  badOrder        Float?
+  widthHoldingTax Float?
+  otherDeduction  Float?
 }
 
 model Expense {

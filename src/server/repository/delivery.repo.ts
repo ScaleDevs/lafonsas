@@ -57,6 +57,23 @@ class Respository {
     };
   }
 
+  public async findDeliveriesByPaymentId(paymentId: string) {
+    const result = await prisma.delivery.findMany({
+      where: {
+        paymentId,
+      },
+      select: {
+        id: true,
+        storeId: true,
+        deliveryNumber: true,
+        amount: true,
+        amountPaid: true,
+      },
+    });
+
+    return result;
+  }
+
   public async updateDelivery(deliveryId: string, deliveryPartialData: Partial<IDelivery>) {
     return prisma.delivery.update({
       where: {
