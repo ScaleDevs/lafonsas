@@ -13,12 +13,6 @@ const generateInitialEditFormValues = (delivery: Delivery) => {
     storeId: delivery.storeId,
     deliveryNumber: delivery.deliveryNumber,
     postingDate: dayjs(delivery.postingDate).format('YYYY-MM-DD'),
-    widthHoldingTax: delivery.widthHoldingTax || undefined,
-    otherDeduction: delivery.otherDeduction || undefined,
-    badOrder: delivery.badOrder || undefined,
-    amountPaid: delivery.amountPaid || undefined,
-    checkDate: dayjs(delivery.checkDate).format('YYYY-MM-DD') || undefined,
-    checkNumber: delivery.checkNumber || undefined,
     orders: delivery.orders || [],
     returnSlip: delivery.returnSlip || [],
   };

@@ -17,7 +17,7 @@ export default function ReviewDelivery({ deliveryDetails, changeStep }: ReviewDe
   const { mutate, isLoading: isCreating, isError } = trpc.useMutation('delivery.create');
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { orders, returnSlip, storeId, badOrder, widthHoldingTax, otherDeduction, ...rest } = deliveryDetails;
+  const { orders, returnSlip, storeId, ...rest } = deliveryDetails;
 
   const backToStep1 = () => changeStep({ step: 1 });
 
@@ -32,12 +32,6 @@ export default function ReviewDelivery({ deliveryDetails, changeStep }: ReviewDe
     const mutateParams = {
       ...rest,
       storeId,
-      checkDate: !!rest.checkDate ? rest.checkDate : null,
-      badOrder: !!badOrder ? badOrder : null,
-      widthHoldingTax: !!widthHoldingTax ? widthHoldingTax : null,
-      otherDeduction: !!otherDeduction ? otherDeduction : null,
-      amountPaid: !!rest.amountPaid ? rest.amountPaid : null,
-      checkNumber: !!rest.checkNumber ? rest.checkNumber : null,
       orders: newOrderArr,
       returnSlip,
     };

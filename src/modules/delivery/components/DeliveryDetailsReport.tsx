@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { trpc } from '@/utils/trpc';
-import { FormSchemaType } from '../CreateDeliveryForm';
 import Loader from '@/components/Loader';
 import { IDelivery } from '@/utils/types';
 import dayjs from 'dayjs';
+import { DeliveryFormSchemaType } from '../types';
 
 const displayData = (data: any) => {
   if (!data[1]) return 'N/A';
@@ -22,18 +22,17 @@ export type IOrder = {
 };
 
 export interface IDeliveryDetailsReportProps {
-  deliveryDetails: (FormSchemaType & { amount: number }) | IDelivery;
+  deliveryDetails: (DeliveryFormSchemaType & { amount: number }) | IDelivery;
 }
 
 export default function DeliveryDetailsReport({ deliveryDetails }: IDeliveryDetailsReportProps) {
   const { data, isLoading } = trpc.useQuery(['store.getById', deliveryDetails.storeId]);
   const [orderTotal, setOrderTotal] = useState(0);
   const [returnSlipTotal, setReturnSlipTotal] = useState(0);
-  const [totalDeductions, setTotalDeductions] = useState(0);
   const [transformedOrders, setTransformedOrders] = useState<IOrder[]>([]);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { orders, returnSlip, storeId, badOrder, widthHoldingTax, otherDeduction, ...rest } = deliveryDetails;
+  const { orders, returnSlip, storeId, ...rest } = deliveryDetails;
 
   const initializeOrderDetails = () => {
     const newOrderArr: IOrder[] = [];
@@ -45,7 +44,6 @@ export default function DeliveryDetailsReport({ deliveryDetails }: IDeliveryDeta
     });
     setOrderTotal(newOrderTotal);
     setTransformedOrders(newOrderArr);
-    setTotalDeductions((badOrder || 0) + (widthHoldingTax || 0) + (otherDeduction || 0));
   };
 
   const initializeReturnSlipDetails = () => {
@@ -58,7 +56,7 @@ export default function DeliveryDetailsReport({ deliveryDetails }: IDeliveryDeta
     initializeOrderDetails();
     initializeReturnSlipDetails();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [badOrder, data, orders, otherDeduction, widthHoldingTax, returnSlip]);
+  }, [data, orders, returnSlip]);
 
   if (isLoading)
     return (
@@ -104,27 +102,6 @@ export default function DeliveryDetailsReport({ deliveryDetails }: IDeliveryDeta
               <td className='text-left'></td>
               <td className='text-left font-bold'>ORDER TOTAL</td>
               <td className='text-left font-bold text-blue-500'>{orderTotal}</td>
-            </tr>
-            <tr className='font-comfortaa h-8 text-center border-b border-zinc-600'>
-              <td className='text-center font-bold text-lg' colSpan={3}>
-                DEDUCTIONS
-              </td>
-            </tr>
-            {[
-              { label: 'BAD ORDER', value: badOrder },
-              { label: 'WIDTHOLDING TAX', value: widthHoldingTax },
-              { label: 'OTHER DEDUCTIONS', value: otherDeduction },
-            ].map((record) => (
-              <tr key={record.label} className='font-comfortaa h-8 text-center border-b border-zinc-600'>
-                <td className='text-left'>{record.label}</td>
-                <td className='text-left'></td>
-                <td className='text-left'>{record.value}</td>
-              </tr>
-            ))}
-            <tr className='font-comfortaa h-8 text-center border-b border-zinc-600'>
-              <td className='text-left'></td>
-              <td className='text-left font-bold'>TOTAL</td>
-              <td className='text-left font-bold text-blue-500'>{orderTotal - totalDeductions}</td>
             </tr>
           </tbody>
         </table>

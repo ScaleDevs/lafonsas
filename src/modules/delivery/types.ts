@@ -4,12 +4,6 @@ export const deliveryFormSchema = z.object({
   storeId: z.string().min(1, 'Please Choose Store'),
   deliveryNumber: z.string().min(1, 'Please Input Delivery Number'),
   postingDate: z.string().min(1, 'Please Input posting date'),
-  badOrder: z.number({ invalid_type_error: 'Must input a number!' }).optional(),
-  widthHoldingTax: z.number({ invalid_type_error: 'Must input a number!' }).optional(),
-  otherDeduction: z.number({ invalid_type_error: 'Must input a number!' }).optional(),
-  amountPaid: z.number({ invalid_type_error: 'Must input a number!' }).optional(),
-  checkNumber: z.string().optional(),
-  checkDate: z.string().optional(),
   orders: z
     .array(
       z.object({

@@ -70,11 +70,6 @@ export default function CreateDeliveryForm({ defaultValues, changeStep }: Create
       });
     }
 
-    // deductions for total price
-    if (!!formData.badOrder) amount -= formData.badOrder;
-    if (!!formData.widthHoldingTax) amount -= formData.widthHoldingTax;
-    if (!!formData.otherDeduction) amount -= formData.otherDeduction;
-
     const step1FormData = {
       ...formData,
       amount: amount,
@@ -131,10 +126,10 @@ export default function CreateDeliveryForm({ defaultValues, changeStep }: Create
         label='Orders'
         property='orders'
         register={register}
+        control={control}
         storeId={storeId}
         fields={orderFields}
         errors={errors}
-        control={control}
         append={addOrder}
         remove={removeOrder}
       />
@@ -143,10 +138,10 @@ export default function CreateDeliveryForm({ defaultValues, changeStep }: Create
         label='Return Slip'
         property='returnSlip'
         register={register}
+        control={control}
         storeId={storeId}
         fields={returnSlipFields}
         errors={errors}
-        control={control}
         append={addReturnSlipItem}
         remove={removeReturnSlipItem}
       />

@@ -15,12 +15,6 @@ const schema = z.object({
   storeId: z.string().min(1, 'Please Choose Store'),
   deliveryNumber: z.string().min(1, 'Please Input Delivery Number'),
   postingDate: z.string().min(1, 'Please Input posting date'),
-  badOrder: z.number().optional(),
-  widthHoldingTax: z.number().optional(),
-  otherDeduction: z.number().optional(),
-  amountPaid: z.number().optional(),
-  checkNumber: z.string().optional(),
-  checkDate: z.string().optional(),
   orders: z
     .array(
       z.object({
@@ -53,7 +47,6 @@ export default function EditDeliveryForm({ deliveryId, defaultValues, onSuccessf
 
   const {
     register,
-    setValue,
     handleSubmit,
     resetField,
     formState: { errors, defaultValues: formDefaultValues, dirtyFields },
@@ -126,10 +119,6 @@ export default function EditDeliveryForm({ deliveryId, defaultValues, onSuccessf
           });
         }
 
-        // deductions for total price
-        if (!!formData.badOrder) tempAmount -= formData.badOrder;
-        if (!!formData.widthHoldingTax) tempAmount -= formData.widthHoldingTax;
-        if (!!formData.otherDeduction) tempAmount -= formData.otherDeduction;
         partialData['amount'] = tempAmount;
       }
     });
@@ -161,7 +150,8 @@ export default function EditDeliveryForm({ deliveryId, defaultValues, onSuccessf
               return { label: store.name, value: store.id };
             }) || []
           }
-          formInput={{ setValue, property: 'storeId' }}
+          property='storeId'
+          control={control}
           errorMessage={errors.storeId?.message}
           onChange={onStoreSelect}
           isLoading={isLoading}
@@ -185,81 +175,28 @@ export default function EditDeliveryForm({ deliveryId, defaultValues, onSuccessf
         />
       </div>
 
-      <div className='flex justify-between flex-col space-y-5 lg:flex-row lg:space-x-7 lg:space-y-0'>
-        <TextField
-          label='Bad Order'
-          type='number'
-          placeholder='enter bad order here'
-          formInput={{ register, property: 'badOrder' }}
-          errorMessage={errors.badOrder?.message}
-        />
-
-        <TextField
-          label='Width Holding Tax'
-          type='number'
-          placeholder='enter width holding tax here'
-          formInput={{ register, property: 'widthHoldingTax' }}
-          errorMessage={errors.widthHoldingTax?.message}
-        />
-
-        <TextField
-          label='Other Deductions'
-          type='number'
-          placeholder='enter other deductions here'
-          formInput={{ register, property: 'otherDeduction' }}
-          errorMessage={errors.otherDeduction?.message}
-        />
-      </div>
-
-      <div className='flex justify-between flex-col space-y-5 lg:flex-row lg:space-x-7 lg:space-y-0'>
-        <TextField
-          label='Amount Paid'
-          type='number'
-          placeholder='enter amount paid here'
-          formInput={{ register, property: 'amountPaid' }}
-          errorMessage={errors.amountPaid?.message}
-        />
-
-        <TextField
-          label='Check Number'
-          placeholder='enter check number here'
-          formInput={{ register, property: 'checkNumber' }}
-          errorMessage={errors.checkNumber?.message}
-        />
-
-        <TextField
-          type='date'
-          label='Check Date'
-          placeholder='enter check date here'
-          formInput={{ register, property: 'checkDate' }}
-          errorMessage={errors.checkDate?.message}
-        />
-      </div>
-
       <InputArray
+        label='Orders'
+        property='orders'
         register={register}
+        control={control}
         storeId={storeId}
         fields={orderFields}
         errors={errors}
-        setValue={setValue}
         append={addOrder}
         remove={removeOrder}
-        label='Orders'
-        property='orders'
-        defaultValues={formDefaultValues?.orders}
       />
 
       <InputArray
+        label='Return Slip'
+        property='returnSlip'
         register={register}
+        control={control}
         storeId={storeId}
         fields={returnSlipFields}
         errors={errors}
-        setValue={setValue}
         append={addReturnSlipItem}
         remove={removeReturnSlipItem}
-        label='Return Slip'
-        property='returnSlip'
-        defaultValues={formDefaultValues?.returnSlip}
       />
 
       <Button buttonTitle='SUBMIT' type='submit' />
