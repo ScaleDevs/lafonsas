@@ -80,6 +80,7 @@ export default function ListDeliveryFilter({
           <br />
           <SelectField
             label='Store'
+            property='store'
             options={
               [{ name: 'ALL', id: 'ALL' }, ...(data?.records || [])].map((store: any) => {
                 return { label: store.name, value: store.id };

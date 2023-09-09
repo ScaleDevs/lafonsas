@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { UseFormSetValue } from 'react-hook-form';
+import { Control, Controller } from 'react-hook-form';
 import OutsideClickHandler from 'react-outside-click-handler';
 import FadeIn from './FadeIn';
 import IconComp from './Icon';
@@ -53,12 +53,10 @@ export interface ISelectProps {
   color?: 'primary';
   type?: 'fill' | 'outline';
   isLight?: boolean;
-  errorMessage?: string;
+  errorMessage?: any;
   options: IOption[];
-  formInput?: {
-    setValue: UseFormSetValue<any>;
-    property: any;
-  };
+  property: string;
+  control?: Control<any, any>;
   onChange?: (value: string) => void;
   defaultValue?: string;
   isLoading?: boolean;
@@ -66,6 +64,8 @@ export interface ISelectProps {
 }
 
 function SelectFieldComp({
+  control,
+  property,
   rounded = 'sm',
   size = 'sm',
   color = 'primary',
@@ -74,7 +74,6 @@ function SelectFieldComp({
   label,
   labelCss,
   placeholder = 'Select ...',
-  formInput,
   onChange,
   defaultValue,
   errorMessage,
@@ -82,31 +81,26 @@ function SelectFieldComp({
   disabled,
 }: ISelectProps) {
   const [showMenu, setShowMenu] = useState(false);
-  const [value, setValue] = useState(!!defaultValue ? options.find((opt) => opt.value === defaultValue)?.label || '' : '');
+  const [searchInput, setSearchInput] = useState(
+    !!defaultValue ? options.find((opt) => opt.value === defaultValue)?.label || '' : '',
+  );
   const [searchQry, setSearchQry] = useState('');
   const [selected, setSelected] = useState(!!defaultValue);
-
-  const onUseFormUpdate = (value: string) => {
-    onChange && onChange(value);
-    if (formInput) {
-      formInput.setValue(formInput.property, value || '', { shouldValidate: true });
-    }
-  };
 
   const onSelect = (opt: IOption) => {
     setSelected(true);
     setSearchQry('');
     setShowMenu(false);
-    setValue(opt.label);
-    onUseFormUpdate(opt.value);
+    setSearchInput(opt.label);
+    onChange && onChange(opt.value);
   };
 
   const onInputChange = (e: any) => {
     const searchVal = e.target.value;
     setSearchQry(searchVal);
-    setValue(searchVal);
+    setSearchInput(searchVal);
 
-    if (onChange && searchVal === '') onUseFormUpdate('');
+    if (onChange && searchVal === '') onChange('');
 
     setSelected(false);
   };
@@ -125,62 +119,90 @@ function SelectFieldComp({
     setShowMenu(false);
 
     if (!selected) {
-      setValue('');
-      onUseFormUpdate('');
+      setSearchInput('');
+      onChange && onChange('');
     }
   };
 
-  return (
-    <div className='w-full flex flex-col space-y-1 text-md md:text-lg font-normal font-roboto'>
-      {label ? (
-        <label className={'p-0 font-bold' + labelCss}>
-          {label} {required ? <span className='text-red-500'>*</span> : ''}
-        </label>
-      ) : (
-        ''
-      )}
-      <div className='relative'>
-        <OutsideClickHandler onOutsideClick={() => onOutSideClick()}>
-          <div className='relative overflow-hidden'>
-            <input
-              className={inputCssGenerate({ rounded, size, color, errorMessage })}
-              placeholder={placeholder}
-              value={value}
-              onChange={onInputChange}
-              onBlur={onBlurHandler}
-              disabled={isLoading || disabled}
-            />
-            <div
-              className={`absolute top-0 right-0 flex h-full justify-center items-center p-3 z-10 border-0 ${
-                disabled ? '' : 'hover:cursor-pointer'
-              }`}
-              onClick={() => {
-                if (disabled) return;
-                setShowMenu(!showMenu);
-              }}
-            >
-              {isLoading ? <Loader /> : <IconComp iconName='ChevronDownIcon' iconProps={{}} />}
+  const ResultComponent = ({ value, setValue }: { value: string; setValue?: (...event: any[]) => void }) => {
+    return (
+      <div className='w-full flex flex-col space-y-1 text-md md:text-lg font-normal font-roboto'>
+        {label && (
+          <label className={'p-0 font-bold' + labelCss}>
+            {label} {required ? <span className='text-red-500'>*</span> : ''}
+          </label>
+        )}
+        <div className='relative'>
+          <OutsideClickHandler onOutsideClick={() => onOutSideClick()}>
+            <div className='relative overflow-hidden'>
+              <input
+                className={inputCssGenerate({ rounded, size, color, errorMessage })}
+                placeholder={placeholder}
+                value={value}
+                onChange={(e) => {
+                  onInputChange(e);
+                  if (!!setValue && e.target.value === '') setValue('');
+                }}
+                onBlur={() => {
+                  onBlurHandler();
+                  if (!!setValue) setValue('');
+                }}
+                disabled={isLoading || disabled}
+              />
+              <div
+                className={`absolute top-0 right-0 flex h-full justify-center items-center p-3 z-10 border-0 ${
+                  disabled ? '' : 'hover:cursor-pointer'
+                }`}
+                onClick={() => {
+                  if (disabled) return;
+                  setShowMenu(!showMenu);
+                }}
+              >
+                {isLoading ? <Loader /> : <IconComp iconName='ChevronDownIcon' iconProps={{}} />}
+              </div>
             </div>
-          </div>
 
-          {showMenu && !isLoading ? (
-            <ul className='absolute bg-gray-200 w-full p-2 rounded-sm space-y-1 mt-1 z-10 overflow-auto max-h-96 scrollbar'>
-              {options
-                .filter((opt) => opt.label.includes(searchQry))
-                .map((opt, i) => (
-                  <li key={i} className='px-2 rounded-sm hover:cursor-pointer hover:bg-gray-300' onClick={() => onSelect(opt)}>
-                    {opt.label}
-                  </li>
-                ))}
-            </ul>
-          ) : (
-            ''
-          )}
-        </OutsideClickHandler>
+            {showMenu && !isLoading ? (
+              <ul className='absolute bg-gray-200 w-full p-2 rounded-sm space-y-1 mt-1 z-20 overflow-auto max-h-96 scrollbar'>
+                {options
+                  .filter((opt) => opt.label.includes(searchQry))
+                  .map((opt, i) => (
+                    <li
+                      key={i}
+                      className='px-2 rounded-sm hover:cursor-pointer hover:bg-gray-300'
+                      onClick={() => {
+                        onSelect(opt);
+                        if (!!setValue) setValue(opt.value);
+                      }}
+                    >
+                      {opt.label}
+                    </li>
+                  ))}
+              </ul>
+            ) : (
+              ''
+            )}
+          </OutsideClickHandler>
+        </div>
+        {errorMessage ? <FadeIn cssText='text-red-500'>{errorMessage}</FadeIn> : ''}
       </div>
-      {errorMessage ? <FadeIn cssText='text-red-500'>{errorMessage}</FadeIn> : ''}
-    </div>
-  );
+    );
+  };
+
+  if (control)
+    return (
+      <Controller
+        control={control}
+        name={property}
+        render={({ field: { onChange: setValue, value } }) => {
+          const defaultValueLabel = options.find((opt) => opt.value === value)?.label ?? '';
+
+          return <ResultComponent value={defaultValueLabel} setValue={setValue} />;
+        }}
+      />
+    );
+
+  return <ResultComponent value={searchInput} />;
 }
 
 export default function SelectField(props: ISelectProps) {
