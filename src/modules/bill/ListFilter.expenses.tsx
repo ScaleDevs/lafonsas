@@ -38,7 +38,7 @@ export default function ListFilter({
 }: IListFilterProps) {
   const { data: accountsData, isLoading: getAccountLoader } = trpc.useQuery(['account.getMany', { limit: 2000, page: 1 }]);
 
-  const { handleSubmit, register, setValue } = useForm({
+  const { handleSubmit, register, control } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
       ...stateFilters,
@@ -78,9 +78,9 @@ export default function ListFilter({
                   return { label: account.accountName, value: account.accountId };
                 }) || []
               }
-              formInput={{ setValue, property: `accountId` }}
+              control={control}
+              property='accountId'
               isLoading={getAccountLoader}
-              defaultValue={stateFilters.accountId}
             />
 
             <div className='flex flex-row w-full space-x-3'>

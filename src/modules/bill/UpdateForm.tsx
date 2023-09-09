@@ -56,7 +56,6 @@ export default function UpdateForm({ data, refetchCalls, resetIsUpdate }: IUpdat
     register,
     handleSubmit,
     formState: { errors, dirtyFields },
-    setValue,
     control,
     reset,
   } = useForm({
@@ -218,7 +217,8 @@ export default function UpdateForm({ data, refetchCalls, resetIsUpdate }: IUpdat
                         return { label: account.accountName, value: account.accountId };
                       }) || []
                     }
-                    formInput={{ setValue, property: `expenses.${index}.accountId` }}
+                    control={control}
+                    property={`expenses.${index}.accountId`}
                     isLoading={getAccountLoader}
                     defaultValue={field.accountId}
                     errorMessage={errors?.expenses ? errors.expenses[index]?.accountId?.message : undefined}

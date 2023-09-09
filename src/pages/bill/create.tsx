@@ -42,7 +42,6 @@ export default function CreateBill() {
     handleSubmit,
     control,
     reset,
-    setValue,
     formState: { errors },
   } = useForm<FormSchemaType>({
     resolver: zodResolver(schema),
@@ -171,7 +170,8 @@ export default function CreateBill() {
                         return { label: account.accountName, value: account.accountId };
                       }) || []
                     }
-                    formInput={{ setValue, property: `entries.${index}.accountId` }}
+                    control={control}
+                    property={`entries.${index}.accountId`}
                     isLoading={getAccountLoader}
                     defaultValue={''}
                     errorMessage={errors?.entries ? errors.entries[index]?.accountId?.message : undefined}
