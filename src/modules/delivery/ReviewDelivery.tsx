@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { trpc } from '@/utils/trpc';
-import { FormSchemaType } from './CreateDeliveryForm';
 import Button from '@/components/Button';
 import ModalLoader from '@/components/ModalLoader';
 import Notification from '@/components/Notification';
-import { HandleChangeStepParams } from './types';
+import { DeliveryFormSchemaType, HandleChangeStepParams } from './types';
 import DeliveryDetailsReport, { IOrder } from './components/DeliveryDetailsReport';
 
 export interface ReviewDeliveryProps {
-  deliveryDetails: FormSchemaType & { amount: number };
+  deliveryDetails: DeliveryFormSchemaType & { amount: number };
   changeStep: (handleChangeStepParams: HandleChangeStepParams) => void;
 }
 

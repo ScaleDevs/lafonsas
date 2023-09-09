@@ -1,20 +1,20 @@
-import { UseFormRegister, UseFormSetValue } from 'react-hook-form';
+import { Control, UseFormRegister } from 'react-hook-form';
 import { trpc } from '@/utils/trpc';
 import FadeIn from '@/components/FadeIn';
 import IconComp from '@/components/Icon';
 import SelectField from '@/components/SelectField';
 import TextField from '@/components/TextField';
+import { DeliveryFormSchemaType } from '../types';
 
 interface ISelectProductProps {
+  control: Control<DeliveryFormSchemaType, any>;
   index: number;
   storeId: string;
-  setValue: UseFormSetValue<any>;
   property: string;
   errors: any;
-  defaultValues: any;
 }
 
-const SelectProducts = ({ index, storeId, setValue, property, errors, defaultValues }: ISelectProductProps) => {
+const SelectProducts = ({ control, index, storeId, property, errors }: ISelectProductProps) => {
   const { data } = trpc.useQuery(['store.getById', storeId]);
 
   return (
@@ -22,15 +22,15 @@ const SelectProducts = ({ index, storeId, setValue, property, errors, defaultVal
       required
       label='Size'
       options={(!!data && data.products.map((product) => ({ label: product.size, value: product.size }))) || []}
-      formInput={{ setValue, property: `${property}.${index}.size` }}
+      control={control}
+      property={`${property}.${index}.size`}
       errorMessage={errors[`${property}`] ? errors[`${property}`][index]?.size?.message : undefined}
-      defaultValue={defaultValues ? defaultValues[index]?.size : ''}
     />
   );
 };
 
 interface InputArrayProps {
-  setValue: UseFormSetValue<any>;
+  control: Control<DeliveryFormSchemaType, any>;
   register: UseFormRegister<any>;
   fields: { id: any; size: string; quantity: number; price?: number }[];
   errors: any;
@@ -39,35 +39,9 @@ interface InputArrayProps {
   property: string;
   label: string;
   storeId: string;
-  defaultValues:
-    | {
-        size: string;
-        quantity: number;
-        price?: number;
-      }[]
-    | (
-        | {
-            size?: string | undefined;
-            quantity?: number | undefined;
-            price?: number;
-          }
-        | undefined
-      )[]
-    | undefined;
 }
 
-const InputArray = ({
-  errors,
-  setValue,
-  register,
-  fields,
-  append,
-  remove,
-  property,
-  label,
-  storeId,
-  defaultValues,
-}: InputArrayProps) => {
+const InputArray = ({ control, errors, register, fields, append, remove, property, label, storeId }: InputArrayProps) => {
   return (
     <div className='space-y-3 border-gray-600 font-roboto text-md md:text-lg'>
       <div className='w-ful h-[2px] bg-zinc-700 my-5' />
@@ -85,11 +59,7 @@ const InputArray = ({
             key={field.id}
             className='flex flex-col space-y-4 md:space-y-0 md:flex-row md:space-x-6 mt-2 w-full p-3 bg-gray-300 rounded-md'
           >
-            {!!storeId && storeId !== '' ? (
-              <SelectProducts {...{ index, setValue, errors, storeId, defaultValues, property }} />
-            ) : (
-              ''
-            )}
+            {!!storeId && storeId !== '' ? <SelectProducts {...{ index, errors, storeId, property, control }} /> : ''}
             <TextField
               required
               label='Quantity'

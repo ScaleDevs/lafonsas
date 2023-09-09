@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import Head from 'next/head';
 import Layout from '@/layouts/index';
-import CreateDeliveryForm, { FormSchemaType } from '@/modules/delivery/CreateDeliveryForm';
+import CreateDeliveryForm from '@/modules/delivery/CreateDeliveryForm';
 import ReviewDelivery from '@/modules/delivery/ReviewDelivery';
 import Notification from '@/components/Notification';
-import { HandleChangeStepParams } from '@/modules/delivery/types';
+import { DeliveryFormSchemaType, HandleChangeStepParams } from '@/modules/delivery/types';
 
 const initialData = {
   storeId: '',
@@ -24,7 +24,7 @@ const initialData = {
 export default function CreateDelivery() {
   const [step, setStep] = useState(1);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [data, setData] = useState<FormSchemaType & { amount: number }>(initialData);
+  const [data, setData] = useState<DeliveryFormSchemaType & { amount: number }>(initialData);
 
   const handleChangeStep = ({ step, data, isSuccessfulSubmit, isResetData }: HandleChangeStepParams) => {
     setStep(step);
