@@ -20,7 +20,7 @@ export function useSyncTabs() {
 
         setWholeAuthState({ ...authStates });
 
-        if (isPublicRoute(router.pathname)) router.push({ pathname: '/' });
+        if (isPublicRoute(router.pathname)) router.push({ pathname: '/delivery' });
 
         setAuthState('authLoader', false);
       } else if (msg.action === 'LOGOUT') {

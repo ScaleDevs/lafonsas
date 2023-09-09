@@ -150,12 +150,12 @@ export default function SideNav() {
 
           <div className={sideNavOpen ? 'w-full py-3' : 'hidden'}>
             <ul className='w-[90%] mx-auto font-comfortaa font- text-lg'>
-              <NavLink path='/' Icon={() => <IconComp iconName='BarChartIcon' iconProps={{}} />}>
+              {/* <NavLink path='/' Icon={() => <IconComp iconName='BarChartIcon' iconProps={{}} />}>
                 Dashboard
-              </NavLink>
-              <NavLink path='/user-management' Icon={() => <IconComp iconName='UsersIcon' iconProps={{}} />}>
+              </NavLink> */}
+              {/* <NavLink path='/user-management' Icon={() => <IconComp iconName='UsersIcon' iconProps={{}} />}>
                 Users
-              </NavLink>
+              </NavLink> */}
               <NavLinkHouse
                 title='Delivery'
                 Icon={() => <IconComp iconName='BoxIcon' iconProps={{}} />}
@@ -187,6 +187,14 @@ export default function SideNav() {
                   { title: 'Create Bill', path: '/bill/create' },
                   { title: 'List Bills', path: '/bill' },
                   { title: 'List Expenses', path: '/bill/expenses' },
+                ]}
+              />
+              <NavLinkHouse
+                title='Payments'
+                Icon={() => <IconComp iconName='BoxIcon' iconProps={{}} />}
+                links={[
+                  { title: 'Create Payment', path: '/payment/create' },
+                  { title: 'List Payments', path: '/payment' },
                 ]}
               />
               <NavLink path='/login' logout Icon={() => <IconComp iconName='LogoutIcon' iconProps={{}} />}>
