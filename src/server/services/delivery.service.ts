@@ -32,6 +32,14 @@ class Service {
     }
   }
 
+  public async findDeliveriesByStoreId(storeId: string) {
+    try {
+      return DeliveryRepository.findDeliveriesByStoreId(storeId);
+    } catch (err) {
+      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
+    }
+  }
+
   public async findDeliveries(inputs: IFindDeliveriesInput) {
     try {
       return DeliveryRepository.findDeliveries(inputs);

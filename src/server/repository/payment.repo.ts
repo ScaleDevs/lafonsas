@@ -4,8 +4,8 @@ import prisma from './prisma.client';
 import { IPayment, IPaginationInputs } from '@/utils/types';
 
 export type IFindPaymentsInput = {
-  paymentId?: string;
-  checkNumber?: string;
+  vendor?: string;
+  refNo?: string;
   dateFilter?: {
     startDate: Date | string;
     endDate: Date | string;
@@ -25,31 +25,34 @@ class Respository {
     return prisma.payment.findFirst({ where: { paymentId } });
   }
 
-  public async findPayments({ dateFilter, paymentId, checkNumber, page, limit }: IFindPaymentsInput) {
+  public async findPaymentByRefNo(refNo: string) {
+    return prisma.payment.findFirst({ where: { refNo } });
+  }
+
+  public async findPayments({ dateFilter, refNo, vendor, page, limit }: IFindPaymentsInput) {
     const whereFilter: Prisma.PaymentWhereInput = {};
 
-    if (!dateFilter && !paymentId && !checkNumber)
-      throw new TRPCError({ code: 'BAD_REQUEST', message: 'There are no filters applied!' });
+    if (!dateFilter && !refNo && !vendor) throw new TRPCError({ code: 'BAD_REQUEST', message: 'There are no filters applied!' });
 
-    if (!!dateFilter)
-      whereFilter['checkDate'] = {
+    if (!!refNo)
+      whereFilter['refNo'] = {
+        equals: refNo,
+      };
+    else if (!!dateFilter) {
+      whereFilter['refDate'] = {
         gte: dateFilter.startDate,
         lte: dateFilter.endDate,
       };
 
-    if (!!paymentId)
-      whereFilter['paymentId'] = {
-        equals: paymentId,
-      };
-
-    if (!!checkNumber)
-      whereFilter['checkNumber'] = {
-        equals: checkNumber,
-      };
+      if (!!vendor)
+        whereFilter['storeId'] = {
+          equals: vendor,
+        };
+    }
 
     const result = await prisma.payment.findMany({
       where: whereFilter,
-      orderBy: { checkDate: 'asc' },
+      orderBy: { refDate: 'asc' },
       skip: page > 0 ? (page - 1) * limit : 0,
       take: limit,
     });

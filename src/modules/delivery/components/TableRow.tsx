@@ -6,7 +6,7 @@ import { trpc } from '@/utils/trpc';
 export interface ITableRowProps {
   delivery: Omit<
     Delivery,
-    'badOrder' | 'widthHoldingTax' | 'otherDeduction' | 'checkNumber' | 'checkDate' | 'orders' | 'returnSlip' | 'paymentId'
+    'badOrder' | 'widthHoldingTax' | 'otherDeduction' | 'checkNumber' | 'checkDate' | 'orders' | 'returnSlip'
   >;
   onClick: (deliveryId: string) => void;
 }
@@ -24,7 +24,7 @@ export default function TableRow({ delivery, onClick }: ITableRowProps) {
       <td>{dayjs(delivery.postingDate).format('MMM DD, YYYY')}</td>
       <td>₱{delivery.amount}</td>
       <td>
-        {!!delivery.amountPaid && delivery.amountPaid > 0 ? (
+        {!!delivery.paymentId ? (
           <span className='bg-green-500 p-2 rounded-full text-sm'>PAID</span>
         ) : (
           <span className='bg-red-500 p-2 rounded-full text-sm'>UNPAID</span>

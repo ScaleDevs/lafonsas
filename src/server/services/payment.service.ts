@@ -1,8 +1,9 @@
 import dayjs from 'dayjs';
+import { TRPCError } from '@trpc/server';
 import { IPayment } from '@/utils/types';
 import { PaymentRepository, IFindPaymentsInput } from '@/repo/payment.repo';
 import { DeliveryRepository } from '@/repo/delivery.repo';
-import { TRPCError } from '@trpc/server';
+import { StoreRepository } from '@/repo/store.repo';
 
 class Service {
   public async createPayment(paymentData: Omit<IPayment, 'paymentId'>, deliveryIds: string[]) {
@@ -13,15 +14,32 @@ class Service {
 
       return result;
     } catch (err) {
+      console.log(err);
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
     }
   }
 
-  public async findPaymentById(paymentId: string) {
+  public async findPayment({ paymentId, refNo }: { paymentId?: string; refNo?: string }) {
     try {
-      return PaymentRepository.findPaymentById(paymentId);
-    } catch (err) {
-      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
+      if (!paymentId && !refNo) throw new TRPCError({ code: 'BAD_REQUEST', message: 'No ID Provided' });
+
+      let payment: IPayment | null = null;
+
+      if (paymentId) payment = await PaymentRepository.findPaymentById(paymentId);
+      if (refNo) payment = await PaymentRepository.findPaymentByRefNo(refNo);
+
+      if (!payment) throw new TRPCError({ code: 'NOT_FOUND', message: 'PAYMENT RECORD NOT FOUND' });
+
+      const deliveries = await DeliveryRepository.findDeliveriesByPaymentId(payment.paymentId);
+      const store = await StoreRepository.findStoreById(payment.storeId);
+
+      return {
+        ...payment,
+        vendorName: store?.name ?? '',
+        deliveries,
+      };
+    } catch (err: any) {
+      throw new TRPCError({ code: err.code || 'INTERNAL_SERVER_ERROR', message: err.message || 'Something went wrong' });
     }
   }
 
@@ -29,13 +47,22 @@ class Service {
     try {
       const paymentsResult = await PaymentRepository.findPayments(inputs);
       const payments = [];
+      const vendorMap = new Map<string, string>();
 
       for (const payment of paymentsResult.records) {
-        const deliveries = await DeliveryRepository.findDeliveriesByPaymentId(payment.paymentId);
+        let vendorName = vendorMap.get(payment.storeId);
+
+        if (!vendorName) {
+          const store = await StoreRepository.findStoreById(payment.storeId);
+          if (!!store) {
+            vendorMap.set(payment.storeId, store.name);
+            vendorName = store.name;
+          }
+        }
 
         payments.push({
           ...payment,
-          deliveries,
+          vendor: vendorName ?? 'N/A',
         });
       }
 
@@ -52,7 +79,7 @@ class Service {
     try {
       return PaymentRepository.updatePayment(paymentId, {
         ...paymentPartialData,
-        checkDate: paymentPartialData.checkDate ? dayjs.tz(paymentPartialData.checkDate).toISOString() : undefined,
+        refDate: paymentPartialData.refDate ? dayjs.tz(paymentPartialData.refDate).toISOString() : undefined,
       });
     } catch (err) {
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
@@ -77,9 +104,17 @@ class Service {
 
   public async deletePayment(paymentId: string) {
     try {
+      const paymentRecord = await PaymentRepository.findPaymentById(paymentId);
+
+      if (!paymentRecord) throw new TRPCError({ code: 'NOT_FOUND', message: 'Payment Record Not Found!' });
+
+      const deliveries = await DeliveryRepository.findDeliveriesByPaymentId(paymentId);
+
+      for (const delivery of deliveries) await DeliveryRepository.updateDelivery(delivery.id, { paymentId: null });
+
       return PaymentRepository.deletePayment(paymentId);
-    } catch (err) {
-      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
+    } catch (err: any) {
+      throw new TRPCError({ code: err.code || 'INTERNAL_SERVER_ERROR', message: err.message || 'Something went wrong' });
     }
   }
 }

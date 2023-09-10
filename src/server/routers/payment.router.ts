@@ -9,18 +9,27 @@ export const paymentRouter = createRouter()
   .mutation('create', {
     input: z.object({
       paymentData: z.object({
-        vendor: z.string(),
-        checkNumber: z.string(),
-        checkDate: z.string(),
+        storeId: z.string(),
+        modeOfPayment: z.enum(['BANK_TRANSFER', 'CHEQUE', 'CASH']),
+        bankName: z.string().optional(),
+        refNo: z.string(),
+        refDate: z.string(),
         amount: z.number(),
-        badOrder: z.number().nullable(),
-        widthHoldingTax: z.number().nullable(),
-        otherDeduction: z.number().nullable(),
+        badOrder: z.number().default(0),
+        widthHoldingTax: z.number().default(0),
+        otherDeduction: z.number().default(0),
       }),
       deliveryIds: z.array(z.string()),
     }),
     resolve({ input }) {
-      return PaymentService.createPayment(input.paymentData, input.deliveryIds);
+      return PaymentService.createPayment(
+        {
+          ...input.paymentData,
+          refDate: new Date(input.paymentData.refDate),
+          bankName: input.paymentData.bankName ? input.paymentData.bankName : null,
+        },
+        input.deliveryIds,
+      );
     },
   })
   .mutation('update', {
@@ -39,13 +48,13 @@ export const paymentRouter = createRouter()
       return PaymentService.updatePayment(input.paymentId, input.partialData);
     },
   })
-  .mutation('addDelivery', {
+  .mutation('removeDelivery', {
     input: z.string(),
     resolve({ input }) {
       return PaymentService.removeDeliveryFromPayment(input);
     },
   })
-  .mutation('removeDelivery', {
+  .mutation('attachDelivery', {
     input: z.object({
       deliveryId: z.string(),
       paymentId: z.string(),
@@ -60,16 +69,19 @@ export const paymentRouter = createRouter()
       return PaymentService.deletePayment(input);
     },
   })
-  .query('getById', {
-    input: z.string(),
+  .query('getPayment', {
+    input: z.object({
+      paymentId: z.string().optional(),
+      refNo: z.string().optional(),
+    }),
     resolve({ input }) {
-      return PaymentService.findPaymentById(input);
+      return PaymentService.findPayment(input);
     },
   })
   .query('getMany', {
     input: z.object({
-      paymentId: z.string().optional(),
-      checkNumber: z.string().optional(),
+      vendor: z.string().optional(),
+      refNo: z.string().optional(),
       dateFilters: z.object({
         startDate: z.string(),
         endDate: z.string(),

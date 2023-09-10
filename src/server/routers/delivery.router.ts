@@ -12,12 +12,6 @@ export const deliveryRouter = createRouter()
       postingDate: z.string(),
       deliveryNumber: z.string(),
       amount: z.number(),
-      badOrder: z.number().nullable(),
-      widthHoldingTax: z.number().nullable(),
-      otherDeduction: z.number().nullable(),
-      amountPaid: z.number().nullable(),
-      checkNumber: z.string().nullable(),
-      checkDate: z.string().nullable(),
       orders: z.array(
         z.object({
           size: z.string(),
@@ -38,7 +32,6 @@ export const deliveryRouter = createRouter()
         ...input,
         paymentId: null,
         postingDate: new Date(input.postingDate),
-        checkDate: !!input.checkDate ? new Date(input.checkDate) : null,
       });
     },
   })
@@ -50,12 +43,6 @@ export const deliveryRouter = createRouter()
         postingDate: z.string().optional(),
         deliveryNumber: z.string().optional(),
         amount: z.number().optional(),
-        badOrder: z.number().nullable().optional(),
-        widthHoldingTax: z.number().nullable().optional(),
-        otherDeduction: z.number().nullable().optional(),
-        amountPaid: z.number().nullable().optional(),
-        checkNumber: z.string().nullable().optional(),
-        checkDate: z.string().nullable().optional(),
         orders: z
           .array(
             z.object({
@@ -80,12 +67,6 @@ export const deliveryRouter = createRouter()
       const partialData = {
         ...input.partialData,
         postingDate: input.partialData.postingDate === undefined ? undefined : new Date(input.partialData.postingDate),
-        checkDate:
-          input.partialData.checkDate === undefined
-            ? undefined
-            : !!input.partialData.checkDate
-            ? new Date(input.partialData.checkDate)
-            : null,
       };
 
       return DeliveryService.updateDelivery(input.deliveryId, partialData);
@@ -107,6 +88,12 @@ export const deliveryRouter = createRouter()
     input: z.string(),
     resolve({ input }) {
       return DeliveryService.findDeliveryByDeliveryNumber(input);
+    },
+  })
+  .query('getDeliveriesByStoreId', {
+    input: z.string(),
+    resolve({ input }) {
+      return DeliveryService.findDeliveriesByStoreId(input);
     },
   })
   .query('getDeliveries', {

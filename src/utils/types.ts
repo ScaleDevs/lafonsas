@@ -11,8 +11,8 @@ export type IBill = Omit<Bill, 'date'> & {
   date: string | Date;
 };
 
-export type IPayment = Omit<Payment, 'checkDate'> & {
-  checkDate: string | Date;
+export type IPayment = Omit<Payment, 'refDate'> & {
+  refDate: string | Date;
 };
 
 export type IExpense = Omit<Expense, 'date'> & {

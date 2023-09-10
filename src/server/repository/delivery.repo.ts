@@ -45,7 +45,7 @@ class Respository {
         deliveryNumber: true,
         postingDate: true,
         amount: true,
-        amountPaid: true,
+        paymentId: true,
       },
     });
 
@@ -55,6 +55,23 @@ class Respository {
       pageCount: Math.ceil(totalCount / limit),
       records: result,
     };
+  }
+
+  public async findDeliveriesByStoreId(storeId: string) {
+    const result = await prisma.delivery.findMany({
+      where: {
+        storeId,
+        paymentId: null,
+      },
+      select: {
+        id: true,
+        postingDate: true,
+        deliveryNumber: true,
+        amount: true,
+      },
+    });
+
+    return result;
   }
 
   public async findDeliveriesByPaymentId(paymentId: string) {
@@ -67,7 +84,7 @@ class Respository {
         storeId: true,
         deliveryNumber: true,
         amount: true,
-        amountPaid: true,
+        postingDate: true,
       },
     });
 
