@@ -22,11 +22,14 @@ export type IOrder = {
 };
 
 export interface IDeliveryDetailsReportProps {
-  deliveryDetails: (DeliveryFormSchemaType & { amount: number }) | IDelivery;
+  deliveryDetails: (DeliveryFormSchemaType & { amount: number; paymentId?: string }) | IDelivery;
 }
 
 export default function DeliveryDetailsReport({ deliveryDetails }: IDeliveryDetailsReportProps) {
   const { data, isLoading } = trpc.useQuery(['store.getById', deliveryDetails.storeId]);
+  const { data: paymentData } = trpc.useQuery(['payment.getPayment', { paymentId: deliveryDetails.paymentId ?? '' }], {
+    enabled: !!deliveryDetails.paymentId,
+  });
   const [orderTotal, setOrderTotal] = useState(0);
   const [returnSlipTotal, setReturnSlipTotal] = useState(0);
   const [transformedOrders, setTransformedOrders] = useState<IOrder[]>([]);
@@ -77,6 +80,10 @@ export default function DeliveryDetailsReport({ deliveryDetails }: IDeliveryDeta
               <span className='text-right min-w-[100px]'>{displayData(record)}</span>
             </li>
           ))}
+          <li className='w-full text-center flex flex-row justify-between border-b border-zinc-600 py-2'>
+            <div className='font-bold text-left'>Payment:</div>{' '}
+            <span className='text-right min-w-[100px]'>{paymentData?.refNo ?? 'N/A'}</span>
+          </li>
         </ul>
       </SectionContainer>
 

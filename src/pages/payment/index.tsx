@@ -57,7 +57,7 @@ export default function ListPayments() {
       {!!router.query.refNo && typeof router.query.refNo === 'string' ? (
         <PaymentDetails referenceNo={router.query.refNo} paymentsRefetch={refetch} />
       ) : (
-        <>
+        <div>
           <ListFilter
             isOpen={openFilterModal}
             closeModal={() => setOpenFilterModal(false)}
@@ -99,12 +99,12 @@ export default function ListPayments() {
 
           <br />
 
-          <div className='bg-white shadow-lg px-5 py-7 rounded-md'>
+          <div className='bg-white shadow-lg px-5 py-7 rounded-md overflow-x-auto'>
             {isLoading ? (
               <TableLoader />
             ) : (
               <>
-                <table className='w-full'>
+                <table className='w-full min-w-[800px]'>
                   <thead>
                     <tr className='border-gray-500 border-b font-raleway text-xl text-center'>
                       <th className='pb-3'>VENDOR</th>
@@ -136,7 +136,7 @@ export default function ListPayments() {
             <br />
             <Paginator currentPage={page} pageCount={data?.pageCount || 0} handlePageChange={handlePageChange} />
           </div>
-        </>
+        </div>
       )}
     </Layout>
   );

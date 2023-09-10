@@ -50,8 +50,6 @@ export default function ListProducts() {
       <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>List Stores</h1>
 
       <br />
-      <br />
-      <br />
 
       <div className='bg-white shadow-lg px-5 py-7 rounded-md'>
         {isLoading ? (

@@ -65,7 +65,6 @@ export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
       <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>List Deliveries</h1>
 
       <br />
-      <br />
 
       <div className='w-[100px]'>
         <Button buttonTitle='Filter' size='sm' onClick={() => setOpenFilterModal(true)} />
@@ -97,12 +96,12 @@ export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
         ''
       )}
 
-      <div className='bg-white shadow-lg px-5 py-7 rounded-md'>
+      <div className='bg-white shadow-lg px-5 py-7 rounded-md overflow-x-auto'>
         {isLoading ? (
           <TableLoader />
         ) : (
           <>
-            <table className='w-full'>
+            <table className='w-full min-w-[800px]'>
               <thead>
                 <tr className='border-gray-500 border-b font-raleway text-xl text-left'>
                   <th className='pb-3'>Store</th>

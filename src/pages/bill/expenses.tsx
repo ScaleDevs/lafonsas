@@ -94,12 +94,12 @@ export default function ListExpenses() {
         ''
       )}
 
-      <div className='bg-white shadow-lg px-5 py-7 rounded-md'>
+      <div className='bg-white shadow-lg px-5 py-7 rounded-md overflow-x-auto'>
         {isLoading ? (
           <TableLoader />
         ) : (
           <>
-            <table className='w-full'>
+            <table className='w-full min-w-[800px]'>
               <thead>
                 <tr className='border-gray-500 border-b font-raleway text-xl text-center'>
                   <th className='pb-3'>ACCOUNT</th>

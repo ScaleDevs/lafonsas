@@ -62,11 +62,9 @@ export default function ListBills() {
       {!!router.query.refNo && typeof router.query.refNo === 'string' ? (
         <ExpenseDetails referenceNo={router.query.refNo} billsRefetch={refetch} />
       ) : (
-        <>
+        <div>
           <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>List Bills</h1>
 
-          <br />
-          <br />
           <br />
           <div className='w-[100px]'>
             <Button buttonTitle='Filter' size='sm' onClick={() => setFilterModal(true)} />
@@ -100,12 +98,12 @@ export default function ListBills() {
             ''
           )}
 
-          <div className='bg-white shadow-lg px-5 py-7 rounded-md'>
+          <div className='bg-white shadow-lg px-5 py-7 rounded-md overflow-x-auto'>
             {isLoading ? (
               <TableLoader />
             ) : (
               <>
-                <table className='w-full'>
+                <table className='w-full min-w-[800px]'>
                   <thead>
                     <tr className='border-gray-500 border-b font-raleway text-xl text-center'>
                       <th className='pb-3'>DATE</th>
@@ -146,7 +144,7 @@ export default function ListBills() {
 
             <Paginator currentPage={page} pageCount={data?.pageCount || 0} handlePageChange={handlePageChange} />
           </div>
-        </>
+        </div>
       )}
     </Layout>
   );
