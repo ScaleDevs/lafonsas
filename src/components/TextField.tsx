@@ -12,7 +12,7 @@ interface InputWrapperProps {
   rounded?: 'sm' | 'md' | 'lg';
   size?: 'sm' | 'md' | 'lg';
   color?: 'primary' | 'secondary';
-  errorMessage?: string;
+  errorMessage?: any;
   formInput?: {
     setValue?: UseFormSetValue<any>;
     register?: UseFormRegister<any>;

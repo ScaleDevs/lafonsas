@@ -220,9 +220,9 @@ export default function SelectField(props: ISelectProps) {
         ''
       )}
       <div className='relative overflow-hidden'>
-        <input name={'stores'} className={inputCssGenerate({ rounded, size, color, errorMessage })} />
-        <div className='absolute top-0 right-0 flex h-full justify-center items-center p-3 z-10 border-0 hover:cursor-pointer'>
-          <Loader />
+        <input name={'stores'} className={inputCssGenerate({ rounded, size, color, errorMessage })} disabled />
+        <div className='absolute top-0 left-0 flex h-full justify-center items-center p-3 z-10 border-0 hover:cursor-pointer'>
+          NO OPTIONS AVAILABLE
         </div>
       </div>
     </div>
