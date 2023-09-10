@@ -18,6 +18,12 @@ type Product {
   price Float
 }
 
+enum PaymentMode {
+  BANK_TRANSFER
+  CHEQUE
+  CASH
+}
+
 model Store {
   id         String     @id @default(auto()) @map("_id") @db.ObjectId
   name       String     @unique
@@ -26,21 +32,18 @@ model Store {
 }
 
 model Delivery {
-  id              String    @id @default(auto()) @map("_id") @db.ObjectId
-  postingDate     DateTime
-  deliveryNumber  String    @unique
-  amount          Float
-  badOrder        Float?
-  widthHoldingTax Float?
-  otherDeduction  Float?
-  amountPaid      Float?
-  checkNumber     String?
-  checkDate       DateTime?
-  orders          Order[]
-  returnSlip      Order[]
-  store           Store     @relation(fields: [storeId], references: [id])
-  storeId         String    @db.ObjectId
-  paymentId       String?   @db.ObjectId
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  postingDate    DateTime
+  deliveryNumber String   @unique
+  amount         Float
+  orders         Order[]
+  returnSlip     Order[]
+  store          Store    @relation(fields: [storeId], references: [id])
+  storeId        String   @db.ObjectId
+  paymentId      String?  @db.ObjectId
+
+  @@index([storeId, paymentId])
+  @@index(postingDate)
 }
 
 model Account {
@@ -57,14 +60,18 @@ model Bill {
 }
 
 model Payment {
-  paymentId       String   @id @default(auto()) @map("_id") @db.ObjectId
-  vendor          String
-  checkNumber     String   @unique
-  checkDate       DateTime
+  paymentId       String      @id @default(auto()) @map("_id") @db.ObjectId
+  storeId         String
+  modeOfPayment   PaymentMode
+  bankName        String?
+  refNo           String      @unique
+  refDate         DateTime
   amount          Float
-  badOrder        Float?
-  widthHoldingTax Float?
-  otherDeduction  Float?
+  badOrder        Float
+  widthHoldingTax Float
+  otherDeduction  Float
+
+  @@index([storeId, refDate])
 }
 
 model Expense {
