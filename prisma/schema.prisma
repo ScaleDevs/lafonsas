@@ -71,7 +71,7 @@ model Payment {
   widthHoldingTax Float
   otherDeductions Float
 
-  @@index([refDate, storeId])
+  @@index([storeId, refDate])
 }
 
 model Expense {
