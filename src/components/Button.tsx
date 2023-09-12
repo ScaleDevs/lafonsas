@@ -3,7 +3,7 @@ import Loader from './Loader';
 
 export interface IButtonProps {
   type?: 'button' | 'submit';
-  color?: 'blue' | 'red' | 'green' | 'primary';
+  color?: 'blue' | 'red' | 'green' | 'primary' | 'gray';
   isLoading?: boolean;
   size?: 'sm' | 'md' | 'lg';
   onClick?: () => void;
@@ -21,6 +21,7 @@ export default function Button({
   font = 'comfortaa',
 }: IButtonProps) {
   const buttonColor = {
+    gray: 'bg-gray-600 hover:bg-gray-400 text-white',
     blue: 'bg-blue-600 hover:bg-blue-400 text-white',
     red: 'bg-red-500 hover:bg-red-400 text-white',
     green: 'bg-green-600 hover:bg-green-500 text-white',

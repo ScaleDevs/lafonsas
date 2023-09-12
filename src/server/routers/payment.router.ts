@@ -17,7 +17,7 @@ export const paymentRouter = createRouter()
         amount: z.number(),
         badOrder: z.number().default(0),
         widthHoldingTax: z.number().default(0),
-        otherDeduction: z.number().default(0),
+        otherDeductions: z.number().default(0),
       }),
       deliveryIds: z.array(z.string()),
     }),
@@ -36,12 +36,15 @@ export const paymentRouter = createRouter()
     input: z.object({
       paymentId: z.string(),
       partialData: z.object({
-        vendor: z.string().optional(),
+        storeId: z.string().optional(),
+        modeOfPayment: z.enum(['BANK_TRANSFER', 'CHEQUE', 'CASH']).optional(),
+        bankName: z.string().optional(),
+        refNo: z.string().optional(),
+        refDate: z.string().optional(),
         amount: z.number().optional(),
-        checkDate: z.string().optional(),
         badOrder: z.number().optional(),
         widthHoldingTax: z.number().optional(),
-        otherDeduction: z.number().optional(),
+        otherDeductions: z.number().optional(),
       }),
     }),
     resolve({ input }) {

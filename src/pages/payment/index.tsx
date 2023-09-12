@@ -4,6 +4,7 @@ import router from 'next/router';
 import dayjs from 'dayjs';
 
 import { trpc } from '@/utils/trpc';
+import { PHpeso } from '@/modules/utils';
 import Layout from '@/layouts/index';
 import TableLoader from '@/components/TableLoader';
 import Notification from '@/components/Notification';
@@ -124,7 +125,7 @@ export default function ListPayments() {
                             <td className='show-modal-ref'>{row.vendor}</td>
                             <td className='show-modal-ref'>{row.refNo}</td>
                             <td className='show-modal-ref'>{dayjs(row.refDate).format('MMM DD, YYYY')}</td>
-                            <td className='show-modal-ref'>{row.amount}</td>
+                            <td className='show-modal-ref'>{PHpeso.format(row.amount)}</td>
                           </tr>
                         ))
                       : null}

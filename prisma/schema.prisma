@@ -69,7 +69,7 @@ model Payment {
   amount          Float
   badOrder        Float
   widthHoldingTax Float
-  otherDeduction  Float
+  otherDeductions Float
 
   @@index([storeId, refDate])
 }

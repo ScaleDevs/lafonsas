@@ -27,7 +27,7 @@ const paymenyDataBase = (
     amount: z.number().min(1, 'Required'),
     badOrder: z.number({ invalid_type_error: 'Must Input Number' }),
     widthHoldingTax: z.number({ invalid_type_error: 'Must Input Number' }),
-    otherDeduction: z.number({ invalid_type_error: 'Must Input Number' }),
+    otherDeductions: z.number({ invalid_type_error: 'Must Input Number' }),
   });
 
 const schema = z.object({
@@ -80,7 +80,7 @@ export default function CreatePayment() {
         amount: 0,
         badOrder: 0,
         widthHoldingTax: 0,
-        otherDeduction: 0,
+        otherDeductions: 0,
       },
     },
   });
@@ -210,7 +210,7 @@ export default function CreatePayment() {
           label='OtherDeductions'
           placeholder='enter other deductions here'
           formInput={{ register, property: 'paymentData.otherDeduction' }}
-          errorMessage={errors.paymentData?.otherDeduction?.message}
+          errorMessage={errors.paymentData?.otherDeductions?.message}
         />
 
         <AttachDeliveries control={control} errorMessage={errors.deliveries?.message} storeId={watch('paymentData.storeId')} />

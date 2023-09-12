@@ -25,7 +25,7 @@ export interface IAttachDeliveriesProps {
         amount: number;
         badOrder: number;
         widthHoldingTax: number;
-        otherDeduction: number;
+        otherDeductions: number;
       };
     },
     any
