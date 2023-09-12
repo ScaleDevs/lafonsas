@@ -39,15 +39,19 @@ class Respository {
         equals: refNo,
       };
     else if (!!dateFilter) {
-      whereFilter['refDate'] = {
-        gte: dateFilter.startDate,
-        lte: dateFilter.endDate,
-      };
-
       if (!!vendor)
         whereFilter['storeId'] = {
           equals: vendor,
         };
+      else
+        whereFilter['storeId'] = {
+          startsWith: '',
+        };
+
+      whereFilter['refDate'] = {
+        gte: dateFilter.startDate,
+        lte: dateFilter.endDate,
+      };
     }
 
     const result = await prisma.payment.findMany({
