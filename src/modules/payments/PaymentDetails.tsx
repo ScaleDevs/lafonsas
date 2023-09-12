@@ -46,10 +46,9 @@ export default function PaymentDetails({ referenceNo, paymentsRefetch }: IDetail
       onSuccess(result) {
         if (!!result)
           ctx.setQueryData(['payment.getPayment', { refNo: referenceNo }], (updater: any) => {
-            const updaterData = updater as typeof data;
             return {
-              ...updaterData,
-              deliveries: updaterData?.deliveries.filter((delivery) => delivery.id !== deliveryId),
+              ...updater,
+              deliveries: updater?.deliveries.filter((delivery: any) => delivery.id !== deliveryId),
             };
           });
       },

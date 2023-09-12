@@ -52,9 +52,8 @@ export default function EditPaymentForm({ paymentId, referenceNo, defaultValues 
       {
         onSuccess() {
           ctx.setQueryData(['payment.getPayment', { refNo: referenceNo }], (updater: any) => {
-            const updaterData = updater as typeof data;
             return {
-              ...updaterData,
+              ...updater,
               ...data,
             };
           });
