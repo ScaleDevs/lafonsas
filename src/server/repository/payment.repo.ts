@@ -52,6 +52,7 @@ class Respository {
 
     const result = await prisma.payment.findMany({
       where: whereFilter,
+      distinct: ['paymentId'],
       orderBy: { refDate: 'asc' },
       skip: page > 0 ? (page - 1) * limit : 0,
       take: limit,
