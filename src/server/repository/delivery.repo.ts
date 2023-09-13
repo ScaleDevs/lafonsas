@@ -61,7 +61,7 @@ class Respository {
     const result = await prisma.delivery.findMany({
       where: {
         storeId,
-        paymentId: null,
+        OR: [{ paymentId: null }, { paymentId: { isSet: false } }],
       },
       select: {
         id: true,
