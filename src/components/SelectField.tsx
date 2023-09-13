@@ -64,8 +64,6 @@ export interface ISelectProps {
 }
 
 function SelectFieldComp({
-  control,
-  property,
   rounded = 'sm',
   size = 'sm',
   color = 'primary',
@@ -74,12 +72,13 @@ function SelectFieldComp({
   label,
   labelCss,
   placeholder = 'Select ...',
+  controlOnChange,
   onChange,
   defaultValue,
   errorMessage,
   isLoading,
   disabled,
-}: ISelectProps) {
+}: ISelectProps & { controlOnChange?: (e: any) => void }) {
   const [showMenu, setShowMenu] = useState(false);
   const [searchInput, setSearchInput] = useState(
     !!defaultValue ? options.find((opt) => opt.value === defaultValue)?.label || '' : '',
@@ -124,91 +123,82 @@ function SelectFieldComp({
     }
   };
 
-  const ResultComponent = ({ value, setValue }: { value: string; setValue?: (...event: any[]) => void }) => {
-    return (
-      <div className='w-full flex flex-col space-y-1 text-md md:text-lg font-normal font-roboto'>
-        {label && (
-          <label className={'p-0 font-bold' + labelCss}>
-            {label} {required ? <span className='text-red-500'>*</span> : ''}
-          </label>
-        )}
-        <div className='relative'>
-          <OutsideClickHandler onOutsideClick={() => onOutSideClick()}>
-            <div className='relative overflow-hidden'>
-              <input
-                className={inputCssGenerate({ rounded, size, color, errorMessage })}
-                placeholder={placeholder}
-                value={value}
-                onChange={(e) => {
-                  onInputChange(e);
-                  if (!!setValue && e.target.value === '') setValue('');
-                }}
-                onBlur={() => {
-                  onBlurHandler();
-                  if (!!setValue) setValue('');
-                }}
-                disabled={isLoading || disabled}
-              />
-              <div
-                className={`absolute top-0 right-0 flex h-full justify-center items-center p-3 z-10 border-0 ${
-                  disabled ? '' : 'hover:cursor-pointer'
-                }`}
-                onClick={() => {
-                  if (disabled) return;
-                  setShowMenu(!showMenu);
-                }}
-              >
-                {isLoading ? <Loader /> : <IconComp iconName='ChevronDownIcon' iconProps={{}} />}
-              </div>
+  return (
+    <div className='w-full flex flex-col space-y-1 text-md md:text-lg font-normal font-roboto'>
+      {label && (
+        <label className={'p-0 font-bold' + labelCss}>
+          {label} {required ? <span className='text-red-500'>*</span> : ''}
+        </label>
+      )}
+      <div className='relative'>
+        <OutsideClickHandler onOutsideClick={() => onOutSideClick()}>
+          <div className='relative overflow-hidden'>
+            <input
+              className={inputCssGenerate({ rounded, size, color, errorMessage })}
+              placeholder={placeholder}
+              value={searchInput}
+              onChange={(e) => {
+                onInputChange(e);
+                !!controlOnChange && controlOnChange('');
+              }}
+              onBlur={() => {
+                onBlurHandler();
+                !!controlOnChange && controlOnChange('');
+              }}
+              disabled={isLoading || disabled}
+            />
+            <div
+              className={`absolute top-0 right-0 flex h-full justify-center items-center p-3 z-10 border-0 ${
+                disabled ? '' : 'hover:cursor-pointer'
+              }`}
+              onClick={() => {
+                if (disabled) return;
+                setShowMenu(!showMenu);
+              }}
+            >
+              {isLoading ? <Loader /> : <IconComp iconName='ChevronDownIcon' iconProps={{}} />}
             </div>
-
-            {showMenu && !isLoading ? (
-              <ul className='absolute bg-gray-200 w-full p-2 rounded-sm space-y-1 mt-1 z-20 overflow-auto max-h-96 scrollbar'>
-                {options
-                  .filter((opt) => opt.label.includes(searchQry))
-                  .map((opt, i) => (
-                    <li
-                      key={i}
-                      className='px-2 rounded-sm hover:cursor-pointer hover:bg-gray-300'
-                      onClick={() => {
-                        onSelect(opt);
-                        if (!!setValue) setValue(opt.value);
-                      }}
-                    >
-                      {opt.label}
-                    </li>
-                  ))}
-              </ul>
-            ) : (
-              ''
-            )}
-          </OutsideClickHandler>
-        </div>
-        {errorMessage ? <FadeIn cssText='text-red-500'>{errorMessage}</FadeIn> : ''}
+          </div>
+          {showMenu && !isLoading && (
+            <ul className='absolute bg-gray-200 w-full p-2 rounded-sm space-y-1 mt-1 z-20 overflow-auto max-h-96 scrollbar'>
+              {options
+                .filter((opt) => opt.label.includes(searchQry))
+                .map((opt, i) => (
+                  <li
+                    key={i}
+                    className='px-2 rounded-sm hover:cursor-pointer hover:bg-gray-300'
+                    onClick={() => {
+                      onSelect(opt);
+                      !!controlOnChange && controlOnChange(opt.value);
+                    }}
+                  >
+                    {opt.label}
+                  </li>
+                ))}
+            </ul>
+          )}
+          {errorMessage ? <FadeIn cssText='text-red-500'>{errorMessage}</FadeIn> : ''}
+        </OutsideClickHandler>
       </div>
-    );
-  };
+    </div>
+  );
+}
 
-  if (control)
+export default function SelectField(props: ISelectProps) {
+  const { rounded, size, color, errorMessage, label, labelCss, required, control, property } = props;
+
+  if (props.options.length > 0 && !!control)
     return (
       <Controller
         control={control}
         name={property}
         render={({ field: { onChange: setValue, value } }) => {
-          const defaultValueLabel = options.find((opt) => opt.value === value)?.label ?? '';
-
-          return <ResultComponent value={defaultValueLabel} setValue={setValue} />;
+          return <SelectFieldComp {...props} controlOnChange={setValue} defaultValue={value} />;
         }}
       />
     );
 
-  return <ResultComponent value={searchInput} />;
-}
-
-export default function SelectField(props: ISelectProps) {
-  const { rounded, size, color, errorMessage, label, labelCss, required } = props;
-
-  if (props.options.length > 0) return <SelectFieldComp {...props} />;
+  if (props.options.length > 0 && !control) return <SelectFieldComp {...props} />;
 
   return (
     <div className='w-full flex flex-col space-y-1 text-md md:text-lg font-normal font-roboto'>
