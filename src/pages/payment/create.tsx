@@ -130,94 +130,104 @@ export default function CreatePayment() {
         {isError ? <Notification rounded='sm' type='error' message={errs.message} /> : ''}
         {!!error ? <Notification rounded='sm' type='error' message={error} /> : ''}
 
-        <SelectField
-          required
-          label='Store'
-          options={
-            data?.records.map((store: any) => {
-              return { label: store.name, value: store.id };
-            }) || []
-          }
-          control={control}
-          property='paymentData.storeId'
-          errorMessage={errors.paymentData?.storeId?.message}
-        />
+        <div className='flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-5'>
+          <SelectField
+            required
+            label='Store'
+            options={
+              data?.records.map((store: any) => {
+                return { label: store.name, value: store.id };
+              }) || []
+            }
+            control={control}
+            property='paymentData.storeId'
+            errorMessage={errors.paymentData?.storeId?.message}
+          />
 
-        <SelectField
-          required
-          label='Mode Of Payment'
-          options={Object.entries(PaymentMode).map((v) => ({ label: v[1], value: v[1] }))}
-          control={control}
-          property='paymentData.modeOfPayment'
-          errorMessage={errors.paymentData?.modeOfPayment?.message}
-        />
+          <SelectField
+            required
+            label='Mode Of Payment'
+            options={Object.entries(PaymentMode).map((v) => ({ label: v[1], value: v[1] }))}
+            control={control}
+            property='paymentData.modeOfPayment'
+            errorMessage={errors.paymentData?.modeOfPayment?.message}
+          />
+        </div>
 
-        <TextField
-          required
-          label='Bank Name'
-          placeholder='enter bank name here'
-          formInput={{ register, property: 'paymentData.bankName' }}
-          errorMessage={errors.paymentData?.bankName?.message}
-          disabled={watch('paymentData.modeOfPayment') === 'CASH'}
-        />
+        <div className='flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-5'>
+          <TextField
+            required
+            label='Bank Name'
+            placeholder='enter bank name here'
+            formInput={{ register, property: 'paymentData.bankName' }}
+            errorMessage={errors.paymentData?.bankName?.message}
+            disabled={watch('paymentData.modeOfPayment') === 'CASH'}
+          />
 
-        <TextField
-          required
-          label='Reference Number'
-          placeholder='enter reference number here'
-          formInput={{ register, property: 'paymentData.refNo' }}
-          errorMessage={errors.paymentData?.refNo?.message}
-        />
+          <TextField
+            required
+            label='Reference Number'
+            placeholder='enter reference number here'
+            formInput={{ register, property: 'paymentData.refNo' }}
+            errorMessage={errors.paymentData?.refNo?.message}
+          />
+        </div>
 
-        <TextField
-          required
-          type='date'
-          label='Reference Date'
-          formInput={{ register, property: 'paymentData.refDate' }}
-          errorMessage={errors.paymentData?.refDate?.message}
-        />
+        <div className='flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-5'>
+          <TextField
+            required
+            type='date'
+            label='Reference Date'
+            formInput={{ register, property: 'paymentData.refDate' }}
+            errorMessage={errors.paymentData?.refDate?.message}
+          />
 
-        <TextField
-          required
-          type='number'
-          label='Amount'
-          placeholder='enter amount here'
-          formInput={{ register, property: 'paymentData.amount' }}
-          errorMessage={errors.paymentData?.amount?.message}
-        />
+          <TextField
+            required
+            type='number'
+            label='Amount'
+            placeholder='enter amount here'
+            formInput={{ register, property: 'paymentData.amount' }}
+            errorMessage={errors.paymentData?.amount?.message}
+          />
+        </div>
 
-        <TextField
-          required
-          type='number'
-          label='Bad Order'
-          placeholder='enter bad order here'
-          formInput={{ register, property: 'paymentData.badOrder' }}
-          errorMessage={errors.paymentData?.badOrder?.message}
-        />
+        <div className='flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-5'>
+          <TextField
+            required
+            type='number'
+            label='Bad Order'
+            placeholder='enter bad order here'
+            formInput={{ register, property: 'paymentData.badOrder' }}
+            errorMessage={errors.paymentData?.badOrder?.message}
+          />
 
-        <TextField
-          required
-          type='number'
-          label='WidthHoldingTax'
-          placeholder='enter amount here'
-          formInput={{ register, property: 'paymentData.widthHoldingTax' }}
-          errorMessage={errors.paymentData?.widthHoldingTax?.message}
-        />
+          <TextField
+            required
+            type='number'
+            label='WidthHoldingTax'
+            placeholder='enter amount here'
+            formInput={{ register, property: 'paymentData.widthHoldingTax' }}
+            errorMessage={errors.paymentData?.widthHoldingTax?.message}
+          />
 
-        <TextField
-          required
-          type='number'
-          label='OtherDeductions'
-          placeholder='enter other deductions here'
-          formInput={{ register, property: 'paymentData.otherDeduction' }}
-          errorMessage={errors.paymentData?.otherDeductions?.message}
-        />
+          <TextField
+            required
+            type='number'
+            label='OtherDeductions'
+            placeholder='enter other deductions here'
+            formInput={{ register, property: 'paymentData.otherDeductions' }}
+            errorMessage={errors.paymentData?.otherDeductions?.message}
+          />
+        </div>
 
         <AttachDeliveries control={control} errorMessage={errors.deliveries?.message} storeId={watch('paymentData.storeId')} />
 
         <br />
 
-        <Button buttonTitle='SUBMIT' type='submit' />
+        <div className='w-32'>
+          <Button buttonTitle='SUBMIT' type='submit' size='sm' />
+        </div>
       </form>
     </Layout>
   );
