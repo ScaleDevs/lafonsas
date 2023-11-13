@@ -67,8 +67,13 @@ const TextField = ({
   };
 
   const setFormValue = (v: string) => {
-    if (type === 'number' && v === '') return undefined;
-    return type === 'number' ? (!!RegexValidations.FloatOnly.exec(v) ? parseFloat(v) : v) : v;
+    if (type === 'number') {
+      if (v === '') return undefined;
+      if (v === '0') return 0;
+      if (!!RegexValidations.FloatOnly.exec(v)) return parseFloat(v);
+    }
+
+    return v;
   };
 
   const useFormRegisterField = formInput?.register
