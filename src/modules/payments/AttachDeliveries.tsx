@@ -4,6 +4,7 @@ import { useFieldArray, Control } from 'react-hook-form';
 import FadeIn from '@/components/FadeIn';
 import IconComp from '@/components/Icon';
 import { trpc } from '@/utils/trpc';
+import { PHpeso } from '../utils';
 
 export interface IAttachDeliveriesProps {
   storeId?: string;
@@ -93,7 +94,7 @@ export function AttachDeliveries({ control, errorMessage, storeId }: IAttachDeli
               >
                 <td>{row.deliveryNumber}</td>
                 <td>{dayjs(row.postingDate).format('MMM DD, YYYY')}</td>
-                <td>₱{row.amount}</td>
+                <td>{PHpeso.format(row.amount)}</td>
                 <td>
                   {isActive && (
                     <IconComp iconName='CheckCircleIcon' iconProps={{ fillColor: 'fill-green-700', isButton: false }} />

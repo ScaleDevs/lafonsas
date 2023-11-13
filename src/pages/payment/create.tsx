@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { PaymentMode } from '@prisma/client';
 import { trpc } from '@/utils/trpc';
+import { PHpeso } from '@/modules/utils';
 import Layout from '@/layouts/index';
 import ModalLoader from '@/components/ModalLoader';
 import Notification from '@/components/Notification';
@@ -13,6 +14,7 @@ import TextField from '@/components/TextField';
 import SelectField from '@/components/SelectField';
 import Button from '@/components/Button';
 import { AttachDeliveries } from '@/modules/payments/AttachDeliveries';
+import Collapse from '@/components/Collapse';
 
 const paymenyDataBase = (
   modeOfPayment: z.ZodLiteral<'BANK_TRANSFER' | 'CHEQUE' | 'CASH'>,
@@ -84,6 +86,10 @@ export default function CreatePayment() {
       },
     },
   });
+
+  const getAmountOfDeliveries = (deliveries: { amount: number }[]) => {
+    return deliveries.reduce((a, b) => a + b.amount, 0);
+  };
 
   const submitPaymentEntry = (formData: FormSchemaType) => {
     mutate(
@@ -224,6 +230,40 @@ export default function CreatePayment() {
         <AttachDeliveries control={control} errorMessage={errors.deliveries?.message} storeId={watch('paymentData.storeId')} />
 
         <br />
+
+        <Collapse
+          isOpen={
+            !!watch('paymentData.badOrder') || !!watch('paymentData.widthHoldingTax') || !!watch('paymentData.otherDeductions')
+          }
+        >
+          <div className='rounded-sm w-full md:w-80 shadow-xl p-5 bg-gray-200'>
+            <div className='flex justify-between'>
+              <span className='font-semibold font-raleway'>Total Deductions:</span>{' '}
+              <span>
+                {PHpeso.format(
+                  watch('paymentData.badOrder') + watch('paymentData.widthHoldingTax') + watch('paymentData.otherDeductions'),
+                )}
+              </span>
+            </div>
+            <div className='flex justify-between'>
+              <span className='font-semibold font-raleway'>Total Delivery Amount:</span>{' '}
+              <span>{PHpeso.format(getAmountOfDeliveries(watch('deliveries')))}</span>
+            </div>
+            <div className='flex justify-between'>
+              <span className='font-semibold font-raleway'>Expected Amount:</span>{' '}
+              <span>
+                {PHpeso.format(
+                  getAmountOfDeliveries(watch('deliveries')) -
+                    (watch('paymentData.badOrder') + watch('paymentData.widthHoldingTax') + watch('paymentData.otherDeductions')),
+                )}
+              </span>
+            </div>
+            <div className='flex justify-between'>
+              <span className='font-semibold font-raleway'>Actual Amount:</span>{' '}
+              <span>{PHpeso.format(watch('paymentData.amount'))}</span>
+            </div>
+          </div>
+        </Collapse>
 
         <div className='w-32'>
           <Button buttonTitle='SUBMIT' type='submit' size='sm' />
