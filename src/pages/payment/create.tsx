@@ -88,7 +88,7 @@ export default function CreatePayment() {
   });
 
   const getAmountOfDeliveries = (deliveries: { amount: number }[]) => {
-    return deliveries.reduce((a, b) => a + b.amount, 0);
+    return deliveries?.reduce((a, b) => a + b.amount, 0);
   };
 
   const submitPaymentEntry = (formData: FormSchemaType) => {
@@ -233,7 +233,11 @@ export default function CreatePayment() {
 
         <Collapse
           isOpen={
-            !!watch('paymentData.badOrder') || !!watch('paymentData.widthHoldingTax') || !!watch('paymentData.otherDeductions')
+            !!watch('paymentData.badOrder') ||
+            !!watch('paymentData.widthHoldingTax') ||
+            !!watch('paymentData.otherDeductions') ||
+            !!watch('paymentData.amount') ||
+            watch('deliveries')?.length > 0
           }
         >
           <div className='rounded-sm w-full md:w-80 shadow-xl p-5 bg-gray-200'>
