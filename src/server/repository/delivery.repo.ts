@@ -63,6 +63,7 @@ class Respository {
         storeId,
         OR: [{ paymentId: null }, { paymentId: { isSet: false } }],
       },
+      orderBy: { postingDate: 'desc' },
       select: {
         id: true,
         postingDate: true,
