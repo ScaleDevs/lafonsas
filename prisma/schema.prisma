@@ -25,10 +25,13 @@ enum PaymentMode {
 }
 
 model Store {
-  id         String     @id @default(auto()) @map("_id") @db.ObjectId
-  name       String     @unique
-  products   Product[]
-  deliveries Delivery[]
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  name        String     @unique
+  parentStore String?    @db.ObjectId
+  products    Product[]
+  deliveries  Delivery[]
+
+  @@index(parentStore)
 }
 
 model Delivery {

@@ -3,9 +3,14 @@ import { IFindStoresInput, StoreRepository } from '@/server/repository/store.rep
 import { TRPCError } from '@trpc/server';
 
 class Service {
-  public async createStore(storeData: Omit<IStore, 'id'>) {
+  public async createStore(storeData: Omit<IStore, 'id' | 'parentStore'> & { childStores?: string[] }) {
     try {
-      return StoreRepository.createStore(storeData);
+      const parent = await StoreRepository.createStore(storeData);
+
+      if (!!storeData.childStores && storeData.childStores.length > 0)
+        for (const child of storeData.childStores) await StoreRepository.updateStore(child, { parentStore: parent.id });
+
+      return parent;
     } catch (err) {
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
     }
