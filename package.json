@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "npm run prisma-generate && next build",
     "start": "next start",
+    "db:push": "npx prisma db push",
     "prisma-generate": "npx prisma generate",
     "lint": "next lint",
     "prettier": "prettier \"**/*.{js,jsx,ts,tsx}\" --check",
