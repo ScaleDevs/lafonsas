@@ -31,13 +31,15 @@
       "@/functions/*": ["modules/*"],
       "@/store/*": ["src/store/*"],
       "@/types": ["src/utils/types.ts"],
-      "@/styles/*": [ "styles/*"],
-      "@/theme/*": [ "theme/*"],
-      "@/theme": [ "theme/index.ts"],
-      "@/repo/*": [ "src/server/repository/*"],
-      "@/svc/*": [ "src/server/services/*"],
+      "@/styles/*": ["styles/*"],
+      "@/theme/*": ["theme/*"],
+      "@/theme": ["theme/index.ts"],
+      "@/repo/*": ["src/server/repository/*"],
+      "@/svc/*": ["src/server/services/*"],
+      "@/shadcn/components/*": ["src/shadcn/components/*"],
+      "@/shadcn/lib/utils": ["src/shadcn/lib/utils.ts"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts","**/*.tsx"],
-  "exclude": ["node_modules",]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
 }
