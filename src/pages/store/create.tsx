@@ -12,23 +12,79 @@ import TextField from '@/components/TextField';
 import IconComp from '@/components/Icon';
 import FadeIn from '@/components/FadeIn';
 import Button from '@/components/Button';
+import Checkbox from '@/components/Checkbox';
+import SelectField from '@/components/SelectField';
 
-const schema = z.object({
-  name: z.string().min(1, 'Please input store name!'),
-  products: z
-    .array(
+const baseSchema = (
+  isParentStore: z.ZodLiteral<true | false>,
+  childStores: z.ZodArray<z.ZodObject<{ id: z.ZodString }>, 'many'>,
+  products: z.ZodArray<
+    z.ZodObject<
+      {
+        size: z.ZodString;
+        price: z.ZodNumber;
+      },
+      'strip',
+      z.ZodTypeAny,
+      {
+        size: string;
+        price: number;
+      },
+      {
+        size: string;
+        price: number;
+      }
+    >,
+    'many'
+  >,
+) =>
+  z.object({
+    name: z.string().min(1, 'Please input store name!'),
+    isParentStore,
+    childStores,
+    products,
+  });
+
+const schema = z.discriminatedUnion('isParentStore', [
+  baseSchema(
+    z.literal(true),
+    z
+      .array(
+        z.object({
+          id: z.string(),
+        }),
+      )
+      .min(1, 'Required'),
+    z.array(
       z.object({
         size: z.string().min(1, 'Please input size!'),
         price: z.number({ invalid_type_error: 'Must input a price!' }).min(1, 'Please input price!'),
       }),
-    )
-    .min(1, 'Please add a product!'),
-});
+    ),
+  ),
+  baseSchema(
+    z.literal(false),
+    z.array(
+      z.object({
+        id: z.string(),
+      }),
+    ),
+    z
+      .array(
+        z.object({
+          size: z.string().min(1, 'Please input size!'),
+          price: z.number({ invalid_type_error: 'Must input a price!' }).min(1, 'Please input price!'),
+        }),
+      )
+      .min(1, 'Please add a product!'),
+  ),
+]);
 
 type FormSchemaType = z.infer<typeof schema>;
 
 export default function CreateStore() {
   const { mutate, isLoading, isSuccess, isError } = trpc.useMutation('store.create');
+  const { data: stores } = trpc.useQuery(['store.getStores', { limit: 1000 }]);
 
   const {
     register,
@@ -36,8 +92,12 @@ export default function CreateStore() {
     reset,
     formState: { errors },
     control,
+    watch,
   } = useForm<FormSchemaType>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      isParentStore: false,
+    },
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -48,7 +108,21 @@ export default function CreateStore() {
     },
   });
 
+  const {
+    fields: childStoreFields,
+    append: childStoreAppend,
+    remove: childStoreRemove,
+  } = useFieldArray({
+    name: 'childStores',
+    control,
+    rules: {
+      required: 'Please link a store',
+    },
+  });
+
   const createStore = (formData: FormSchemaType) => {
+    console.log(formData);
+    return;
     mutate(formData, {
       onSuccess() {
         reset({
@@ -71,10 +145,10 @@ export default function CreateStore() {
       </Head>
 
       <ModalLoader open={isLoading}>Saving Product ...</ModalLoader>
-      <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>Create Product</h1>
+      <h1 className='font-comfortaa text-3xl font-bold md:text-4xl'>Create Product</h1>
       <br />
       <form
-        className='flex flex-col space-y-4 md:w-[100%] xl:w-[60%] 2xl:w-[800px] bg-white p-8 rounded-md shadow-md overflow-hidden'
+        className='flex flex-col space-y-4 rounded-md bg-white p-8 shadow-md md:w-[100%] xl:w-[60%] 2xl:w-[800px]'
         onSubmit={handleSubmit(createStore)}
       >
         {isSuccess ? <Notification rounded='sm' type='success' message='Store Saved' /> : ''}
@@ -88,53 +162,121 @@ export default function CreateStore() {
           color='secondary'
         />
 
-        <div>
-          <h1 className='text-md md:text-lg font-semibold font-raleway'>
-            Products : <span className='text-red-500'>*</span>
-          </h1>
-          {errors.products?.message ? <FadeIn cssText='font-raleway text-red-500'>{errors.products?.message}</FadeIn> : ''}
-          <div className='space-y-3'>
-            {fields.map((field, index) => {
-              return (
-                <div key={field.id} className='grid grid-rows-3 md:grid-rows-1 grid-flow-col gap-3 mt-2 w-full'>
-                  <TextField
-                    label='Size'
-                    labelCss='text-sm font-bold'
-                    type='text'
-                    placeholder='Product size here'
-                    formInput={{ register, property: `products.${index}.size` }}
-                    errorMessage={errors?.products ? errors.products[index]?.size?.message : undefined}
-                    color='secondary'
-                  />
-                  <TextField
-                    label='Price'
-                    labelCss='text-sm font-bold'
-                    type='number'
-                    placeholder='Product price here'
-                    formInput={{ register, property: `products.${index}.price` }}
-                    errorMessage={errors?.products ? errors.products[index]?.price?.message : undefined}
-                    color='secondary'
-                  />
-                  <button
-                    type='button'
-                    className='group flex flex-row items-center justify-center border border-red-500 hover:bg-red-500 px-3 rounded-md transition-colors duration-200'
-                    onClick={() => remove(index)}
-                  >
-                    <IconComp iconName='TrashIcon' iconProps={{ fillColor: 'text-red-500 group-hover:text-white' }} />
-                  </button>
-                </div>
-              );
-            })}
+        <Checkbox control={control} name='isParentStore' />
+
+        {!watch('isParentStore') && (
+          <div>
+            <h1 className='text-md font-raleway font-semibold md:text-lg'>
+              Products : <span className='text-red-500'>*</span>
+            </h1>
+            {errors.products?.message ? <FadeIn cssText='font-raleway text-red-500'>{errors.products?.message}</FadeIn> : ''}
+            <div className='space-y-3'>
+              {fields.map((field, index) => {
+                return (
+                  <div key={field.id} className='flex items-end gap-2'>
+                    <div className='xs:flex-row relative mt-2 flex w-[90%] flex-col gap-3'>
+                      <div className='xs:w-[47%] w-[100%] lg:w-1/2'>
+                        <TextField
+                          label='Size'
+                          labelCss='text-sm font-bold'
+                          type='text'
+                          placeholder='Product size here'
+                          formInput={{ register, property: `products.${index}.size` }}
+                          errorMessage={errors?.products ? errors.products[index]?.size?.message : undefined}
+                          color='secondary'
+                        />
+                      </div>
+                      <div className='xs:w-[47%] w-[100%] lg:w-1/2'>
+                        <TextField
+                          label='Price'
+                          labelCss='text-sm font-bold'
+                          type='number'
+                          placeholder='Product price here'
+                          formInput={{ register, property: `products.${index}.price` }}
+                          errorMessage={errors?.products ? errors.products[index]?.price?.message : undefined}
+                          color='secondary'
+                        />
+                      </div>
+                    </div>
+                    <button
+                      type='button'
+                      className='group flex h-[46px] flex-row items-center justify-center rounded-md border border-red-500 px-3 transition-colors duration-200 hover:bg-red-500'
+                      onClick={() => remove(index)}
+                    >
+                      <IconComp iconName='TrashIcon' iconProps={{ fillColor: 'text-red-500 group-hover:text-white' }} />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+            <button
+              type='button'
+              className='text-md mt-3 rounded-sm bg-primary px-5 py-1 font-raleway text-xl font-semibold text-white'
+              onClick={() => append({ size: '', price: 0 })}
+            >
+              +
+            </button>
           </div>
-          <button
-            type='button'
-            className='bg-primary text-white rounded-sm py-1 px-5 text-md mt-3 text-xl font-raleway font-semibold'
-            onClick={() => append({ size: '', price: 0 })}
-          >
-            +
-          </button>
+        )}
+
+        {!!watch('isParentStore') && (
+          <div>
+            <h1 className='text-md font-raleway font-semibold md:text-lg'>
+              Link Stores : <span className='text-red-500'>*</span>
+            </h1>
+            {errors.childStores?.message ? (
+              <FadeIn cssText='font-raleway text-red-500'>{errors.childStores?.message}</FadeIn>
+            ) : (
+              ''
+            )}
+            <div className='space-y-3'>
+              {childStoreFields.map((field, index) => {
+                return (
+                  <div key={field.id} className='mt-2'>
+                    <label className='text-md font-roboto font-normal md:text-lg'>
+                      Store <span className='text-red-500'>*</span>
+                    </label>
+                    <div className='mt-2 flex w-full flex-row gap-3'>
+                      <div className='w-[90%] md:w-[50%]'>
+                        <SelectField
+                          required
+                          options={
+                            stores?.records.map((store: any) => {
+                              return { label: store.name, value: store.id };
+                            }) || []
+                          }
+                          control={control}
+                          property={`childStores.${index}.id`}
+                          errorMessage={errors?.childStores ? errors.childStores[index]?.id?.message : undefined}
+                          isLoading={isLoading}
+                        />
+                      </div>
+
+                      <button
+                        type='button'
+                        className='group flex flex-row items-center justify-center rounded-md border border-red-500 px-3 transition-colors duration-200 hover:bg-red-500'
+                        onClick={() => childStoreRemove(index)}
+                      >
+                        <IconComp iconName='TrashIcon' iconProps={{ fillColor: 'text-red-500 group-hover:text-white' }} />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <button
+              type='button'
+              className='text-md mt-3 rounded-sm bg-primary px-5 py-1 font-raleway text-xl font-semibold text-white'
+              onClick={() => childStoreAppend({ id: '' })}
+            >
+              +
+            </button>
+          </div>
+        )}
+
+        <div className='w-[8rem]'>
+          <Button buttonTitle='SUBMIT' type='submit' size='sm' />
         </div>
-        <Button buttonTitle='SUBMIT' type='submit' />
       </form>
     </Layout>
   );
