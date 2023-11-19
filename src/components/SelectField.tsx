@@ -160,7 +160,7 @@ function SelectFieldComp({
             </div>
           </div>
           {showMenu && !isLoading && (
-            <ul className='absolute bg-gray-200 w-full p-2 rounded-sm space-y-1 mt-1 z-20 overflow-auto max-h-96 scrollbar'>
+            <ul className='absolute bg-gray-200 w-full p-2 rounded-sm space-y-1 mt-1 z-20 overflow-auto max-h-96 scrollbar shadow-lg drop-shadow-lg'>
               {options
                 .filter((opt) => opt.label.includes(searchQry))
                 .map((opt, i) => (

@@ -21,7 +21,7 @@ const NavLinkHouse = ({ title, Icon, links }: INavLinkHouseProps) => {
 
   const LinkItem = ({ children, path }: { children: any; path: string }) => (
     <Link href={path} passHref>
-      <div className='text-md p-3 rounded-md hover:bg-gray-300 hover:cursor-pointer text-black'>{children}</div>
+      <div className='text-md rounded-md p-3 text-black hover:cursor-pointer hover:bg-gray-300'>{children}</div>
     </Link>
   );
 
@@ -41,7 +41,7 @@ const NavLinkHouse = ({ title, Icon, links }: INavLinkHouseProps) => {
     <li>
       <FadeIn>
         <div
-          className='flex flex-row justify-between p-3 w-full rounded-md hover:bg-gray-300 hover:cursor-pointer'
+          className='flex w-full flex-row justify-between rounded-md p-3 hover:cursor-pointer hover:bg-gray-300'
           onClick={() => setCollapse((curr) => !curr)}
         >
           <div className='flex flex-row items-center text-black'>
@@ -108,7 +108,7 @@ const NavLink = ({ children, path, logout, Icon }: INavLinkProps) => {
     <li>
       <FadeIn cssText='rounded-md hover:bg-gray-300 hover:cursor-pointer text-black'>
         <Link href={path} passHref>
-          <a className='p-3 flex flex-row items-center'>
+          <a className='flex flex-row items-center p-3'>
             <IconComp />
             {children}
           </a>
@@ -130,13 +130,13 @@ export default function SideNav() {
       </button>
       <div
         className={`${
-          sideNavOpen ? 'w-[70%] sm:w-64' : 'w-0 sm:w-12'
-        } absolute  sm:w-64 shadow-lg h-full bg-white transition-[width] duration-500 sm:relative overflow-hidden z-10`}
+          sideNavOpen ? 'w-[70%] sm:w-64' : 'w-0 sm:w-[3.5rem]'
+        } absolute  z-10 h-full overflow-hidden bg-white shadow-lg transition-[width] duration-500 sm:relative sm:w-64`}
       >
         {sideNavOpen ? (
           ''
         ) : (
-          <div className={`w-full ${sideNavOpen ? 'flex flex-row' : 'hidden'} sm:flex sm:flex-row justify-end p-3`}>
+          <div className={`w-full ${sideNavOpen ? 'flex flex-row' : 'hidden'} justify-end p-3 sm:flex sm:flex-row`}>
             <FadeIn cssText={`w-full flex flex-row justify-center p-3 ${sideNavOpen ? 'hidden' : ''}`}>
               <button onClick={toggleSideNav}>
                 <IconComp iconName='ArrowCircleRightIcon' iconProps={{ isButton: true }} />
@@ -146,10 +146,10 @@ export default function SideNav() {
         )}
 
         <div className={sideNavOpen ? 'divide-y text-gray-200' : ''}>
-          <div className={sideNavOpen ? 'text-primary p-5 font-comfortaa font-bold text-3xl' : 'hidden'}>Lafonsas</div>
+          <div className={sideNavOpen ? 'p-5 font-comfortaa text-3xl font-bold text-primary' : 'hidden'}>Lafonsas</div>
 
           <div className={sideNavOpen ? 'w-full py-3' : 'hidden'}>
-            <ul className='w-[90%] mx-auto font-comfortaa font- text-lg'>
+            <ul className='font- mx-auto w-[90%] font-comfortaa text-lg'>
               {/* <NavLink path='/' Icon={() => <IconComp iconName='BarChartIcon' iconProps={{}} />}>
                 Dashboard
               </NavLink> */}
