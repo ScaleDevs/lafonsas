@@ -51,7 +51,7 @@ const schema = z.discriminatedUnion('isParentStore', [
     z
       .array(
         z.object({
-          id: z.string(),
+          id: z.string().min(1, 'Required'),
         }),
       )
       .min(1, 'Required'),
@@ -66,7 +66,7 @@ const schema = z.discriminatedUnion('isParentStore', [
     z.literal(false),
     z.array(
       z.object({
-        id: z.string(),
+        id: z.string().min(1, 'Required'),
       }),
     ),
     z
@@ -121,19 +121,25 @@ export default function CreateStore() {
   });
 
   const createStore = (formData: FormSchemaType) => {
-    console.log(formData);
-    return;
-    mutate(formData, {
-      onSuccess() {
-        reset({
-          name: '',
-          products: [],
-        });
+    mutate(
+      {
+        name: formData.name,
+        isParent: formData.isParentStore,
+        childStores: formData.childStores.map((v) => v.id),
+        products: formData.products,
       },
-      onError(err) {
-        console.log(err);
+      {
+        onSuccess() {
+          reset({
+            name: '',
+            products: [],
+          });
+        },
+        onError(err) {
+          console.log(err);
+        },
       },
-    });
+    );
   };
 
   return (
@@ -174,8 +180,8 @@ export default function CreateStore() {
               {fields.map((field, index) => {
                 return (
                   <div key={field.id} className='flex items-end gap-2'>
-                    <div className='xs:flex-row relative mt-2 flex w-[90%] flex-col gap-3'>
-                      <div className='xs:w-[47%] w-[100%] lg:w-1/2'>
+                    <div className='relative mt-2 flex w-[90%] flex-col gap-3 xs:flex-row'>
+                      <div className='w-[100%] xs:w-[47%] lg:w-1/2'>
                         <TextField
                           label='Size'
                           labelCss='text-sm font-bold'
@@ -186,7 +192,7 @@ export default function CreateStore() {
                           color='secondary'
                         />
                       </div>
-                      <div className='xs:w-[47%] w-[100%] lg:w-1/2'>
+                      <div className='w-[100%] xs:w-[47%] lg:w-1/2'>
                         <TextField
                           label='Price'
                           labelCss='text-sm font-bold'
@@ -241,13 +247,18 @@ export default function CreateStore() {
                         <SelectField
                           required
                           options={
-                            stores?.records.map((store: any) => {
-                              return { label: store.name, value: store.id };
-                            }) || []
+                            stores?.records
+                              .filter((store) => {
+                                if (!!store.isParent || !!store.parentStore) return false;
+
+                                return !watch('childStores').some((s) => s.id === store.id);
+                              })
+                              .map((store: any) => {
+                                return { label: store.name, value: store.id };
+                              }) || []
                           }
                           control={control}
                           property={`childStores.${index}.id`}
-                          errorMessage={errors?.childStores ? errors.childStores[index]?.id?.message : undefined}
                           isLoading={isLoading}
                         />
                       </div>
@@ -260,6 +271,11 @@ export default function CreateStore() {
                         <IconComp iconName='TrashIcon' iconProps={{ fillColor: 'text-red-500 group-hover:text-white' }} />
                       </button>
                     </div>
+                    {!!errors?.childStores ? (
+                      <FadeIn cssText='text-red-500'>{errors.childStores[index]?.id?.message}</FadeIn>
+                    ) : (
+                      ''
+                    )}
                   </div>
                 );
               })}

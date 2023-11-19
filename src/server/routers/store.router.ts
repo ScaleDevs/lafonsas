@@ -8,6 +8,7 @@ export const storeRouter = createRouter()
   .mutation('create', {
     input: z.object({
       name: z.string().transform((val) => val.toUpperCase()),
+      isParent: z.boolean().nullable(),
       childStores: z.array(z.string()).optional(),
       products: z.array(
         z.object({

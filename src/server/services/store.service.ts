@@ -4,14 +4,20 @@ import { TRPCError } from '@trpc/server';
 
 class Service {
   public async createStore(storeData: Omit<IStore, 'id' | 'parentStore'> & { childStores?: string[] }) {
-    try {
-      const parent = await StoreRepository.createStore(storeData);
+    const { childStores, ...rest } = storeData;
 
-      if (!!storeData.childStores && storeData.childStores.length > 0)
-        for (const child of storeData.childStores) await StoreRepository.updateStore(child, { parentStore: parent.id });
+    try {
+      const parent = await StoreRepository.createStore(rest);
+
+      if (!!childStores && childStores.length > 0)
+        for (const child of childStores) {
+          const childStore = await StoreRepository.findStoreById(child);
+          if (!!childStore && !childStore.parentStore) await StoreRepository.updateStore(child, { parentStore: parent.id });
+        }
 
       return parent;
     } catch (err) {
+      console.log(err);
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
     }
   }

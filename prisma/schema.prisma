@@ -27,6 +27,7 @@ enum PaymentMode {
 model Store {
   id          String     @id @default(auto()) @map("_id") @db.ObjectId
   name        String     @unique
+  isParent    Boolean?
   parentStore String?    @db.ObjectId
   products    Product[]
   deliveries  Delivery[]
