@@ -75,6 +75,26 @@ class Respository {
     return result;
   }
 
+  public async findDeliveriesByStoreIds(storeIds: string[]) {
+    const result = await prisma.delivery.findMany({
+      where: {
+        storeId: {
+          in: storeIds,
+        },
+        OR: [{ paymentId: null }, { paymentId: { isSet: false } }],
+      },
+      orderBy: { postingDate: 'desc' },
+      select: {
+        id: true,
+        postingDate: true,
+        deliveryNumber: true,
+        amount: true,
+      },
+    });
+
+    return result;
+  }
+
   public async findDeliveriesByPaymentId(paymentId: string) {
     const result = await prisma.delivery.findMany({
       where: {

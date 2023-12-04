@@ -47,6 +47,19 @@ class Respository {
     };
   }
 
+  public async findStoresByParentId(parentId: string) {
+    const result = await prisma.store.findMany({
+      where: {
+        parentStore: parentId,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    return result;
+  }
+
   public async updateStore(storeId: string, storePartialData: Partial<IStore>) {
     return prisma.store.update({
       where: {

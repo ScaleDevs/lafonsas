@@ -1,6 +1,7 @@
+import { TRPCError } from '@trpc/server';
 import { IDelivery } from '@/utils/types';
 import { DeliveryRepository, IFindDeliveriesInput } from '@/server/repository/delivery.repo';
-import { TRPCError } from '@trpc/server';
+import { StoreRepository } from '@/server/repository/store.repo';
 
 class Service {
   public async createDelivery(deliveryData: Omit<IDelivery, 'id'>) {
@@ -34,6 +35,15 @@ class Service {
 
   public async findDeliveriesByStoreId(storeId: string) {
     try {
+      const store = await StoreRepository.findStoreById(storeId);
+
+      if (!store) throw new TRPCError({ code: 'NOT_FOUND', message: 'Store not found' });
+
+      if (!!store.isParent) {
+        const stores = await StoreRepository.findStoresByParentId(storeId);
+        return DeliveryRepository.findDeliveriesByStoreIds(stores.map((v) => v.id));
+      }
+
       return DeliveryRepository.findDeliveriesByStoreId(storeId);
     } catch (err) {
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
