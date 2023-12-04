@@ -47,15 +47,15 @@ export function AttachDeliveries({ control, errorMessage, storeId }: IAttachDeli
   });
 
   return (
-    <div className='shadow-lg p-10'>
-      <h1 className='text-md md:text-xl font-semibold font-raleway'>
+    <div className='p-10 shadow-lg'>
+      <h1 className='text-md font-raleway font-semibold md:text-xl'>
         Attach Deliveries : <span className='text-red-500'>*</span>
       </h1>
 
       <div className='flex flex-row space-x-2'>
         {fields.map((v) => {
           return (
-            <div key={v.deliveryId} className='bg-gray-300 p-1 px-3 rounded-md'>
+            <div key={v.deliveryId} className='rounded-md bg-gray-300 p-1 px-3'>
               {v.deliveryNumber}
             </div>
           );
@@ -67,7 +67,7 @@ export function AttachDeliveries({ control, errorMessage, storeId }: IAttachDeli
 
       <table className='w-full'>
         <thead>
-          <tr className='border-gray-500 border-b font-raleway text-md text-left'>
+          <tr className='text-md border-b border-gray-500 text-left font-raleway'>
             <th className='pb-3 font-semibold'>DELIVERY NUMBER</th>
             <th className='pb-3 font-semibold'>POSTING DATE</th>
             <th className='pb-3 font-semibold'>AMOUNT</th>
@@ -76,27 +76,28 @@ export function AttachDeliveries({ control, errorMessage, storeId }: IAttachDeli
         </thead>
         <tbody>
           {data?.map((row, index) => {
-            const isActive = fields.some((v) => v.deliveryId === row.id);
+            const selected = fields.findIndex((v) => v.deliveryId === row.id);
+
             return (
               <tr
-                key={row.deliveryNumber}
-                className='font-comfortaa h-14 text-left hover:cursor-pointer hover:bg-gray-200 transition-colors duration-200'
+                key={index}
+                className='h-14 text-left font-comfortaa transition-colors duration-200 hover:cursor-pointer hover:bg-gray-200'
                 onClick={() => {
-                  if (!isActive)
+                  if (selected === -1)
                     append({
                       deliveryId: row.id,
                       deliveryNumber: row.deliveryNumber,
                       postingDate: row.postingDate.toString(),
                       amount: row.amount,
                     });
-                  else remove(index);
+                  else remove(selected);
                 }}
               >
                 <td>{row.deliveryNumber}</td>
                 <td>{dayjs(row.postingDate).format('MMM DD, YYYY')}</td>
                 <td>{PHpeso.format(row.amount)}</td>
                 <td>
-                  {isActive && (
+                  {selected !== -1 && (
                     <IconComp iconName='CheckCircleIcon' iconProps={{ fillColor: 'fill-green-700', isButton: false }} />
                   )}
                 </td>
