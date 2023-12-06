@@ -91,6 +91,7 @@ export const paymentRouter = createRouter()
       }),
       page: z.number().optional().default(1),
       limit: z.number().optional().default(10),
+      noLimit: z.boolean().optional(),
     }),
     async resolve({ input }) {
       return PaymentService.findPayments({

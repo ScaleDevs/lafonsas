@@ -29,7 +29,7 @@ class Respository {
     return prisma.payment.findFirst({ where: { refNo } });
   }
 
-  public async findPayments({ dateFilter, refNo, vendor, page, limit }: IFindPaymentsInput) {
+  public async findPayments({ dateFilter, refNo, vendor, page, limit, noLimit }: IFindPaymentsInput) {
     const whereFilter: Prisma.PaymentWhereInput = {};
 
     if (!dateFilter && !refNo && !vendor) throw new TRPCError({ code: 'BAD_REQUEST', message: 'There are no filters applied!' });
@@ -59,7 +59,7 @@ class Respository {
       distinct: ['paymentId'],
       orderBy: { refDate: 'asc' },
       skip: page > 0 ? (page - 1) * limit : 0,
-      take: limit,
+      take: !!noLimit ? undefined : limit,
     });
 
     const totalCount = await prisma.payment.count({ where: whereFilter });

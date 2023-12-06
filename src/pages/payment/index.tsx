@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Head from 'next/head';
 import router from 'next/router';
 import dayjs from 'dayjs';
+import { mkConfig, generateCsv, download } from 'export-to-csv';
 
 import { trpc } from '@/utils/trpc';
 import { PHpeso } from '@/modules/utils';
@@ -30,8 +31,23 @@ export default function ListPayments() {
   const { data, isLoading, isError, refetch } = trpc.useQuery([
     'payment.getMany',
     {
-      limit: 10,
+      limit: 2,
       page,
+      refNo: stateFilters.refNo,
+      vendor: stateFilters.vendor,
+      dateFilters: { startDate: stateFilters.startDate, endDate: stateFilters.endDate },
+    },
+  ]);
+
+  const {
+    data: exportData,
+    isLoading: fetchingExportData,
+    isError: exportDataError,
+  } = trpc.useQuery([
+    'payment.getMany',
+    {
+      noLimit: true,
+      page: 1,
       refNo: stateFilters.refNo,
       vendor: stateFilters.vendor,
       dateFilters: { startDate: stateFilters.startDate, endDate: stateFilters.endDate },
@@ -45,6 +61,22 @@ export default function ListPayments() {
 
   const onRecordClick = (refNo: string) => {
     router.push(`/payment/?refNo=${refNo}`, undefined, { shallow: true });
+  };
+
+  const exportToCsv = () => {
+    if (!exportData?.records || !!exportDataError) return;
+    const csvConfig = mkConfig({
+      useKeysAsHeaders: true,
+      filename: `payments_${stateFilters.startDate}-${stateFilters.endDate}`,
+    });
+    const dataFeed = exportData.records.map((v) => ({
+      vendor: v.vendor,
+      referenceNumber: v.refNo,
+      referenceDate: dayjs(v.refDate).format('MMM DD, YYYY'),
+      amount: PHpeso.format(v.amount),
+    }));
+    const csv = generateCsv(csvConfig)(dataFeed);
+    download(csvConfig)(csv);
   };
 
   return (
@@ -67,7 +99,7 @@ export default function ListPayments() {
             handlePageChange={handlePageChange}
           />
 
-          <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>Payments</h1>
+          <h1 className='font-comfortaa text-3xl font-bold md:text-4xl'>Payments</h1>
 
           <br />
           <div className='w-[100px]'>
@@ -83,31 +115,36 @@ export default function ListPayments() {
             </>
           )}
 
-          <div className='flex space-x-5'>
-            <div className='bg-gray-300 p-3 rounded-md text-md font-comfortaa'>
-              {filterVendorName ? filterVendorName : 'ALL VENDORS'}
+          <div className='flex justify-between'>
+            <div className='flex space-x-5'>
+              <div className='text-md rounded-md bg-gray-300 p-3 font-comfortaa'>
+                {filterVendorName ? filterVendorName : 'ALL VENDORS'}
+              </div>
+              <div className='flex'>
+                <div className='text-md rounded-md bg-gray-300 p-3 font-comfortaa'>
+                  {dayjs(stateFilters.startDate).format('MMM DD, YYYY')}
+                </div>
+                <div className='flex items-center px-3'>-</div>
+                <div className='text-md rounded-md bg-gray-300 p-3 font-comfortaa'>
+                  {dayjs(stateFilters.endDate).format('MMM DD, YYYY')}
+                </div>
+              </div>
             </div>
-            <div className='flex'>
-              <div className='bg-gray-300 p-3 rounded-md text-md font-comfortaa'>
-                {dayjs(stateFilters.startDate).format('MMM DD, YYYY')}
-              </div>
-              <div className='px-3 flex items-center'>-</div>
-              <div className='bg-gray-300 p-3 rounded-md text-md font-comfortaa'>
-                {dayjs(stateFilters.endDate).format('MMM DD, YYYY')}
-              </div>
+            <div>
+              <Button buttonTitle='export' size='sm' onClick={exportToCsv} isLoading={fetchingExportData} />
             </div>
           </div>
 
           <br />
 
-          <div className='bg-white shadow-lg px-5 py-7 rounded-md overflow-x-auto'>
+          <div className='overflow-x-auto rounded-md bg-white px-5 py-7 shadow-lg'>
             {isLoading ? (
               <TableLoader />
             ) : (
               <>
                 <table className='w-full min-w-[800px]'>
                   <thead>
-                    <tr className='border-gray-500 border-b font-raleway text-xl text-center'>
+                    <tr className='border-b border-gray-500 text-center font-raleway text-xl'>
                       <th className='pb-3'>VENDOR</th>
                       <th className='pb-3'>REF NO</th>
                       <th className='pb-3'>REF DATE</th>
@@ -119,7 +156,7 @@ export default function ListPayments() {
                       ? data.records.map((row) => (
                           <tr
                             key={row.paymentId}
-                            className='font-comfortaa h-14 text-center hover:cursor-pointer hover:bg-gray-200 transition-colors duration-200'
+                            className='h-14 text-center font-comfortaa transition-colors duration-200 hover:cursor-pointer hover:bg-gray-200'
                             onClick={() => onRecordClick(row.refNo)}
                           >
                             <td className='show-modal-ref'>{row.vendor}</td>
