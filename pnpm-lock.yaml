@@ -56,6 +56,9 @@ dependencies:
   dayjs:
     specifier: 1.11.6
     version: 1.11.6
+  export-to-csv:
+    specifier: ^1.2.1
+    version: 1.2.1
   lodash:
     specifier: ^4.17.21
     version: 4.17.21
@@ -2800,6 +2803,10 @@ packages:
 
   /eventemitter3@4.0.7:
     resolution: {integrity: sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==}
+    dev: false
+
+  /export-to-csv@1.2.1:
+    resolution: {integrity: sha512-Q16f4RAu99VcBy3ZVXWAdJ4N+6GIijLI/7Uw5rQ4Mi1WeiAK+s6i11AN/wdYTS+hK14wM6xlSrVhnLyEVEvMFQ==}
     dev: false
 
   /fast-deep-equal@3.1.3:
