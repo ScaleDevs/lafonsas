@@ -23,4 +23,5 @@ export type IExpense = Omit<Expense, 'date'> & {
 export type IPaginationInputs = {
   page: number;
   limit: number;
+  noLimit?: boolean;
 };

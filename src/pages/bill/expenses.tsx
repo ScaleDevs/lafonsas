@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Head from 'next/head';
 import router from 'next/router';
 import dayjs from 'dayjs';
+import { mkConfig, generateCsv, download } from 'export-to-csv';
 
 import { trpc } from '@/utils/trpc';
 import { getStartOfMonth, getEndOfMonth } from '@/utils/helper';
@@ -37,11 +38,44 @@ export default function ListExpenses() {
     },
   ]);
 
+  const {
+    data: exportData,
+    isLoading: fetchingExportData,
+    isError: exportDataError,
+  } = trpc.useQuery([
+    'expense.getMany',
+    {
+      noLimit: true,
+      page: 1,
+      dateFilters: {
+        startDate: stateFilters.startDate,
+        endDate: stateFilters.endDate,
+      },
+      accountId: stateFilters.accountId,
+    },
+  ]);
+
   const onRecordClick = (invoiceRefNo: string) => {
     router.push(`/bill/?refNo=${invoiceRefNo}`, undefined, { shallow: true });
   };
 
   const handlePageChange = (page: number) => setPage(page);
+
+  const exportToCsv = () => {
+    if (!exportData?.records || exportDataError) return;
+    const csvConfig = mkConfig({
+      useKeysAsHeaders: true,
+      filename: `expenses_${stateFilters.startDate}-${stateFilters.endDate}`,
+    });
+    const dataFeed = exportData.records.map((v) => ({
+      account: capFirstLetters(v.accountName),
+      date: dayjs(v.date).format('MMM DD, YYYY'),
+      amount: PHpeso.format(v.amount),
+      description: v.description,
+    }));
+    const csv = generateCsv(csvConfig)(dataFeed);
+    download(csvConfig)(csv);
+  };
 
   return (
     <Layout>
@@ -59,7 +93,7 @@ export default function ListExpenses() {
         setAccountName={setAccountName}
         handlePageChange={handlePageChange}
       />
-      <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>List Expenses</h1>
+      <h1 className='font-comfortaa text-3xl font-bold md:text-4xl'>List Expenses</h1>
 
       <br />
       <br />
@@ -69,17 +103,21 @@ export default function ListExpenses() {
       </div>
 
       <br />
-
-      <div className='flex space-x-5'>
-        <div className='bg-gray-300 p-3 rounded-md text-md font-comfortaa'>{capFirstLetters(accountName)}</div>
-        <div className='flex'>
-          <div className='bg-gray-300 p-3 rounded-md text-md font-comfortaa'>
-            {dayjs(stateFilters.startDate).format('MMM DD, YYYY')}
+      <div className='flex justify-between'>
+        <div className='flex space-x-5'>
+          <div className='text-md rounded-md bg-gray-300 p-3 font-comfortaa'>{capFirstLetters(accountName)}</div>
+          <div className='flex'>
+            <div className='text-md rounded-md bg-gray-300 p-3 font-comfortaa'>
+              {dayjs(stateFilters.startDate).format('MMM DD, YYYY')}
+            </div>
+            <div className='flex items-center px-3'>-</div>
+            <div className='text-md rounded-md bg-gray-300 p-3 font-comfortaa'>
+              {dayjs(stateFilters.endDate).format('MMM DD, YYYY')}
+            </div>
           </div>
-          <div className='px-3 flex items-center'>-</div>
-          <div className='bg-gray-300 p-3 rounded-md text-md font-comfortaa'>
-            {dayjs(stateFilters.endDate).format('MMM DD, YYYY')}
-          </div>
+        </div>
+        <div>
+          <Button buttonTitle='export' size='sm' onClick={exportToCsv} isLoading={fetchingExportData} />
         </div>
       </div>
 
@@ -94,14 +132,14 @@ export default function ListExpenses() {
         ''
       )}
 
-      <div className='bg-white shadow-lg px-5 py-7 rounded-md overflow-x-auto'>
+      <div className='overflow-x-auto rounded-md bg-white px-5 py-7 shadow-lg'>
         {isLoading ? (
           <TableLoader />
         ) : (
           <>
             <table className='w-full min-w-[800px]'>
               <thead>
-                <tr className='border-gray-500 border-b font-raleway text-xl text-center'>
+                <tr className='border-b border-gray-500 text-center font-raleway text-xl'>
                   <th className='pb-3'>ACCOUNT</th>
                   <th className='pb-3'>DATE</th>
                   <th className='pb-3'>AMOUNT</th>
@@ -111,7 +149,7 @@ export default function ListExpenses() {
               <tbody>
                 {data ? (
                   data.records.length === 0 ? (
-                    <tr className='font-comfortaa h-14 text-center'>
+                    <tr className='h-14 text-center font-comfortaa'>
                       <td className='show-modal-ref text-red-500' colSpan={4}>
                         NO RECORD
                       </td>
@@ -120,7 +158,7 @@ export default function ListExpenses() {
                     data.records.map((expense) => (
                       <tr
                         key={expense.expenseId}
-                        className='font-comfortaa h-14 text-center hover:cursor-pointer hover:bg-gray-300 transition-colors duration-200'
+                        className='h-14 text-center font-comfortaa transition-colors duration-200 hover:cursor-pointer hover:bg-gray-300'
                         onClick={() => onRecordClick(expense.billInvoiceRefNo)}
                       >
                         <td className='show-modal-ref'>{capFirstLetters(expense.accountName)}</td>

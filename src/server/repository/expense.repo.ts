@@ -31,7 +31,7 @@ class Respository {
     return prisma.expense.findFirst({ where: { expenseId } });
   }
 
-  public async findExpenses({ dateFilter, accountId, billId, page, limit }: IFindExpensesInput) {
+  public async findExpenses({ dateFilter, accountId, billId, page, limit, noLimit }: IFindExpensesInput) {
     const whereFilter: Prisma.ExpenseWhereInput = {};
 
     if (!dateFilter && !accountId && !billId)
@@ -57,7 +57,7 @@ class Respository {
       where: whereFilter,
       orderBy: { date: 'asc' },
       skip: page > 0 ? (page - 1) * limit : 0,
-      take: limit,
+      take: !!noLimit ? undefined : limit,
     });
 
     const totalCount = await prisma.expense.count({ where: whereFilter });

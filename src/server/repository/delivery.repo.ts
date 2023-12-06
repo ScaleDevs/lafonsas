@@ -5,7 +5,6 @@ export type IFindDeliveriesInput = {
   storeId?: string;
   startDate: Date | string;
   endDate: Date | string;
-  noLimit?: boolean;
 } & IPaginationInputs;
 
 class Respository {
