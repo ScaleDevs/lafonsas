@@ -104,10 +104,11 @@ export const deliveryRouter = createRouter()
       endDate: z.string(),
       page: z.number().optional().default(1),
       limit: z.number().optional().default(10),
+      noLimit: z.boolean().optional(),
     }),
     async resolve({ input }) {
       if (input.deliveryNumber) {
-        const delivery = await DeliveryService.findDeliveryByDeliveryNumber(input.deliveryNumber);
+        const delivery = await DeliveryService.findDeliveryByDeliveryNumberPartial(input.deliveryNumber);
         return {
           pageCount: 1,
           records: delivery ? [delivery] : [],

@@ -5,6 +5,7 @@ export type IFindDeliveriesInput = {
   storeId?: string;
   startDate: Date | string;
   endDate: Date | string;
+  noLimit?: boolean;
 } & IPaginationInputs;
 
 class Respository {
@@ -21,10 +22,31 @@ class Respository {
   }
 
   public async findDeliveryByDeliveryNumber(deliveryNumber: string) {
-    return prisma.delivery.findUnique({ where: { deliveryNumber } });
+    return prisma.delivery.findUnique({
+      where: { deliveryNumber },
+    });
   }
 
-  public async findDeliveries({ startDate, endDate, storeId, page, limit }: IFindDeliveriesInput) {
+  public async findDeliveryByDeliveryNumberPartial(deliveryNumber: string) {
+    return prisma.delivery.findUnique({
+      where: { deliveryNumber },
+      select: {
+        id: true,
+        storeId: true,
+        deliveryNumber: true,
+        postingDate: true,
+        amount: true,
+        paymentId: true,
+        store: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+  }
+
+  public async findDeliveries({ startDate, endDate, storeId, page, limit, noLimit }: IFindDeliveriesInput) {
     const whereFilter = {
       postingDate: {
         gte: startDate,
@@ -37,7 +59,7 @@ class Respository {
       where: whereFilter,
       orderBy: { postingDate: 'asc' },
       skip: page > 0 ? (page - 1) * limit : 0,
-      take: limit,
+      take: !!noLimit ? undefined : limit,
       distinct: ['id'],
       select: {
         id: true,
@@ -46,6 +68,11 @@ class Respository {
         postingDate: true,
         amount: true,
         paymentId: true,
+        store: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
 

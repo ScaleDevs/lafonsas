@@ -33,6 +33,14 @@ class Service {
     }
   }
 
+  public async findDeliveryByDeliveryNumberPartial(deliveryNumber: string) {
+    try {
+      return DeliveryRepository.findDeliveryByDeliveryNumberPartial(deliveryNumber);
+    } catch (err) {
+      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
+    }
+  }
+
   public async findDeliveriesByStoreId(storeId: string) {
     try {
       const store = await StoreRepository.findStoreById(storeId);

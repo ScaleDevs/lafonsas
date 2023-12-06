@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import dayjs from 'dayjs';
+import { mkConfig, generateCsv, download } from 'export-to-csv';
 
 import { trpc } from '@/utils/trpc';
 import useDeliveryStoreTrack from '@/store/delivery.store';
@@ -9,11 +10,12 @@ import Notification from '@/components/Notification';
 import TableRow from './components/TableRow';
 import ListDeliveryFilter, { OnDeliverySearchParams } from './components/ListDeliveryFilter';
 import Paginator from '@/components/Paginator';
+import { PHpeso } from '../utils';
 
 const StoreTag = ({ storeId }: { storeId: string }) => {
   const { data } = trpc.useQuery(['store.getById', storeId]);
 
-  return <div className='bg-gray-300 p-3 rounded-md text-md font-comfortaa'>{data?.name}</div>;
+  return <div className='text-md rounded-md bg-gray-300 p-3 font-comfortaa'>{data?.name}</div>;
 };
 
 export interface ITableDeliveryProps {
@@ -27,6 +29,11 @@ export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
   const { data, isLoading } = trpc.useQuery([
     'delivery.getDeliveries',
     { limit: 10, page, startDate, endDate, storeId, deliveryNumber },
+  ]);
+
+  const { data: exportData, isLoading: fetchingExportData } = trpc.useQuery([
+    'delivery.getDeliveries',
+    { noLimit: true, page: 1, startDate, endDate, storeId, deliveryNumber },
   ]);
 
   const handlePageChange = (page: number) => {
@@ -48,6 +55,20 @@ export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
 
   const onTableRowClick = (deliveryId: string) => setDeliveryId(deliveryId);
 
+  const exportToCsv = () => {
+    if (!exportData?.records) return;
+    const csvConfig = mkConfig({ useKeysAsHeaders: true, filename: `deliveries_${startDate}-${endDate}` });
+    const dataFeed = exportData.records.map((v) => ({
+      store: v.store.name,
+      deliveryNumber: v.deliveryNumber,
+      postingDate: dayjs(v.postingDate).format('MMM DD, YYYY'),
+      amount: PHpeso.format(v.amount),
+      paymentStatus: !!v.paymentId ? 'PAID' : 'UNPAID',
+    }));
+    const csv = generateCsv(csvConfig)(dataFeed);
+    download(csvConfig)(csv);
+  };
+
   return (
     <div>
       {openFilterModal ? (
@@ -62,7 +83,7 @@ export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
       ) : (
         ''
       )}
-      <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>List Deliveries</h1>
+      <h1 className='font-comfortaa text-3xl font-bold md:text-4xl'>List Deliveries</h1>
 
       <br />
 
@@ -72,16 +93,21 @@ export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
 
       <br />
 
-      <div className='flex space-x-5'>
-        {storeId ? (
-          <StoreTag storeId={storeId} />
-        ) : (
-          <div className='bg-gray-300 p-3 rounded-md text-md font-comfortaa'>{'ALL STORES'}</div>
-        )}
-        <div className='flex'>
-          <div className='bg-gray-300 p-3 rounded-md text-md font-comfortaa'>{dayjs(startDate).format('MMM DD, YYYY')}</div>
-          <div className='px-3 flex items-center'>-</div>
-          <div className='bg-gray-300 p-3 rounded-md text-md font-comfortaa'>{dayjs(endDate).format('MMM DD, YYYY')}</div>
+      <div className='flex justify-between'>
+        <div className='flex space-x-5'>
+          {storeId ? (
+            <StoreTag storeId={storeId} />
+          ) : (
+            <div className='text-md rounded-md bg-gray-300 p-3 font-comfortaa'>{'ALL STORES'}</div>
+          )}
+          <div className='flex'>
+            <div className='text-md rounded-md bg-gray-300 p-3 font-comfortaa'>{dayjs(startDate).format('MMM DD, YYYY')}</div>
+            <div className='flex items-center px-3'>-</div>
+            <div className='text-md rounded-md bg-gray-300 p-3 font-comfortaa'>{dayjs(endDate).format('MMM DD, YYYY')}</div>
+          </div>
+        </div>
+        <div>
+          <Button buttonTitle='export' size='sm' onClick={exportToCsv} isLoading={fetchingExportData} />
         </div>
       </div>
 
@@ -96,14 +122,14 @@ export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
         ''
       )}
 
-      <div className='bg-white shadow-lg px-5 py-7 rounded-md overflow-x-auto'>
+      <div className='overflow-x-auto rounded-md bg-white px-5 py-7 shadow-lg'>
         {isLoading ? (
           <TableLoader />
         ) : (
           <>
             <table className='w-full min-w-[800px]'>
               <thead>
-                <tr className='border-gray-500 border-b font-raleway text-xl text-left'>
+                <tr className='border-b border-gray-500 text-left font-raleway text-xl'>
                   <th className='pb-3'>Store</th>
                   <th className='pb-3'>DeliveryNumber</th>
                   <th className='pb-3'>PostingDate</th>
