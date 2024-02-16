@@ -62,16 +62,20 @@ class Service {
       const expenses = [];
 
       for (const expense of expensesResult.records) {
-        const account = await AccountRepository.findAccountById(expense.accountId);
-        expenses.push({
-          ...expense,
-          accountName: account?.accountName || '',
-        });
+        expenses.push(
+          (async () => {
+            const account = await AccountRepository.findAccountById(expense.accountId);
+            return {
+              ...expense,
+              accountName: account?.accountName || '',
+            };
+          })(),
+        );
       }
 
       return {
         ...bill,
-        expenses,
+        expenses: await Promise.all(expenses),
       };
     } catch (err) {
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });

@@ -31,7 +31,7 @@ export default function ListPayments() {
   const { data, isLoading, isError, refetch } = trpc.useQuery([
     'payment.getMany',
     {
-      limit: 2,
+      limit: 10,
       page,
       refNo: stateFilters.refNo,
       vendor: stateFilters.vendor,

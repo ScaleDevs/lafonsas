@@ -61,6 +61,8 @@ model Bill {
   date         DateTime
   invoiceRefNo String   @unique
   amount       Float
+
+  @@index([date])
 }
 
 model Payment {
