@@ -18,7 +18,7 @@ export interface IDetailsProps {
 export default function Details({ referenceNo, billsRefetch }: IDetailsProps) {
   const [isUpdate, setIsUpdate] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const { data, refetch } = trpc.useQuery(['bill.getBill', { refNo: referenceNo }]);
+  const { data, refetch, isLoading: fetchingBill } = trpc.useQuery(['bill.getBill', { refNo: referenceNo }]);
   const { mutate, isSuccess, isLoading: isDeleting } = trpc.useMutation('bill.delete');
 
   const onDelete = () => {
@@ -39,6 +39,14 @@ export default function Details({ referenceNo, billsRefetch }: IDetailsProps) {
     refetch();
   };
 
+  if (fetchingBill)
+    return (
+      <div className='flex h-[40rem] items-center justify-center space-x-3'>
+        <Loader h='h-10' w='w-10' color='fill-yellow-500' />
+        <p>Fetching Information ...</p>
+      </div>
+    );
+
   if (!data) return <></>;
 
   if (isUpdate) return <UpdateForm data={data} refetchCalls={refetchCalls} resetIsUpdate={resetIsUpdate} />;
@@ -50,41 +58,41 @@ export default function Details({ referenceNo, billsRefetch }: IDetailsProps) {
         <Modal w='w-[80%] md: w-[520px]' p='p-8'>
           <div className='flex flex-row justify-center'>
             <Loader h='h-7' w='w-7' />
-            <h1 className='text-xl font-comfortaa'>Removing Bill Record ...</h1>
+            <h1 className='font-comfortaa text-xl'>Removing Bill Record ...</h1>
           </div>
         </Modal>
       </>
     );
 
   return (
-    <div className='bg-white shadow-lg px-5 py-7 rounded-md'>
-      <div className='py-3 w-16'>
+    <div className='rounded-md bg-white px-5 py-7 shadow-lg'>
+      <div className='w-16 py-3'>
         <Button size='sm' buttonTitle='Back' onClick={backToList} font='raleway' />
       </div>
 
       {isSuccess ? (
-        <h1 className='text-red-500 text-lg font-comfortaa'>{data.invoiceRefNo} bill removed from list successfuly !</h1>
+        <h1 className='font-comfortaa text-lg text-red-500'>{data.invoiceRefNo} bill removed from list successfuly !</h1>
       ) : (
         <div className='space-y-5'>
-          <h1 className='font-comfortaa font-bold text-3xl'>Bill Details:</h1>
+          <h1 className='font-comfortaa text-3xl font-bold'>Bill Details:</h1>
           <br />
-          <div className='border-b-[1px] border-gray-500 flex flex-row justify-between'>
-            <h1 className='font-comfortaa font-bold text-2xl'>Date</h1>
+          <div className='flex flex-row justify-between border-b-[1px] border-gray-500'>
+            <h1 className='font-comfortaa text-2xl font-bold'>Date</h1>
             <p className=' text-lg'>{`${tableFormatTimeDisplay(data.date)}`}</p>
           </div>
 
-          <div className='border-b-[1px] border-gray-500 flex flex-row justify-between'>
-            <h1 className='font-comfortaa font-bold text-2xl'>Vendor</h1>
+          <div className='flex flex-row justify-between border-b-[1px] border-gray-500'>
+            <h1 className='font-comfortaa text-2xl font-bold'>Vendor</h1>
             <p className=' text-lg'>{data.vendor}</p>
           </div>
 
-          <div className='border-b-[1px] border-gray-500 flex flex-row justify-between'>
-            <h1 className='font-comfortaa font-bold text-2xl'>Reference Number</h1>
+          <div className='flex flex-row justify-between border-b-[1px] border-gray-500'>
+            <h1 className='font-comfortaa text-2xl font-bold'>Reference Number</h1>
             <p className=' text-lg'>{data.invoiceRefNo}</p>
           </div>
 
-          <div className='border-b-[1px] border-gray-500 flex flex-row justify-between'>
-            <h1 className='font-comfortaa font-bold text-2xl'>Amount</h1>
+          <div className='flex flex-row justify-between border-b-[1px] border-gray-500'>
+            <h1 className='font-comfortaa text-2xl font-bold'>Amount</h1>
             <p className=' text-lg'>{PHpeso.format(data.amount)}</p>
           </div>
 
@@ -92,7 +100,7 @@ export default function Details({ referenceNo, billsRefetch }: IDetailsProps) {
             <div className='min-w-[800px]'>
               <table className='w-full'>
                 <thead>
-                  <tr className='border-gray-500 border-b font-raleway text-xl text-center'>
+                  <tr className='border-b border-gray-500 text-center font-raleway text-xl'>
                     <th className='pb-3'>DATE</th>
                     <th className='pb-3'>ACCOUNT</th>
                     <th className='pb-3'>AMOUNT</th>
@@ -102,7 +110,7 @@ export default function Details({ referenceNo, billsRefetch }: IDetailsProps) {
                 <tbody>
                   {data ? (
                     data.expenses.length === 0 ? (
-                      <tr className='font-comfortaa h-14 text-center'>
+                      <tr className='h-14 text-center font-comfortaa'>
                         <td className='show-modal-ref text-red-500' colSpan={4}>
                           NO RECORD
                         </td>
@@ -111,7 +119,7 @@ export default function Details({ referenceNo, billsRefetch }: IDetailsProps) {
                       data.expenses.map((entry, index) => (
                         <tr
                           key={index}
-                          className='h-14 text-center hover:cursor-pointer hover:bg-gray-300 transition-colors duration-200'
+                          className='h-14 text-center transition-colors duration-200 hover:cursor-pointer hover:bg-gray-300'
                         >
                           <td>{dayjs(entry.date).format('MMM DD, YYYY')}</td>
                           <td>{capFirstLetters(entry.accountName)}</td>
@@ -129,18 +137,18 @@ export default function Details({ referenceNo, billsRefetch }: IDetailsProps) {
           <br />
 
           {confirmDelete ? (
-            <div className='flex flex-row space-x-2 items-end'>
+            <div className='flex flex-row items-end space-x-2'>
               <h1 className='font-comfortaa font-bold text-red-500'>Are you sure you want to delete this bill?</h1>
-              <button className='bg-red-500 px-5 py-2 rounded-sm hover:bg-red-400' onClick={onDelete}>
+              <button className='rounded-sm bg-red-500 px-5 py-2 hover:bg-red-400' onClick={onDelete}>
                 YES
               </button>
             </div>
           ) : (
-            <div className='space-x-3 mt-3 font-comfortaa text-white'>
-              <button className='bg-blue-500 px-5 py-2 rounded-sm hover:bg-blue-400' onClick={() => setIsUpdate(true)}>
+            <div className='mt-3 space-x-3 font-comfortaa text-white'>
+              <button className='rounded-sm bg-blue-500 px-5 py-2 hover:bg-blue-400' onClick={() => setIsUpdate(true)}>
                 UPDATE
               </button>
-              <button className='bg-red-500 px-5 py-2 rounded-sm hover:bg-red-400' onClick={() => setConfirmDelete(true)}>
+              <button className='rounded-sm bg-red-500 px-5 py-2 hover:bg-red-400' onClick={() => setConfirmDelete(true)}>
                 DELETE
               </button>
             </div>

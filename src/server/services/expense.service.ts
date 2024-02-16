@@ -28,21 +28,27 @@ class Service {
       const expenses = [];
 
       for (const expense of expensesResult.records) {
-        const account = await AccountRepository.findAccountById(expense.accountId);
-        const bill = await BillRepository.findBillById(expense.billId);
+        expenses.push(
+          (async () => {
+            const [account, bill] = await Promise.all([
+              AccountRepository.findAccountById(expense.accountId),
+              BillRepository.findBillById(expense.billId),
+            ]);
 
-        if (!bill) throw new TRPCError({ code: 'NOT_FOUND', message: 'No Bill Found' });
+            if (!bill) throw new TRPCError({ code: 'NOT_FOUND', message: 'No Bill Found' });
 
-        expenses.push({
-          ...expense,
-          accountName: account?.accountName || '',
-          billInvoiceRefNo: bill.invoiceRefNo,
-        });
+            return {
+              ...expense,
+              accountName: account?.accountName || '',
+              billInvoiceRefNo: bill.invoiceRefNo,
+            };
+          })(),
+        );
       }
 
       return {
         pageCount: expensesResult.pageCount,
-        records: expenses,
+        records: await Promise.all(expenses),
       };
     } catch (err) {
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });

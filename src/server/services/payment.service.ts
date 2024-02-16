@@ -30,8 +30,10 @@ class Service {
 
       if (!payment) throw new TRPCError({ code: 'NOT_FOUND', message: 'PAYMENT RECORD NOT FOUND' });
 
-      const deliveries = await DeliveryRepository.findDeliveriesByPaymentId(payment.paymentId);
-      const store = await StoreRepository.findStoreById(payment.storeId);
+      const [deliveries, store] = await Promise.all([
+        DeliveryRepository.findDeliveriesByPaymentId(payment.paymentId),
+        StoreRepository.findStoreById(payment.storeId),
+      ]);
 
       return {
         ...payment,
@@ -50,25 +52,29 @@ class Service {
       const vendorMap = new Map<string, string>();
 
       for (const payment of paymentsResult.records) {
-        let vendorName = vendorMap.get(payment.storeId);
+        payments.push(
+          (async () => {
+            let vendorName = vendorMap.get(payment.storeId);
 
-        if (!vendorName) {
-          const store = await StoreRepository.findStoreById(payment.storeId);
-          if (!!store) {
-            vendorMap.set(payment.storeId, store.name);
-            vendorName = store.name;
-          }
-        }
+            if (!vendorName) {
+              const store = await StoreRepository.findStoreById(payment.storeId);
+              if (!!store) {
+                vendorMap.set(payment.storeId, store.name);
+                vendorName = store.name;
+              }
+            }
 
-        payments.push({
-          ...payment,
-          vendor: vendorName ?? 'N/A',
-        });
+            return {
+              ...payment,
+              vendor: vendorName ?? 'N/A',
+            };
+          })(),
+        );
       }
 
       return {
         pageCount: paymentsResult.pageCount,
-        records: payments,
+        records: await Promise.all(payments),
       };
     } catch (err) {
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
