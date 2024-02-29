@@ -3,13 +3,20 @@ import { Prisma } from '@prisma/client';
 import prisma from './prisma.client';
 import { IExpense, IPaginationInputs } from '@/utils/types';
 
+export type DateFilter = {
+  startDate: Date | string;
+  endDate: Date | string;
+};
+
+export type IGetExportsData = {
+  dateFilter: DateFilter;
+  accountId?: string;
+};
+
 export type IFindExpensesInput = {
   accountId?: string;
   billId?: string;
-  dateFilter?: {
-    startDate: Date | string;
-    endDate: Date | string;
-  };
+  dateFilter?: DateFilter;
 } & IPaginationInputs;
 
 class Respository {
@@ -53,19 +60,68 @@ class Respository {
         equals: billId,
       };
 
-    const result = await prisma.expense.findMany({
-      where: whereFilter,
-      orderBy: { date: 'asc' },
-      skip: page > 0 ? (page - 1) * limit : 0,
-      take: !!noLimit ? undefined : limit,
-    });
-
-    const totalCount = await prisma.expense.count({ where: whereFilter });
+    const [result, totalCount] = await Promise.all([
+      prisma.expense.findMany({
+        where: whereFilter,
+        orderBy: { date: 'asc' },
+        skip: page > 0 ? (page - 1) * limit : 0,
+        take: !!noLimit ? undefined : limit,
+        include: {
+          account: {
+            select: {
+              accountName: true,
+            },
+          },
+          bill: {
+            select: {
+              invoiceRefNo: true,
+            },
+          },
+        },
+      }),
+      prisma.expense.count({ where: whereFilter }),
+    ]);
 
     return {
       pageCount: Math.ceil(totalCount / limit),
       records: result,
     };
+  }
+
+  public async getExportsData({ dateFilter, accountId }: IGetExportsData) {
+    const whereFilter: Prisma.ExpenseWhereInput = {};
+
+    if (!dateFilter) throw new TRPCError({ code: 'BAD_REQUEST', message: 'There are no filters applied!' });
+
+    if (!!dateFilter)
+      whereFilter['date'] = {
+        gte: dateFilter.startDate,
+        lte: dateFilter.endDate,
+      };
+
+    if (!!accountId)
+      whereFilter['accountId'] = {
+        equals: accountId,
+      };
+
+    const result = await prisma.expense.findMany({
+      where: whereFilter,
+      orderBy: { date: 'asc' },
+      include: {
+        account: {
+          select: {
+            accountName: true,
+          },
+        },
+        bill: {
+          select: {
+            invoiceRefNo: true,
+          },
+        },
+      },
+    });
+
+    return result;
   }
 
   public async updateExpense(expenseId: string, expensePartialData: Partial<IExpense>) {

@@ -43,10 +43,8 @@ export default function ListExpenses() {
     isLoading: fetchingExportData,
     isError: exportDataError,
   } = trpc.useQuery([
-    'expense.getMany',
+    'expense.getExportsData',
     {
-      noLimit: true,
-      page: 1,
       dateFilters: {
         startDate: stateFilters.startDate,
         endDate: stateFilters.endDate,
@@ -62,13 +60,14 @@ export default function ListExpenses() {
   const handlePageChange = (page: number) => setPage(page);
 
   const exportToCsv = () => {
-    if (!exportData?.records || exportDataError) return;
+    if (!exportData || exportDataError) return;
     const csvConfig = mkConfig({
       useKeysAsHeaders: true,
       filename: `expenses_${stateFilters.startDate}-${stateFilters.endDate}`,
     });
-    const dataFeed = exportData.records.map((v) => ({
-      account: capFirstLetters(v.accountName),
+
+    const dataFeed = exportData.map((v) => ({
+      account: capFirstLetters(v.account.accountName),
       date: dayjs(v.date).format('MMM DD, YYYY'),
       amount: PHpeso.format(v.amount),
       description: v.description,
@@ -159,9 +158,9 @@ export default function ListExpenses() {
                       <tr
                         key={expense.expenseId}
                         className='h-14 text-center font-comfortaa transition-colors duration-200 hover:cursor-pointer hover:bg-gray-300'
-                        onClick={() => onRecordClick(expense.billInvoiceRefNo)}
+                        onClick={() => onRecordClick(expense.bill.invoiceRefNo)}
                       >
-                        <td className='show-modal-ref'>{capFirstLetters(expense.accountName)}</td>
+                        <td className='show-modal-ref'>{capFirstLetters(expense.account.accountName)}</td>
                         <td className='show-modal-ref'>{dayjs(expense.date).format('MMM DD, YYYY')}</td>
                         <td className='show-modal-ref'>{PHpeso.format(expense.amount)}</td>
                         <td className='show-modal-ref'>{expense.description}</td>

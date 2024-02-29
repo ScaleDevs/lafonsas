@@ -1,9 +1,7 @@
 import dayjs from 'dayjs';
 import { IExpense } from '@/utils/types';
-import { ExpenseRepository, IFindExpensesInput } from '@/repo/expense.repo';
-import { AccountRepository } from '@/repo/account.repo';
+import { ExpenseRepository, IFindExpensesInput, IGetExportsData } from '@/repo/expense.repo';
 import { TRPCError } from '@trpc/server';
-import { BillRepository } from '../repository/bill.repo';
 
 class Service {
   public async createExpense(data: Omit<IExpense, 'expenseId'>) {
@@ -25,32 +23,24 @@ class Service {
   public async findExpenses(inputs: IFindExpensesInput) {
     try {
       const expensesResult = await ExpenseRepository.findExpenses(inputs);
-      const expenses = [];
-
-      for (const expense of expensesResult.records) {
-        expenses.push(
-          (async () => {
-            const [account, bill] = await Promise.all([
-              AccountRepository.findAccountById(expense.accountId),
-              BillRepository.findBillById(expense.billId),
-            ]);
-
-            if (!bill) throw new TRPCError({ code: 'NOT_FOUND', message: 'No Bill Found' });
-
-            return {
-              ...expense,
-              accountName: account?.accountName || '',
-              billInvoiceRefNo: bill.invoiceRefNo,
-            };
-          })(),
-        );
-      }
 
       return {
         pageCount: expensesResult.pageCount,
-        records: await Promise.all(expenses),
+        records: expensesResult.records,
       };
     } catch (err) {
+      console.error('Error => findExpenses() :: ', err);
+      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
+    }
+  }
+
+  public async getExportsData(inputs: IGetExportsData) {
+    try {
+      const expensesResult = await ExpenseRepository.getExportsData(inputs);
+
+      return expensesResult;
+    } catch (err) {
+      console.error('Error => getExportsData() :: ', err);
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
     }
   }

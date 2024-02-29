@@ -52,4 +52,22 @@ export const expenseRouter = createRouter()
         },
       });
     },
+  })
+  .query('getExportsData', {
+    input: z.object({
+      accountId: z.string().optional(),
+      dateFilters: z.object({
+        startDate: z.string(),
+        endDate: z.string(),
+      }),
+    }),
+    async resolve({ input }) {
+      return ExpenseService.getExportsData({
+        ...input,
+        dateFilter: {
+          startDate: dayjs(input.dateFilters.startDate).startOf('day').toISOString(),
+          endDate: dayjs(input.dateFilters.endDate).endOf('day').toISOString(),
+        },
+      });
+    },
   });

@@ -51,16 +51,18 @@ model Delivery {
 }
 
 model Account {
-  accountId   String @id @default(auto()) @map("_id") @db.ObjectId
+  accountId   String    @id @default(auto()) @map("_id") @db.ObjectId
   accountName String
+  expenses    Expense[]
 }
 
 model Bill {
-  billId       String   @id @default(auto()) @map("_id") @db.ObjectId
+  billId       String    @id @default(auto()) @map("_id") @db.ObjectId
   vendor       String
   date         DateTime
-  invoiceRefNo String   @unique
+  invoiceRefNo String    @unique
   amount       Float
+  expenses     Expense[]
 
   @@index([date])
 }
@@ -85,8 +87,10 @@ model Expense {
   date        DateTime
   amount      Float
   description String
-  accountId   String
-  billId      String
+  account     Account  @relation(fields: [accountId], references: [accountId])
+  accountId   String   @db.ObjectId
+  bill        Bill?    @relation(fields: [billId], references: [billId])
+  billId      String?  @db.ObjectId
 
   @@index([accountId])
   @@index([billId])
