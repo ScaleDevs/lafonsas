@@ -25,12 +25,14 @@ enum PaymentMode {
 }
 
 model Store {
-  id          String     @id @default(auto()) @map("_id") @db.ObjectId
-  name        String     @unique
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique
   isParent    Boolean?
-  parentStore String?    @db.ObjectId
-  products    Product[]
-  deliveries  Delivery[]
+  parentStore String?  @db.ObjectId
+
+  products   Product[]
+  deliveries Delivery[]
+  payments   Payment[]
 
   @@index(parentStore)
 }
@@ -42,9 +44,10 @@ model Delivery {
   amount         Float
   orders         Order[]
   returnSlip     Order[]
-  store          Store    @relation(fields: [storeId], references: [id])
   storeId        String   @db.ObjectId
   paymentId      String?  @db.ObjectId
+
+  store Store @relation(fields: [storeId], references: [id])
 
   @@index([storeId, paymentId])
   @@index(postingDate)
@@ -69,7 +72,7 @@ model Bill {
 
 model Payment {
   paymentId       String      @id @default(auto()) @map("_id") @db.ObjectId
-  storeId         String
+  storeId         String      @db.ObjectId
   modeOfPayment   PaymentMode
   bankName        String?
   refNo           String      @unique
@@ -79,6 +82,8 @@ model Payment {
   widthHoldingTax Float
   otherDeductions Float
 
+  store Store @relation(fields: [storeId], references: [id])
+
   @@index([refDate, storeId])
 }
 
@@ -87,10 +92,11 @@ model Expense {
   date        DateTime
   amount      Float
   description String
-  account     Account  @relation(fields: [accountId], references: [accountId])
   accountId   String   @db.ObjectId
-  bill        Bill?    @relation(fields: [billId], references: [billId])
   billId      String?  @db.ObjectId
+
+  bill    Bill?   @relation(fields: [billId], references: [billId])
+  account Account @relation(fields: [accountId], references: [accountId])
 
   @@index([accountId])
   @@index([billId])

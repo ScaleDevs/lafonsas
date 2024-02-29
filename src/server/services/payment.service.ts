@@ -26,7 +26,7 @@ class Service {
       let payment: IPayment | null = null;
 
       if (paymentId) payment = await PaymentRepository.findPaymentById(paymentId);
-      if (refNo) payment = await PaymentRepository.findPaymentByRefNo(refNo);
+      else if (refNo) payment = await PaymentRepository.findPaymentByRefNo(refNo);
 
       if (!payment) throw new TRPCError({ code: 'NOT_FOUND', message: 'PAYMENT RECORD NOT FOUND' });
 
@@ -48,35 +48,13 @@ class Service {
   public async findPayments(inputs: IFindPaymentsInput) {
     try {
       const paymentsResult = await PaymentRepository.findPayments(inputs);
-      const payments = [];
-      const vendorMap = new Map<string, string>();
-
-      for (const payment of paymentsResult.records) {
-        payments.push(
-          (async () => {
-            let vendorName = vendorMap.get(payment.storeId);
-
-            if (!vendorName) {
-              const store = await StoreRepository.findStoreById(payment.storeId);
-              if (!!store) {
-                vendorMap.set(payment.storeId, store.name);
-                vendorName = store.name;
-              }
-            }
-
-            return {
-              ...payment,
-              vendor: vendorName ?? 'N/A',
-            };
-          })(),
-        );
-      }
 
       return {
         pageCount: paymentsResult.pageCount,
-        records: await Promise.all(payments),
+        records: paymentsResult.records,
       };
     } catch (err) {
+      console.log(err);
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
     }
   }

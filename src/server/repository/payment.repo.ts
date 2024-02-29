@@ -43,26 +43,32 @@ class Respository {
         gte: dateFilter.startDate,
         lte: dateFilter.endDate,
       };
-      
+
       if (!!vendor)
         whereFilter['storeId'] = {
           equals: vendor,
         };
-      else
-        whereFilter['storeId'] = {
-          startsWith: '',
-        };
     }
 
-    const result = await prisma.payment.findMany({
-      where: whereFilter,
-      distinct: ['paymentId'],
-      orderBy: { refDate: 'asc' },
-      skip: page > 0 ? (page - 1) * limit : 0,
-      take: !!noLimit ? undefined : limit,
-    });
-
-    const totalCount = await prisma.payment.count({ where: whereFilter });
+    const [result, totalCount] = await Promise.all([
+      prisma.payment.findMany({
+        where: whereFilter,
+        orderBy: { refDate: 'asc' },
+        skip: page > 0 ? (page - 1) * limit : 0,
+        take: !!noLimit ? undefined : limit,
+        select: {
+          refDate: true,
+          refNo: true,
+          amount: true,
+          store: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      }),
+      prisma.payment.count({ where: whereFilter }),
+    ]);
 
     return {
       pageCount: Math.ceil(totalCount / limit),

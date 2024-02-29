@@ -70,7 +70,7 @@ export default function ListPayments() {
       filename: `payments_${stateFilters.startDate}-${stateFilters.endDate}`,
     });
     const dataFeed = exportData.records.map((v) => ({
-      vendor: v.vendor,
+      vendor: v.store.name,
       referenceNumber: v.refNo,
       referenceDate: dayjs(v.refDate).format('MMM DD, YYYY'),
       amount: PHpeso.format(v.amount),
@@ -155,11 +155,11 @@ export default function ListPayments() {
                     {data
                       ? data.records.map((row) => (
                           <tr
-                            key={row.paymentId}
+                            key={row.refNo}
                             className='h-14 text-center font-comfortaa transition-colors duration-200 hover:cursor-pointer hover:bg-gray-200'
                             onClick={() => onRecordClick(row.refNo)}
                           >
-                            <td className='show-modal-ref'>{row.vendor}</td>
+                            <td className='show-modal-ref'>{row.store.name}</td>
                             <td className='show-modal-ref'>{row.refNo}</td>
                             <td className='show-modal-ref'>{dayjs(row.refDate).format('MMM DD, YYYY')}</td>
                             <td className='show-modal-ref'>{PHpeso.format(row.amount)}</td>
