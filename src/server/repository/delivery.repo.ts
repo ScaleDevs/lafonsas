@@ -54,28 +54,29 @@ class Respository {
       storeId,
     };
 
-    const result = await prisma.delivery.findMany({
-      where: whereFilter,
-      orderBy: { postingDate: 'asc' },
-      skip: page > 0 ? (page - 1) * limit : 0,
-      take: !!noLimit ? undefined : limit,
-      distinct: ['id'],
-      select: {
-        id: true,
-        storeId: true,
-        deliveryNumber: true,
-        postingDate: true,
-        amount: true,
-        paymentId: true,
-        store: {
-          select: {
-            name: true,
+    const [result, totalCount] = await Promise.all([
+      prisma.delivery.findMany({
+        where: whereFilter,
+        orderBy: { postingDate: 'asc' },
+        skip: page > 0 ? (page - 1) * limit : 0,
+        take: !!noLimit ? undefined : limit,
+        distinct: ['id'],
+        select: {
+          id: true,
+          storeId: true,
+          deliveryNumber: true,
+          postingDate: true,
+          amount: true,
+          paymentId: true,
+          store: {
+            select: {
+              name: true,
+            },
           },
         },
-      },
-    });
-
-    const totalCount = await prisma.delivery.count({ where: whereFilter });
+      }),
+      prisma.delivery.count({ where: whereFilter }),
+    ]);
 
     return {
       pageCount: Math.ceil(totalCount / limit),

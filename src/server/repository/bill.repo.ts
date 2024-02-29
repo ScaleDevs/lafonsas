@@ -40,14 +40,15 @@ class Respository {
         contains: vendor,
       };
 
-    const result = await prisma.bill.findMany({
-      where: whereFilter,
-      orderBy: { date: 'asc' },
-      skip: page > 0 ? (page - 1) * limit : 0,
-      take: limit,
-    });
-
-    const totalCount = await prisma.bill.count({ where: whereFilter });
+    const [result, totalCount] = await Promise.all([
+      prisma.bill.findMany({
+        where: whereFilter,
+        orderBy: { date: 'asc' },
+        skip: page > 0 ? (page - 1) * limit : 0,
+        take: limit,
+      }),
+      prisma.bill.count({ where: whereFilter }),
+    ]);
 
     return {
       pageCount: Math.ceil(totalCount / limit),
