@@ -4,13 +4,22 @@ import { IPayment } from '@/utils/types';
 import { PaymentRepository, IFindPaymentsInput } from '@/repo/payment.repo';
 import { DeliveryRepository } from '@/repo/delivery.repo';
 import { StoreRepository } from '@/repo/store.repo';
+import prisma from '../repository/prisma.client';
 
 class Service {
   public async createPayment(paymentData: Omit<IPayment, 'paymentId'>, deliveryIds: string[]) {
     try {
       const result = await PaymentRepository.createPayment(paymentData);
 
-      for (const delveryId of deliveryIds) await DeliveryRepository.updateDelivery(delveryId, { paymentId: result.paymentId });
+      if (!!result)
+        await prisma.delivery.updateMany({
+          where: {
+            id: {
+              in: deliveryIds,
+            },
+          },
+          data: { paymentId: result.paymentId },
+        });
 
       return result;
     } catch (err) {
