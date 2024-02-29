@@ -158,7 +158,7 @@ export default function ListExpenses() {
                       <tr
                         key={expense.expenseId}
                         className='h-14 text-center font-comfortaa transition-colors duration-200 hover:cursor-pointer hover:bg-gray-300'
-                        onClick={() => onRecordClick(expense.bill.invoiceRefNo)}
+                        onClick={() => onRecordClick(expense.bill?.invoiceRefNo ?? '')}
                       >
                         <td className='show-modal-ref'>{capFirstLetters(expense.account.accountName)}</td>
                         <td className='show-modal-ref'>{dayjs(expense.date).format('MMM DD, YYYY')}</td>
