@@ -34,13 +34,14 @@ type FormSchemaType = z.infer<typeof schema>;
 export interface IUpdateProps {
   data: IBill & {
     expenses: {
-      accountName: string;
-      expenseId: string;
+      accountId: string;
       date: Date;
       amount: number;
+      expenseId: string;
       description: string;
-      accountId: string;
-      billId: string;
+      account: {
+        accountName: string;
+      };
     }[];
   };
   refetchCalls: any;
@@ -127,8 +128,8 @@ export default function UpdateForm({ data, refetchCalls, resetIsUpdate }: IUpdat
   };
 
   return (
-    <div className='bg-white shadow-lg px-5 py-7 rounded-md'>
-      <div className='py-3 w-16'>
+    <div className='rounded-md bg-white px-5 py-7 shadow-lg'>
+      <div className='w-16 py-3'>
         <Button size='sm' buttonTitle='Back' onClick={resetIsUpdate} font='raleway' />
       </div>
 
@@ -147,7 +148,7 @@ export default function UpdateForm({ data, refetchCalls, resetIsUpdate }: IUpdat
         ''
       )}
 
-      <h1 className='text-3xl font-raleway font-semibold'>UPDATE BILL DETAILS</h1>
+      <h1 className='font-raleway text-3xl font-semibold'>UPDATE BILL DETAILS</h1>
 
       <br />
 
@@ -189,7 +190,7 @@ export default function UpdateForm({ data, refetchCalls, resetIsUpdate }: IUpdat
         <br />
 
         <div>
-          <h1 className='text-md md:text-lg font-semibold font-raleway'>
+          <h1 className='text-md font-raleway font-semibold md:text-lg'>
             Expenses : <span className='text-red-500'>*</span>
           </h1>
           {errors.expenses?.message ? <FadeIn cssText='font-raleway text-red-500'>{errors.expenses?.message}</FadeIn> : ''}
@@ -198,7 +199,7 @@ export default function UpdateForm({ data, refetchCalls, resetIsUpdate }: IUpdat
               return (
                 <div
                   key={field.id}
-                  className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-2 mt-2 w-full bg-zinc-300 p-3 rounded-sm'
+                  className='mt-2 grid w-full grid-cols-1 gap-2 rounded-sm bg-zinc-300 p-3 md:grid-cols-2 lg:grid-cols-5'
                 >
                   <TextField
                     required
@@ -242,7 +243,7 @@ export default function UpdateForm({ data, refetchCalls, resetIsUpdate }: IUpdat
                   />
                   <button
                     type='button'
-                    className='group flex flex-row items-center justify-center border border-red-500 hover:bg-red-500 px-3 rounded-md transition-colors duration-200 w-[100%] md:w-16 h-16 lg:h-[100%]'
+                    className='group flex h-16 w-[100%] flex-row items-center justify-center rounded-md border border-red-500 px-3 transition-colors duration-200 hover:bg-red-500 md:w-16 lg:h-[100%]'
                     onClick={() => remove(index)}
                   >
                     <IconComp iconName='TrashIcon' iconProps={{ fillColor: 'text-red-500 group-hover:text-white' }} />
@@ -253,7 +254,7 @@ export default function UpdateForm({ data, refetchCalls, resetIsUpdate }: IUpdat
           </div>
           <button
             type='button'
-            className='bg-primary text-white rounded-sm py-1 px-5 text-md mt-3 text-xl font-raleway font-semibold'
+            className='text-md mt-3 rounded-sm bg-primary px-5 py-1 font-raleway text-xl font-semibold text-white'
             onClick={() => append({ expenseId: '', date: '', amount: 0, description: '', accountId: '' })}
           >
             +

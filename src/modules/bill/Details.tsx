@@ -122,7 +122,7 @@ export default function Details({ referenceNo, billsRefetch }: IDetailsProps) {
                           className='h-14 text-center transition-colors duration-200 hover:cursor-pointer hover:bg-gray-300'
                         >
                           <td>{dayjs(entry.date).format('MMM DD, YYYY')}</td>
-                          <td>{capFirstLetters(entry.accountName)}</td>
+                          <td>{capFirstLetters(entry.account.accountName)}</td>
                           <td>{PHpeso.format(entry.amount)}</td>
                           <td>{entry.description}</td>
                         </tr>

@@ -1,8 +1,9 @@
+import { Prisma } from '@prisma/client';
 import { IExpense, IBill } from '@/utils/types';
 import { ExpenseRepository } from '@/repo/expense.repo';
 import { BillRepository, IFindBillsInput } from '@/repo/bill.repo';
-import { AccountRepository } from '@/repo/account.repo';
 import { TRPCError } from '@trpc/server';
+import prisma from '../repository/prisma.client';
 
 type ErrorCode =
   | 'INTERNAL_SERVER_ERROR'
@@ -51,33 +52,37 @@ class Service {
   public async findBill({ refNo, billId }: { refNo?: string; billId?: string }) {
     try {
       if (!refNo && !billId) throw new TRPCError({ code: 'BAD_REQUEST', message: 'No ID Provided' });
-      let bill: IBill | null = null;
 
-      if (billId) bill = await BillRepository.findBillById(billId);
-      else if (refNo) bill = await BillRepository.findBillByReferenceNumber(refNo);
+      const whereFilter: Prisma.BillWhereInput = {};
+
+      if (billId) whereFilter['billId'] = billId;
+      else if (refNo) whereFilter['invoiceRefNo'] = refNo;
+
+      const bill = await prisma.bill.findFirst({
+        where: whereFilter,
+        include: {
+          expenses: {
+            select: {
+              expenseId: true,
+              date: true,
+              amount: true,
+              description: true,
+              accountId: true,
+              account: {
+                select: {
+                  accountName: true,
+                },
+              },
+            },
+          },
+        },
+      });
 
       if (!bill) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Bill does not Exist' });
 
-      const expensesResult = await ExpenseRepository.findExpenses({ billId: bill?.billId, page: 1, limit: 1000 });
-      const expenses = [];
-
-      for (const expense of expensesResult.records) {
-        expenses.push(
-          (async () => {
-            const account = await AccountRepository.findAccountById(expense.accountId);
-            return {
-              ...expense,
-              accountName: account?.accountName || '',
-            };
-          })(),
-        );
-      }
-
-      return {
-        ...bill,
-        expenses: await Promise.all(expenses),
-      };
+      return bill;
     } catch (err) {
+      console.log(err);
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
     }
   }

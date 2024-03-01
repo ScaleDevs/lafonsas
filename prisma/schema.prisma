@@ -97,8 +97,8 @@ model Expense {
   accountId   String   @db.ObjectId
   billId      String?  @db.ObjectId
 
-  bill    Bill?   @relation(fields: [billId], references: [billId])
   account Account @relation(fields: [accountId], references: [accountId])
+  bill    Bill?   @relation(fields: [billId], references: [billId])
 
   @@index([accountId])
   @@index([billId])
