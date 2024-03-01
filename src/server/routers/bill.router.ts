@@ -50,8 +50,6 @@ export const billRouter = createRouter()
         .optional(),
     }),
     async resolve({ input }) {
-      console.log(input);
-
       const result = await BillService.updateBill(input.billId, input.partialData);
 
       if (input.expenses)

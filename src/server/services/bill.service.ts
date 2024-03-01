@@ -91,6 +91,7 @@ class Service {
     try {
       return BillRepository.findBills(params);
     } catch (err) {
+      console.log(err);
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
     }
   }
@@ -99,6 +100,7 @@ class Service {
     try {
       return BillRepository.updateBill(billId, partialData);
     } catch (err) {
+      console.log(err);
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
     }
   }
@@ -107,6 +109,7 @@ class Service {
     try {
       return BillRepository.deleteBill(billId);
     } catch (err) {
+      console.log(err);
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
     }
   }
