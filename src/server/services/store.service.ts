@@ -1,6 +1,7 @@
 import { IStore } from '@/utils/types';
 import { IFindStoresInput, StoreRepository } from '@/server/repository/store.repo';
 import { TRPCError } from '@trpc/server';
+import prisma from '../repository/prisma.client';
 
 class Service {
   public async createStore(storeData: Omit<IStore, 'id' | 'parentStore'> & { childStores?: string[] }) {
@@ -57,6 +58,17 @@ class Service {
 
   public async deleteStore(storeId: string) {
     try {
+      await prisma.store.updateMany({
+        where: {
+          parentStore: storeId,
+        },
+        data: {
+          parentStore: {
+            unset: true,
+          },
+        },
+      });
+
       return StoreRepository.deleteStore(storeId);
     } catch (err) {
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
