@@ -64,7 +64,7 @@ type FormSchemaType = z.infer<typeof schema>;
 export default function CreatePayment() {
   const [error, setError] = useState('');
 
-  const { mutate, isLoading, isSuccess, isError, error: errs } = trpc.useMutation('payment.create');
+  const { mutate, isLoading, isSuccess } = trpc.useMutation('payment.create');
   const { data } = trpc.useQuery(['store.getStores', { limit: 1000 }]);
 
   const {
@@ -104,7 +104,7 @@ export default function CreatePayment() {
         },
         onError(err) {
           console.log(err);
-          setError('Something Went Wrong');
+          setError(err.message ?? 'Something Went Wrong');
         },
       },
     );
@@ -126,17 +126,16 @@ export default function CreatePayment() {
       </Head>
 
       <ModalLoader open={isLoading}>Saving Payment ...</ModalLoader>
-      <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>Create Payment</h1>
+      <h1 className='font-comfortaa text-3xl font-bold md:text-4xl'>Create Payment</h1>
       <br />
       <form
-        className='flex flex-col space-y-4 md:w-[100%] bg-white p-8 rounded-md shadow-md overflow-hidden'
+        className='flex flex-col space-y-4 overflow-hidden rounded-md bg-white p-8 shadow-md md:w-[100%]'
         onSubmit={handleSubmit(submitPaymentEntry)}
       >
         {isSuccess && !error ? <Notification rounded='sm' type='success' message='Payment Saved' /> : ''}
-        {isError ? <Notification rounded='sm' type='error' message={errs.message} /> : ''}
         {!!error ? <Notification rounded='sm' type='error' message={error} /> : ''}
 
-        <div className='flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-5'>
+        <div className='flex flex-col space-y-4 md:flex-row md:space-x-5 md:space-y-0'>
           <SelectField
             required
             label='Store'
@@ -160,7 +159,7 @@ export default function CreatePayment() {
           />
         </div>
 
-        <div className='flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-5'>
+        <div className='flex flex-col space-y-4 md:flex-row md:space-x-5 md:space-y-0'>
           <TextField
             required
             label='Bank Name'
@@ -179,7 +178,7 @@ export default function CreatePayment() {
           />
         </div>
 
-        <div className='flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-5'>
+        <div className='flex flex-col space-y-4 md:flex-row md:space-x-5 md:space-y-0'>
           <TextField
             required
             type='date'
@@ -198,7 +197,7 @@ export default function CreatePayment() {
           />
         </div>
 
-        <div className='flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-5'>
+        <div className='flex flex-col space-y-4 lg:flex-row lg:space-x-5 lg:space-y-0'>
           <TextField
             required
             type='number'
@@ -240,9 +239,9 @@ export default function CreatePayment() {
             watch('deliveries')?.length > 0
           }
         >
-          <div className='rounded-sm w-full md:w-80 shadow-xl p-5 bg-gray-200'>
+          <div className='w-full rounded-sm bg-gray-200 p-5 shadow-xl md:w-80'>
             <div className='flex justify-between'>
-              <span className='font-semibold font-raleway'>Total Deductions:</span>{' '}
+              <span className='font-raleway font-semibold'>Total Deductions:</span>{' '}
               <span>
                 {PHpeso.format(
                   watch('paymentData.badOrder') + watch('paymentData.widthHoldingTax') + watch('paymentData.otherDeductions'),
@@ -250,11 +249,11 @@ export default function CreatePayment() {
               </span>
             </div>
             <div className='flex justify-between'>
-              <span className='font-semibold font-raleway'>Total Delivery Amount:</span>{' '}
+              <span className='font-raleway font-semibold'>Total Delivery Amount:</span>{' '}
               <span>{PHpeso.format(getAmountOfDeliveries(watch('deliveries')))}</span>
             </div>
             <div className='flex justify-between'>
-              <span className='font-semibold font-raleway'>Expected Amount:</span>{' '}
+              <span className='font-raleway font-semibold'>Expected Amount:</span>{' '}
               <span>
                 {PHpeso.format(
                   getAmountOfDeliveries(watch('deliveries')) -
@@ -263,7 +262,7 @@ export default function CreatePayment() {
               </span>
             </div>
             <div className='flex justify-between'>
-              <span className='font-semibold font-raleway'>Actual Amount:</span>{' '}
+              <span className='font-raleway font-semibold'>Actual Amount:</span>{' '}
               <span>{PHpeso.format(watch('paymentData.amount'))}</span>
             </div>
           </div>

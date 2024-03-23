@@ -22,8 +22,12 @@ class Service {
         });
 
       return result;
-    } catch (err) {
+    } catch (err: any) {
       console.log(err);
+
+      if (!!err.message.includes('Unique constraint'))
+        throw new TRPCError({ code: 'BAD_REQUEST', message: 'Reference Number Already Exist' });
+
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
     }
   }
