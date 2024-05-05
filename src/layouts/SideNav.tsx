@@ -128,6 +128,7 @@ export default function SideNav() {
       <button onClick={toggleSideNav} className='absolute p-3 sm:hidden'>
         <IconComp iconName='HamburgerIcon' iconProps={{ isButton: true }} />
       </button>
+
       <div
         className={`${
           sideNavOpen ? 'w-[70%] sm:w-64' : 'w-0 sm:w-[3.5rem]'
@@ -150,9 +151,9 @@ export default function SideNav() {
 
           <div className={sideNavOpen ? 'w-full py-3' : 'hidden'}>
             <ul className='font- mx-auto w-[90%] font-comfortaa text-lg'>
-              {/* <NavLink path='/' Icon={() => <IconComp iconName='BarChartIcon' iconProps={{}} />}>
+              <NavLink path='/dashboard' Icon={() => <IconComp iconName='BarChartIcon' iconProps={{}} />}>
                 Dashboard
-              </NavLink> */}
+              </NavLink>
               {/* <NavLink path='/user-management' Icon={() => <IconComp iconName='UsersIcon' iconProps={{}} />}>
                 Users
               </NavLink> */}
