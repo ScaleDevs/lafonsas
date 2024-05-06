@@ -7,22 +7,35 @@ import TextField from '@/components/TextField';
 import SelectField from '@/components/SelectField';
 import Button from '@/components/Button';
 import InputArray from '@/modules/delivery/components/InputArray';
-import { DeliveryFormSchemaType, HandleChangeStepParams, deliveryFormSchema } from './types';
+import {
+  DeliveryFormSchemaType,
+  HandleChangeStepParams,
+  deliveryFormSchema,
+} from './types';
 
 export interface CreateDeliveryFormProps {
   defaultValues: DeliveryFormSchemaType;
   changeStep: (handleChangeStepParams: HandleChangeStepParams) => void;
 }
 
-export default function CreateDeliveryForm({ defaultValues, changeStep }: CreateDeliveryFormProps) {
-  const { data, isLoading } = trpc.useQuery(['store.getStores', { limit: 1000 }]);
-  const [storeId, setStoreId] = useState(defaultValues.storeId ? defaultValues.storeId : '');
+export default function CreateDeliveryForm({
+  defaultValues,
+  changeStep,
+}: CreateDeliveryFormProps) {
+  const { data, isLoading } = trpc.useQuery([
+    'store.getStores',
+    { limit: 1000 },
+  ]);
+  const [storeId, setStoreId] = useState(
+    defaultValues.storeId ? defaultValues.storeId : '',
+  );
 
   const {
     register,
     handleSubmit,
     resetField,
     formState: { errors },
+    watch,
     control,
   } = useForm<DeliveryFormSchemaType>({
     resolver: zodResolver(deliveryFormSchema),
@@ -59,20 +72,8 @@ export default function CreateDeliveryForm({ defaultValues, changeStep }: Create
   };
 
   const createDelivery = (formData: DeliveryFormSchemaType) => {
-    let amount = 0;
-
-    // add total price of orders
-    const currentProducts = data?.records.find((store) => store.id === formData.storeId)?.products;
-    if (currentProducts) {
-      formData.orders.forEach((order) => {
-        const findProduct = currentProducts.find((prd) => prd.size === order.size);
-        if (findProduct) amount += findProduct.price * order.quantity;
-      });
-    }
-
     const step1FormData = {
       ...formData,
-      amount: amount,
     };
 
     changeStep({
@@ -83,13 +84,15 @@ export default function CreateDeliveryForm({ defaultValues, changeStep }: Create
 
   return (
     <form
-      className='flex flex-col space-y-4 md:w-[100%] bg-white p-8 rounded-md shadow-md overflow-hidden text-black'
+      className='flex flex-col space-y-4 overflow-hidden rounded-md bg-white p-8 text-black shadow-md md:w-[100%]'
       onSubmit={handleSubmit(createDelivery)}
     >
-      <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>Create Delivery</h1>
+      <h1 className='font-comfortaa text-3xl font-bold md:text-4xl'>
+        Create Delivery
+      </h1>
       <br />
 
-      <div className='flex justify-between flex-col space-y-5 lg:flex-row lg:space-x-7 lg:space-y-0'>
+      <div className='flex flex-col justify-between space-y-5 lg:flex-row lg:space-x-7 lg:space-y-0'>
         <SelectField
           required
           label='Store'
