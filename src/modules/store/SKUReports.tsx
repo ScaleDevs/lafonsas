@@ -1,6 +1,5 @@
-import { trpc } from '@/utils/trpc';
 import * as React from 'react';
-
+import { mkConfig, generateCsv, download } from 'export-to-csv';
 import {
   BarChart,
   Bar,
@@ -10,8 +9,11 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  Cell,
 } from 'recharts';
+import dayjs from 'dayjs';
+
+import Button from '@/components/Button';
+import { trpc } from '@/utils/trpc';
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
@@ -36,6 +38,23 @@ export function SKUGraph(props: ISKUGraphProps) {
     'reports.getSKUReports',
     { ...props, storeId: props.storeId },
   ]);
+  const { data: storeData, isLoading: isFetchingStoreData } = trpc.useQuery([
+    'store.getById',
+    props.storeId,
+  ]);
+
+  const exportToCsv = () => {
+    if (!data || !storeData) return;
+    const csvConfig = mkConfig({
+      useKeysAsHeaders: true,
+      filename: `${storeData?.name}_sku_${dayjs(props.startDate).format(
+        'MM-DD-YYYY',
+      )}-${dayjs(props.endDate).format('MM-DD-YYYY')}`,
+    });
+
+    const csv = generateCsv(csvConfig)(data);
+    download(csvConfig)(csv);
+  };
 
   if (isLoading)
     return (
@@ -63,23 +82,28 @@ export function SKUGraph(props: ISKUGraphProps) {
     );
 
   return (
-    <ResponsiveContainer width='100%' height='100%'>
-      <BarChart
-        width={500}
-        height={300}
-        data={data ?? []}
-        margin={{
-          top: 5,
-          bottom: 5,
-        }}
-      >
-        <CartesianGrid strokeDasharray='3 3' />
-        <XAxis dataKey='_id' />
-        <YAxis />
-        <Tooltip content={<CustomTooltip />} />
-        <Legend />
-        <Bar dataKey='qty' fill='#6366F1' />
-      </BarChart>
-    </ResponsiveContainer>
+    <>
+      <div className='flex justify-end pb-5'>
+        <div className='max-w-[100px] overflow-hidden rounded-md'>
+          <Button
+            buttonTitle='export'
+            size='sm'
+            onClick={exportToCsv}
+            isLoading={isLoading || isFetchingStoreData}
+          />
+        </div>
+      </div>
+
+      <ResponsiveContainer width='100%' height='100%'>
+        <BarChart width={500} height={300} data={data ?? []}>
+          <CartesianGrid strokeDasharray='3 3' />
+          <XAxis dataKey='_id' />
+          <YAxis />
+          <Tooltip content={<CustomTooltip />} />
+          <Legend />
+          <Bar dataKey='qty' fill='#6366F1' />
+        </BarChart>
+      </ResponsiveContainer>
+    </>
   );
 }

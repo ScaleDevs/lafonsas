@@ -102,32 +102,42 @@ const Graphs = ({ id }: { id: string }) => {
 
       <br />
 
-      <div className='grid grid-cols-2 gap-3 pb-10'>
-        <div className='space-y-5 rounded-md bg-white p-5 shadow-lg md:p-10'>
-          <div className='flex items-center gap-3 md:px-12'>
-            <p className='whitespace-nowrap text-xl font-bold'>SKU REPORTS</p>
-            <div className='h-[1px] w-full bg-gray-500' />
+      <div className='grid grid-cols-1 gap-3 pb-10 lg:grid-cols-2'>
+        <div className='flex flex-col'>
+          <div className='w-fit rounded-t-md bg-white p-3 shadow-inner'>
+            SKU REPORT
           </div>
-
-          <div className='h-[300px] w-full'>
-            <SKUGraph startDate={startDate} endDate={endDate} storeId={id} />
+          <div
+            className={twMerge(
+              'space-y-5 bg-white',
+              'pb-24 pt-3 md:pr-10',
+              'rounded-b-md rounded-tr-md shadow-lg',
+            )}
+          >
+            <div className='h-[400px] w-full'>
+              <SKUGraph startDate={startDate} endDate={endDate} storeId={id} />
+            </div>
           </div>
         </div>
 
-        <div className='space-y-5 rounded-md bg-white p-5 shadow-lg md:p-10'>
-          <div className='flex items-center gap-3 md:px-12'>
-            <p className='whitespace-nowrap text-xl font-bold'>
-              TRANSACTION REPORTS
-            </p>
-            <div className='h-[1px] w-full bg-gray-500' />
+        <div className='flex flex-col'>
+          <div className='w-fit rounded-t-md bg-white p-3 shadow-inner'>
+            TRANSCATIONS REPORT
           </div>
-
-          <div className='h-[300px] w-full'>
-            <TransactionGraph
-              startDate={startDate}
-              endDate={endDate}
-              storeId={id}
-            />
+          <div
+            className={twMerge(
+              'space-y-5 bg-white',
+              'pb-24 pt-3 md:pr-10',
+              'rounded-b-md rounded-tr-md shadow-lg',
+            )}
+          >
+            <div className='h-[400px] w-full'>
+              <TransactionGraph
+                startDate={startDate}
+                endDate={endDate}
+                storeId={id}
+              />
+            </div>
           </div>
         </div>
       </div>
