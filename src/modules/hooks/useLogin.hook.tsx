@@ -33,7 +33,7 @@ export default function useLogin() {
     setAuthState('idToken', data.IdToken);
     setAuthState('expiresIn', data.ExpiresIn);
     setAuthState('expiresAt', data.expiresAt);
-    router.push('/delivery');
+    router.push('/dashboard');
     loginAllTabs();
   };
 
