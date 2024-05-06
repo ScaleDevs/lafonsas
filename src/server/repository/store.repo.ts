@@ -35,6 +35,11 @@ class Respository {
       orderBy: { name: 'asc' },
       skip: page > 0 ? (page - 1) * limit : 0,
       take: limit,
+      select: {
+        isParent: true,
+        id: true,
+        name: true,
+      },
     });
 
     const totalCount = await prisma.store.count({

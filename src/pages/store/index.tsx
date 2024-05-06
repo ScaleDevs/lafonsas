@@ -1,25 +1,22 @@
 import { useState } from 'react';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 
 import { trpc } from '@/utils/trpc';
 import Layout from '@/layouts/index';
 import TableLoader from '@/components/TableLoader';
-import { IStore } from '@/utils/types';
-import StoreModal from '@/modules/store/StoreModal';
 import InputSolo from '@/components/InputSolo';
 import IconComp from '@/components/Icon';
 import Button from '@/components/Button';
 import Paginator from '@/components/Paginator';
 
 export default function ListProducts() {
-  const [storeData, setStoreData] = useState<IStore | null>(null);
+  const router = useRouter();
   const [storeName, setStoreName] = useState<string | undefined>(undefined);
   const [searchError, setSearchError] = useState<string | undefined>(undefined);
   const [page, setPage] = useState(1);
-  const { data, isLoading, refetch } = trpc.useQuery(['store.getStores', { limit: 10, page, storeName }]);
+  const { data, isLoading } = trpc.useQuery(['store.getStores', { limit: 10, page, storeName }]);
 
-  const onStoreClick = (data: IStore) => setStoreData({ ...data });
-  const resetStoreState = () => setStoreData(null);
   const handlePageChange = (page: number) => setPage(page);
 
   const handleSearchStore = (inputValue: string) => {
@@ -45,18 +42,16 @@ export default function ListProducts() {
         <link rel='icon' href='/favicon.ico' />
       </Head>
 
-      {!!storeData ? <StoreModal resetStoreState={resetStoreState} storeId={storeData.id} storesRefetch={refetch} /> : ''}
-
-      <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>List Stores</h1>
+      <h1 className='font-comfortaa text-3xl font-bold md:text-4xl'>List Stores</h1>
 
       <br />
 
-      <div className='bg-white shadow-lg px-5 py-7 rounded-md'>
+      <div className='rounded-md bg-white px-5 py-7 shadow-lg'>
         {isLoading ? (
           <TableLoader />
         ) : (
           <>
-            <div className='flex flex-row space-x-2 mb-5 h-10'>
+            <div className='mb-5 flex h-10 flex-row space-x-2'>
               <InputSolo
                 placeholder='Search Store'
                 isRow
@@ -72,7 +67,7 @@ export default function ListProducts() {
 
             <table className='w-full'>
               <thead>
-                <tr className='border-gray-500 border-b font-raleway text-xl text-center'>
+                <tr className='border-b border-gray-500 text-center font-raleway text-xl'>
                   <th className='pb-3'>STORE</th>
                 </tr>
               </thead>
@@ -81,8 +76,8 @@ export default function ListProducts() {
                   ? data.records.map((store) => (
                       <tr
                         key={store.id}
-                        className='font-comfortaa h-14 text-center hover:cursor-pointer hover:bg-gray-200 transition-colors duration-200'
-                        onClick={() => onStoreClick(store)}
+                        className='h-14 text-center font-comfortaa transition-colors duration-200 hover:cursor-pointer hover:bg-gray-200'
+                        onClick={() => router.push('/store/' + store.id)}
                       >
                         <td className='show-modal-ref'>{store.name}</td>
                       </tr>
