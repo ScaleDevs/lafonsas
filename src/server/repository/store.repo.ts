@@ -39,6 +39,7 @@ class Respository {
         isParent: true,
         id: true,
         name: true,
+        parentStore: true,
       },
     });
 

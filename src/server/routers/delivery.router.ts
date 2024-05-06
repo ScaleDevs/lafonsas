@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { createRouter } from '../createRouter';
 import { authMiddleware } from '../util';
 import { DeliveryService } from '@/server/services/delivery.service';
+import { StoreService } from '../services/store.service';
 
 export const deliveryRouter = createRouter()
   .middleware(authMiddleware)
@@ -38,17 +39,16 @@ export const deliveryRouter = createRouter()
   .mutation('update', {
     input: z.object({
       deliveryId: z.string(),
+      storeId: z.string(),
       partialData: z.object({
         storeId: z.string().optional(),
         postingDate: z.string().optional(),
         deliveryNumber: z.string().optional(),
-        amount: z.number().optional(),
         orders: z
           .array(
             z.object({
               size: z.string(),
               quantity: z.number(),
-              price: z.number(),
             }),
           )
           .optional(),
@@ -63,10 +63,36 @@ export const deliveryRouter = createRouter()
           .optional(),
       }),
     }),
-    resolve({ input }) {
+    async resolve({ input }) {
+      const storeDetails = await StoreService.findStoreById(input.storeId);
+      const currentProducts = storeDetails?.products;
+      let newOrders = [] as { size: string; quantity: number; price: number }[];
+      let newAmount = 0;
+
+      if (!!input.partialData.orders && currentProducts) {
+        newOrders = input.partialData.orders.map((ord) => {
+          const price =
+            (currentProducts.find((prd) => prd.size === ord.size)?.price || 0) *
+            ord.quantity;
+
+          newAmount += price;
+
+          return {
+            size: ord.size,
+            quantity: ord.quantity,
+            price,
+          };
+        });
+      }
+
       const partialData = {
         ...input.partialData,
-        postingDate: input.partialData.postingDate === undefined ? undefined : new Date(input.partialData.postingDate),
+        orders: !!input.partialData.orders ? newOrders : undefined,
+        amount: !!input.partialData.orders ? newAmount : undefined,
+        postingDate:
+          input.partialData.postingDate === undefined
+            ? undefined
+            : new Date(input.partialData.postingDate),
       };
 
       return DeliveryService.updateDelivery(input.deliveryId, partialData);
@@ -108,7 +134,10 @@ export const deliveryRouter = createRouter()
     }),
     async resolve({ input }) {
       if (input.deliveryNumber) {
-        const delivery = await DeliveryService.findDeliveryByDeliveryNumberPartial(input.deliveryNumber);
+        const delivery =
+          await DeliveryService.findDeliveryByDeliveryNumberPartial(
+            input.deliveryNumber,
+          );
         return {
           pageCount: 1,
           records: delivery ? [delivery] : [],

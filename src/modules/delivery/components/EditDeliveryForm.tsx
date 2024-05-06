@@ -40,10 +40,19 @@ export interface EditDeliveryFormProps {
   onSuccessfulEdit: () => void;
 }
 
-export default function EditDeliveryForm({ deliveryId, defaultValues, onSuccessfulEdit }: EditDeliveryFormProps) {
-  const { data, isLoading } = trpc.useQuery(['store.getStores', { limit: 1000 }]);
+export default function EditDeliveryForm({
+  deliveryId,
+  defaultValues,
+  onSuccessfulEdit,
+}: EditDeliveryFormProps) {
+  const { data, isLoading } = trpc.useQuery([
+    'store.getStores',
+    { limit: 1000 },
+  ]);
   const { mutate } = trpc.useMutation('delivery.update');
-  const [storeId, setStoreId] = useState(defaultValues.storeId ? defaultValues.storeId : '');
+  const [storeId, setStoreId] = useState(
+    defaultValues.storeId ? defaultValues.storeId : '',
+  );
 
   const {
     register,
@@ -86,46 +95,21 @@ export default function EditDeliveryForm({ deliveryId, defaultValues, onSuccessf
   };
 
   const updateDelivery = (formData: FormSchemaType) => {
-    const amountDependency = {
-      badOrder: true,
-      widthHoldingTax: true,
-      otherDeduction: true,
-      orders: true,
-    } as any;
-
-    const partialData = { ...formData } as Partial<FormSchemaType & { amount: number; orders: IOrder[] }>;
-    const currentProducts: Product[] = data?.records.find((store) => store.id === formData.storeId)?.products || [];
-    const newOrderArr: IOrder[] = [];
+    const partialData = { ...formData } as Partial<
+      FormSchemaType & { amount: number; orders: IOrder[] }
+    >;
 
     Object.keys(formData).forEach((key) => {
       const keyField = key as keyof FormSchemaType;
       if (keyField === 'orders' && !!dirtyFields['orders']) {
-        formData.orders.map((ord) => {
-          const price = !!currentProducts ? (currentProducts.find((prd) => prd.size === ord.size)?.price || 0) * ord.quantity : 0;
-          newOrderArr.push({ size: ord.size, quantity: ord.quantity, price });
-        });
-
-        partialData['orders'] = newOrderArr;
+        partialData['orders'] = partialData['orders'];
       } else if (!dirtyFields[keyField]) delete partialData[keyField];
-
-      if (amountDependency[keyField] && !!dirtyFields[keyField]) {
-        let tempAmount = 0;
-
-        // add total price of orders
-        if (currentProducts) {
-          formData.orders.forEach((order) => {
-            const findProduct = currentProducts.find((prd) => prd.size === order.size);
-            if (findProduct) tempAmount += findProduct.price * order.quantity;
-          });
-        }
-
-        partialData['amount'] = tempAmount;
-      }
     });
 
     mutate(
       {
         deliveryId,
+        storeId: formData.storeId,
         partialData,
       },
       {
@@ -137,11 +121,16 @@ export default function EditDeliveryForm({ deliveryId, defaultValues, onSuccessf
   };
 
   return (
-    <form className='flex flex-col space-y-4 md:w-[100%] p-8 overflow-hidden' onSubmit={handleSubmit(updateDelivery)}>
-      <h1 className='text-3xl md:text-4xl font-comfortaa font-bold'>Edit Delivery</h1>
+    <form
+      className='flex flex-col space-y-4 overflow-hidden p-8 md:w-[100%]'
+      onSubmit={handleSubmit(updateDelivery)}
+    >
+      <h1 className='font-comfortaa text-3xl font-bold md:text-4xl'>
+        Edit Delivery
+      </h1>
       <br />
 
-      <div className='flex justify-between flex-col space-y-5 lg:flex-row lg:space-x-7 lg:space-y-0'>
+      <div className='flex flex-col justify-between space-y-5 lg:flex-row lg:space-x-7 lg:space-y-0'>
         <SelectField
           required
           label='Store'
