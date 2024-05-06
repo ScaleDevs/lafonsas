@@ -50,6 +50,7 @@ export const storeRouter = createRouter()
   .query('getById', {
     input: z.string(),
     resolve({ input }) {
+      if (input === 'ALL') return null;
       return StoreService.findStoreById(input);
     },
   })

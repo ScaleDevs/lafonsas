@@ -22,7 +22,7 @@ export const reportRouter = createRouter()
   })
   .query('getTransactionReport', {
     input: z.object({
-      storeId: z.string(),
+      storeId: z.string().optional(),
       startDate: z.string(),
       endDate: z.string(),
     }),
@@ -30,7 +30,8 @@ export const reportRouter = createRouter()
       return ReportService.getTransactionReport({
         startDate: dayjs(input.startDate).startOf('day').toISOString(),
         endDate: dayjs(input.endDate).endOf('day').toISOString(),
-        storeId: input.storeId,
+        storeId:
+          input.storeId === 'ALL' || !input.storeId ? undefined : input.storeId,
       });
     },
   });

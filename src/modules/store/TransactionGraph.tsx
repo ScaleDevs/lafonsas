@@ -20,7 +20,7 @@ import Button from '@/components/Button';
 const COLORS = ['#EF4444', '#F59E0B', '#B91C1C', '#059669'];
 
 export interface ITransactionGraphProps {
-  storeId: string;
+  storeId?: string;
   startDate: string;
   endDate: string;
 }
@@ -44,16 +44,19 @@ export function TransactionGraph(props: ITransactionGraphProps) {
     'reports.getTransactionReport',
     { ...props, storeId: props.storeId },
   ]);
-  const { data: storeData, isLoading: isFetchingStoreData } = trpc.useQuery([
-    'store.getById',
-    props.storeId,
-  ]);
+  const { data: storeData, isLoading: isFetchingStoreData } = trpc.useQuery(
+    ['store.getById', props.storeId!],
+    {
+      enabled: !!props.storeId && props.storeId !== 'ALL',
+    },
+  );
 
   const exportToCsv = () => {
-    if (!data || !storeData) return;
+    if (!data) return;
+
     const csvConfig = mkConfig({
       useKeysAsHeaders: true,
-      filename: `${storeData?.name}_transactions_${dayjs(
+      filename: `${storeData?.name ?? 'ALL'}_transactions_${dayjs(
         props.startDate,
       ).format('MM-DD-YYYY')}-${dayjs(props.endDate).format('MM-DD-YYYY')}`,
     });
