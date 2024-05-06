@@ -12,7 +12,7 @@ import {
   YAxis,
   Cell,
 } from 'recharts';
-import { mkConfig, generateCsv, download } from 'export-to-csv';
+import * as exportCsv from 'export-to-csv';
 
 import { PHpeso } from '../utils';
 import Button from '@/components/Button';
@@ -54,7 +54,9 @@ export function TransactionGraph(props: ITransactionGraphProps) {
   const exportToCsv = () => {
     if (!data) return;
 
-    const csvConfig = mkConfig({
+    const csvLib = exportCsv as any;
+
+    const csvConfig = csvLib.mkConfig({
       useKeysAsHeaders: true,
       filename: `${storeData?.name ?? 'ALL'}_transactions_${dayjs(
         props.startDate,
@@ -66,8 +68,8 @@ export function TransactionGraph(props: ITransactionGraphProps) {
       AMOUNT: PHpeso.format(v.value),
     }));
 
-    const csv = generateCsv(csvConfig)(dataFeed);
-    download(csvConfig)(csv);
+    const csv = csvLib.generateCsv(csvConfig)(dataFeed);
+    csvLib.download(csvConfig)(csv);
   };
 
   if (isLoading)

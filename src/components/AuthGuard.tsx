@@ -1,7 +1,11 @@
 import { useRef, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
-import { getCurrentTimestamp, isPublicRoute, publicRoutes } from '@/utils/helper';
+import {
+  getCurrentTimestamp,
+  isPublicRoute,
+  publicRoutes,
+} from '@/utils/helper';
 import useRefreshToken from '@/hooks/useRefreshToken.hook';
 import { useLogout } from '@/hooks/useLogout.hook';
 import { useRefreshTokenJob } from '@/hooks/useRefreshTokenJob';
@@ -11,7 +15,7 @@ import Loader from '@/components/Loader';
 
 const LoaderNow = () => {
   return (
-    <div className='h-screen w-full flex flex-row justify-center items-center'>
+    <div className='flex h-screen w-full flex-row items-center justify-center'>
       <Loader h='h-24' w='w-24' color='fill-slate-700' />
     </div>
   );
@@ -23,7 +27,8 @@ interface AuthGuardMainComponentProps {
 
 const AuthGuardMainComponent = ({ children }: AuthGuardMainComponentProps) => {
   const router = useRouter();
-  const { expiresAt, accessToken, authLoader, refreshTokenJobInterval } = useAuthStoreTrack();
+  const { expiresAt, accessToken, authLoader, refreshTokenJobInterval } =
+    useAuthStoreTrack();
   const { refreshAccessToken } = useRefreshToken();
   const { runRefreshTokenJob, clearRefreshTokenJob } = useRefreshTokenJob();
   const { signOut } = useLogout();
@@ -43,16 +48,26 @@ const AuthGuardMainComponent = ({ children }: AuthGuardMainComponentProps) => {
       }
 
       // run refresh token job if not yet running
-      if (process.env.NODE_ENV !== 'development' || refreshTokenJobRef.current !== 1) {
+      if (
+        process.env.NODE_ENV !== 'development' ||
+        refreshTokenJobRef.current !== 1
+      ) {
         refreshTokenJobRef.current = 1;
         runRefreshTokenJob();
-      } else if (refreshTokenJobRef.current === 1) refreshTokenJobRef.current = 2;
+      } else if (refreshTokenJobRef.current === 1)
+        refreshTokenJobRef.current = 2;
 
       // if token expired then refresh access token
-      if (getCurrentTimestamp() > expiresAt && !isPublicRoute(router.pathname)) refreshAccessToken();
+      if (getCurrentTimestamp() > expiresAt && !isPublicRoute(router.pathname))
+        refreshAccessToken();
 
       // loggedIn but in login page
-      if (expiresAt && accessToken && publicRoutes['/login'] === router.pathname) return router.push('/delivery');
+      if (
+        expiresAt &&
+        accessToken &&
+        publicRoutes['/login'] === router.pathname
+      )
+        return router.push('/dashboard');
     }
   };
 

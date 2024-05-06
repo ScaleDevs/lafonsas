@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Head from 'next/head';
 import router from 'next/router';
 import dayjs from 'dayjs';
-import { mkConfig, generateCsv, download } from 'export-to-csv';
+import * as exportCsv from 'export-to-csv';
 
 import { trpc } from '@/utils/trpc';
 import { PHpeso } from '@/modules/utils';
@@ -65,7 +65,10 @@ export default function ListPayments() {
 
   const exportToCsv = () => {
     if (!exportData?.records || !!exportDataError) return;
-    const csvConfig = mkConfig({
+
+    const csvLib = exportCsv as any;
+    
+    const csvConfig = csvLib.mkConfig({
       useKeysAsHeaders: true,
       filename: `payments_${stateFilters.startDate}-${stateFilters.endDate}`,
     });
@@ -75,8 +78,8 @@ export default function ListPayments() {
       referenceDate: dayjs(v.refDate).format('MMM DD, YYYY'),
       amount: PHpeso.format(v.amount),
     }));
-    const csv = generateCsv(csvConfig)(dataFeed);
-    download(csvConfig)(csv);
+    const csv = csvLib.generateCsv(csvConfig)(dataFeed);
+    csvLib.download(csvConfig)(csv);
   };
 
   return (

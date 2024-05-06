@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import dayjs from 'dayjs';
-import { mkConfig, generateCsv, download } from 'export-to-csv';
+import * as exportCsv from 'export-to-csv';
 
 import { trpc } from '@/utils/trpc';
 import useDeliveryStoreTrack from '@/store/delivery.store';
@@ -8,14 +8,20 @@ import Button from '@/components/Button';
 import TableLoader from '@/components/TableLoader';
 import Notification from '@/components/Notification';
 import TableRow from './components/TableRow';
-import ListDeliveryFilter, { OnDeliverySearchParams } from './components/ListDeliveryFilter';
+import ListDeliveryFilter, {
+  OnDeliverySearchParams,
+} from './components/ListDeliveryFilter';
 import Paginator from '@/components/Paginator';
 import { PHpeso } from '../utils';
 
 const StoreTag = ({ storeId }: { storeId: string }) => {
   const { data } = trpc.useQuery(['store.getById', storeId]);
 
-  return <div className='text-md rounded-md bg-gray-300 p-3 font-comfortaa'>{data?.name}</div>;
+  return (
+    <div className='text-md rounded-md bg-gray-300 p-3 font-comfortaa'>
+      {data?.name}
+    </div>
+  );
 };
 
 export interface ITableDeliveryProps {
@@ -23,7 +29,15 @@ export interface ITableDeliveryProps {
 }
 
 export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
-  const { deletedDelivery, startDate, endDate, storeId, deliveryNumber, page, setDeliveryState } = useDeliveryStoreTrack();
+  const {
+    deletedDelivery,
+    startDate,
+    endDate,
+    storeId,
+    deliveryNumber,
+    page,
+    setDeliveryState,
+  } = useDeliveryStoreTrack();
   const [openFilterModal, setOpenFilterModal] = useState(false);
 
   const { data, isLoading } = trpc.useQuery([
@@ -57,7 +71,13 @@ export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
 
   const exportToCsv = () => {
     if (!exportData?.records) return;
-    const csvConfig = mkConfig({ useKeysAsHeaders: true, filename: `deliveries_${startDate}-${endDate}` });
+
+    const csvLib = exportCsv as any;
+
+    const csvConfig = csvLib.mkConfig({
+      useKeysAsHeaders: true,
+      filename: `deliveries_${startDate}-${endDate}`,
+    });
     const dataFeed = exportData.records.map((v) => ({
       store: v.store.name,
       deliveryNumber: v.deliveryNumber,
@@ -65,8 +85,8 @@ export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
       amount: PHpeso.format(v.amount),
       paymentStatus: !!v.paymentId ? 'PAID' : 'UNPAID',
     }));
-    const csv = generateCsv(csvConfig)(dataFeed);
-    download(csvConfig)(csv);
+    const csv = csvLib.generateCsv(csvConfig)(dataFeed);
+    csvLib.download(csvConfig)(csv);
   };
 
   return (
@@ -83,12 +103,18 @@ export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
       ) : (
         ''
       )}
-      <h1 className='font-comfortaa text-3xl font-bold md:text-4xl'>List Deliveries</h1>
+      <h1 className='font-comfortaa text-3xl font-bold md:text-4xl'>
+        List Deliveries
+      </h1>
 
       <br />
 
       <div className='w-[100px]'>
-        <Button buttonTitle='Filter' size='sm' onClick={() => setOpenFilterModal(true)} />
+        <Button
+          buttonTitle='Filter'
+          size='sm'
+          onClick={() => setOpenFilterModal(true)}
+        />
       </div>
 
       <br />
@@ -98,16 +124,27 @@ export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
           {storeId ? (
             <StoreTag storeId={storeId} />
           ) : (
-            <div className='text-md rounded-md bg-gray-300 p-3 font-comfortaa'>{'ALL STORES'}</div>
+            <div className='text-md rounded-md bg-gray-300 p-3 font-comfortaa'>
+              {'ALL STORES'}
+            </div>
           )}
           <div className='flex'>
-            <div className='text-md rounded-md bg-gray-300 p-3 font-comfortaa'>{dayjs(startDate).format('MMM DD, YYYY')}</div>
+            <div className='text-md rounded-md bg-gray-300 p-3 font-comfortaa'>
+              {dayjs(startDate).format('MMM DD, YYYY')}
+            </div>
             <div className='flex items-center px-3'>-</div>
-            <div className='text-md rounded-md bg-gray-300 p-3 font-comfortaa'>{dayjs(endDate).format('MMM DD, YYYY')}</div>
+            <div className='text-md rounded-md bg-gray-300 p-3 font-comfortaa'>
+              {dayjs(endDate).format('MMM DD, YYYY')}
+            </div>
           </div>
         </div>
         <div>
-          <Button buttonTitle='export' size='sm' onClick={exportToCsv} isLoading={fetchingExportData} />
+          <Button
+            buttonTitle='export'
+            size='sm'
+            onClick={exportToCsv}
+            isLoading={fetchingExportData}
+          />
         </div>
       </div>
 
@@ -115,7 +152,11 @@ export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
 
       {!!deletedDelivery ? (
         <>
-          <Notification rounded='sm' type='success' message={`Delivery Record: "Delivery Number ${deletedDelivery}" Deleted!`} />
+          <Notification
+            rounded='sm'
+            type='success'
+            message={`Delivery Record: "Delivery Number ${deletedDelivery}" Deleted!`}
+          />
           <br />
         </>
       ) : (
@@ -139,7 +180,13 @@ export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
               </thead>
               <tbody>
                 {data
-                  ? data.records.map((delivery) => <TableRow key={delivery.id} delivery={delivery} onClick={onTableRowClick} />)
+                  ? data.records.map((delivery) => (
+                      <TableRow
+                        key={delivery.id}
+                        delivery={delivery}
+                        onClick={onTableRowClick}
+                      />
+                    ))
                   : null}
               </tbody>
             </table>
@@ -147,7 +194,11 @@ export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
         )}
 
         <br />
-        <Paginator currentPage={page} pageCount={data?.pageCount || 0} handlePageChange={handlePageChange} />
+        <Paginator
+          currentPage={page}
+          pageCount={data?.pageCount || 0}
+          handlePageChange={handlePageChange}
+        />
       </div>
     </div>
   );

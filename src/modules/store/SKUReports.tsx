@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { mkConfig, generateCsv, download } from 'export-to-csv';
+import * as exportCsv from 'export-to-csv';
 import {
   BarChart,
   Bar,
@@ -45,15 +45,18 @@ export function SKUGraph(props: ISKUGraphProps) {
 
   const exportToCsv = () => {
     if (!data || !storeData) return;
-    const csvConfig = mkConfig({
+
+    const csvLib = exportCsv as any;
+
+    const csvConfig = csvLib.mkConfig({
       useKeysAsHeaders: true,
       filename: `${storeData?.name}_sku_${dayjs(props.startDate).format(
         'MM-DD-YYYY',
       )}-${dayjs(props.endDate).format('MM-DD-YYYY')}`,
     });
 
-    const csv = generateCsv(csvConfig)(data);
-    download(csvConfig)(csv);
+    const csv = csvLib.generateCsv(csvConfig)(data);
+    csvLib.download(csvConfig)(csv);
   };
 
   if (isLoading)
