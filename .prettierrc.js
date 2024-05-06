@@ -3,8 +3,11 @@ module.exports = {
   trailingComma: 'all',
   singleQuote: true,
   jsxSingleQuote: true,
-  printWidth: 130,
+  printWidth: 80,
   tabWidth: 2,
   endOfLine: 'auto',
-  plugins: ['prettier-plugin-tailwindcss', 'prettier-plugin-prisma'],
+  plugins: [
+    'prettier-plugin-tailwindcss',
+    'prettier-plugin-prisma',
+  ],
 };

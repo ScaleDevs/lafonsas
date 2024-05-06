@@ -1,12 +1,10 @@
 import z from 'zod';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import OutsideClickHandler from 'react-outside-click-handler';
+import { twMerge } from 'tailwind-merge';
 
 import { IStore } from '@/utils/types';
 import { trpc } from '@/utils/trpc';
-import Modal from '@/components/Modal';
-import { Overlay } from '@/components/Overlay';
 import TextField from '@/components/TextField';
 import FadeIn from '@/components/FadeIn';
 import IconComp from '@/components/Icon';
@@ -21,7 +19,9 @@ const schema = z.object({
         size: z.string().min(1, 'Please input size!'),
         price: z.preprocess(
           (input) => parseFloat(input as string),
-          z.number({ invalid_type_error: 'Must input a price!' }).min(1, 'Please input price!'),
+          z
+            .number({ invalid_type_error: 'Must input a price!' })
+            .min(1, 'Please input price!'),
         ),
       }),
     )
@@ -32,13 +32,13 @@ type FormSchemaType = z.infer<typeof schema>;
 
 export interface IStoreUpdateProps {
   data: IStore;
-  resetStoreState: () => void;
-  storesRefetch: any;
-  resetIsUpdate: () => void;
 }
 
-export default function StoreUpdate({ resetStoreState, data, storesRefetch, resetIsUpdate }: IStoreUpdateProps) {
-  const { mutate, isLoading, isSuccess, isError } = trpc.useMutation('store.update');
+export default function StoreUpdate({ data }: IStoreUpdateProps) {
+  const { mutate, isLoading, isSuccess, isError } =
+    trpc.useMutation('store.update');
+
+  const ctx = trpc.useContext();
 
   const {
     register,
@@ -80,95 +80,134 @@ export default function StoreUpdate({ resetStoreState, data, storesRefetch, rese
         reset({
           ...formData,
         });
-        storesRefetch();
+        ctx.setQueryData(['store.getById', data.id], (updater: any) => {
+          return {
+            ...updater,
+            ...formData,
+          };
+        });
       },
     });
   };
 
   return (
     <>
-      <Overlay />
-      <OutsideClickHandler onOutsideClick={resetStoreState}>
-        <Modal w='w-[80%] md: w-[600px]' p='p-8'>
-          <button type='button' className='absolute top-0 right-0 pr-4 pt-2 hover:text-red-500' onClick={() => resetStoreState()}>
-            X
-          </button>
-          <div className='py-3 w-16'>
-            <Button size='sm' buttonTitle='Back' onClick={resetIsUpdate} font='raleway' />
+      {isSuccess ? (
+        <div className='py-3'>
+          <Notification rounded='sm' type='success' message='Store updated' />
+        </div>
+      ) : (
+        ''
+      )}
+      {isError ? (
+        <div className='py-3'>
+          <Notification
+            rounded='sm'
+            type='error'
+            message='Something went wrong'
+          />
+        </div>
+      ) : (
+        ''
+      )}
+
+      <form onSubmit={handleSubmit(updateStore)}>
+        <TextField
+          required
+          label='Store Name'
+          placeholder='enter store name here'
+          defaultValue={defaultValues?.name}
+          formInput={{ register, property: 'name' }}
+          errorMessage={errors.name?.message}
+        />
+
+        <br />
+
+        <div>
+          <h1 className='text-md font-raleway font-semibold md:text-lg'>
+            Products :
+          </h1>
+          {errors.products?.message ? (
+            <FadeIn cssText='font-raleway text-red-500'>
+              {errors.products?.message}
+            </FadeIn>
+          ) : (
+            ''
+          )}
+          <div className='space-y-3'>
+            {fields.map((field, index) => {
+              return (
+                <div
+                  key={field.id}
+                  className={twMerge(
+                    'flex',
+                    'mt-2 w-full gap-3',
+                    'max-[600px]:flex-col',
+                  )}
+                >
+                  <TextField
+                    label='Size'
+                    labelCss='text-sm font-bold'
+                    type='text'
+                    placeholder='Product size here'
+                    formInput={{ register, property: `products.${index}.size` }}
+                    errorMessage={
+                      errors?.products
+                        ? errors.products[index]?.size?.message
+                        : undefined
+                    }
+                  />
+                  <TextField
+                    label='Price'
+                    labelCss='text-sm font-bold'
+                    type='number'
+                    placeholder='Product price here'
+                    formInput={{
+                      register,
+                      property: `products.${index}.price`,
+                    }}
+                    errorMessage={
+                      errors?.products
+                        ? errors.products[index]?.price?.message
+                        : undefined
+                    }
+                  />
+                  <div className='flex items-end'>
+                    <button
+                      type='button'
+                      className={twMerge(
+                        'group flex flex-row items-center justify-center',
+                        'rounded-md border border-red-500 px-3',
+                        'transition-colors duration-200 hover:bg-red-500',
+                        'p-3',
+                      )}
+                      onClick={() => remove(index)}
+                    >
+                      <IconComp
+                        iconName='TrashIcon'
+                        iconProps={{
+                          fillColor: 'text-red-500 group-hover:text-white',
+                        }}
+                      />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div className='mt-3 w-16'>
+            <Button
+              size='sm'
+              buttonTitle='+'
+              onClick={() => append({ size: '', price: 0 })}
+            />
           </div>
 
-          {isSuccess ? (
-            <div className='py-3'>
-              <Notification rounded='sm' type='success' message='Store updated' />
-            </div>
-          ) : (
-            ''
-          )}
-          {isError ? (
-            <div className='py-3'>
-              <Notification rounded='sm' type='error' message='Something went wrong' />
-            </div>
-          ) : (
-            ''
-          )}
+          <br />
 
-          <form onSubmit={handleSubmit(updateStore)}>
-            <TextField
-              required
-              label='Store Name'
-              placeholder='enter store name here'
-              defaultValue={defaultValues?.name}
-              formInput={{ register, property: 'name' }}
-              errorMessage={errors.name?.message}
-            />
-
-            <br />
-
-            <div>
-              <h1 className='text-md md:text-lg font-semibold font-raleway'>Products :</h1>
-              {errors.products?.message ? <FadeIn cssText='font-raleway text-red-500'>{errors.products?.message}</FadeIn> : ''}
-              <div className='space-y-3'>
-                {fields.map((field, index) => {
-                  return (
-                    <div key={field.id} className='grid grid-rows-3 md:grid-rows-1 grid-flow-col gap-3 mt-2 w-full'>
-                      <TextField
-                        label='Size'
-                        labelCss='text-sm font-bold'
-                        type='text'
-                        placeholder='Product size here'
-                        formInput={{ register, property: `products.${index}.size` }}
-                        errorMessage={errors?.products ? errors.products[index]?.size?.message : undefined}
-                      />
-                      <TextField
-                        label='Price'
-                        labelCss='text-sm font-bold'
-                        type='number'
-                        placeholder='Product price here'
-                        formInput={{ register, property: `products.${index}.price` }}
-                        errorMessage={errors?.products ? errors.products[index]?.price?.message : undefined}
-                      />
-                      <button
-                        type='button'
-                        className='group flex flex-row items-center justify-center border border-red-500 hover:bg-red-500 px-3 rounded-md transition-colors duration-200'
-                        onClick={() => remove(index)}
-                      >
-                        <IconComp iconName='TrashIcon' iconProps={{ fillColor: 'text-red-500 group-hover:text-white' }} />
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-              <div className='mt-3 w-16'>
-                <Button size='sm' buttonTitle='+' onClick={() => append({ size: '', price: 0 })} />
-              </div>
-
-              <br />
-
-              <Button type='submit' size='md' isLoading={isLoading} />
-            </div>
-          </form>
-        </Modal>
-      </OutsideClickHandler>
+          <Button type='submit' size='md' isLoading={isLoading} />
+        </div>
+      </form>
     </>
   );
 }
