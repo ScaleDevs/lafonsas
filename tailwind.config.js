@@ -84,6 +84,14 @@ module.exports = {
         5000: '5000ms',
       },
       keyframes: {
+        zoomIn: {
+          '0%': { transform: 'scale(0)' },
+          '100%': { transform: 'scale(1)' },
+        },
+        zoomOut: {
+          '0%': { transform: 'scale(1)' },
+          '100%': { transform: 'scale(0)' },
+        },
         fadeIn: {
           '0%': { opacity: '0.1' },
           '100%': { opacity: '1' },
@@ -102,6 +110,8 @@ module.exports = {
         },
       },
       animation: {
+        zoomIn: 'zoomIn ease-in',
+        zoomOut: 'zoomOut ease-in',
         slideIn: 'slideIn ease-in',
         fadeIn: 'fadeIn ease-in',
         'accordion-down': 'accordion-down 0.2s ease-out',

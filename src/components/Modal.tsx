@@ -1,3 +1,5 @@
+import { twMerge } from 'tailwind-merge';
+
 export interface IModalProps {
   rounded?: 'rounded-sm' | 'rounded-md' | 'rounded-lg';
   bg?: string;
@@ -5,6 +7,7 @@ export interface IModalProps {
   p?: string;
   w: string;
   children: any;
+  open?: boolean;
 }
 
 export default function Modal({
@@ -17,7 +20,11 @@ export default function Modal({
 }: IModalProps) {
   return (
     <div
-      className={`${w} absolute z-20 p-5 m-auto right-0 left-0 ${rounded} ${bg} ${opacity} ${p} opacity-0 animate-fadeIn animation-delay-100 animation-duration-200 animation-fill-forwards`}
+      className={twMerge(
+        'absolute left-0 right-0 z-20 m-auto p-5 opacity-0',
+        `${w} ${rounded} ${bg} ${opacity} ${p}`,
+        'animate-zoomIn ease-in-out animation-duration-300 animation-fill-forwards',
+      )}
     >
       <div className='w-full break-words'>{children}</div>
     </div>

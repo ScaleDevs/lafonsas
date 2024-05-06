@@ -36,6 +36,7 @@ const TextField = ({
   onChange,
   errorMessage,
   disabled,
+  defaultValue,
 }: InputWrapperProps) => {
   const radius = {
     sm: 'rounded-sm',
@@ -83,10 +84,11 @@ const TextField = ({
       })
     : {
         onChange: onInputChange,
+        value: defaultValue,
       };
 
   return (
-    <div className='w-full flex flex-col space-y-1 text-md md:text-lg font-normal font-roboto'>
+    <div className='text-md flex w-full flex-col space-y-1 font-roboto font-normal md:text-lg'>
       {label ? (
         <label className={'p-0 font-bold' + labelCss}>
           {label} {required ? <span className='text-red-500'>*</span> : ''}
