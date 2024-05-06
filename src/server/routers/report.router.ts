@@ -20,14 +20,14 @@ export const reportRouter = createRouter()
       });
     },
   })
-  .query('getDeductionsReport', {
+  .query('getTransactionReport', {
     input: z.object({
       storeId: z.string(),
       startDate: z.string(),
       endDate: z.string(),
     }),
     async resolve({ input }) {
-      return ReportService.getDeductionsReport({
+      return ReportService.getTransactionReport({
         startDate: dayjs(input.startDate).startOf('day').toISOString(),
         endDate: dayjs(input.endDate).endOf('day').toISOString(),
         storeId: input.storeId,

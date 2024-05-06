@@ -41,7 +41,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 export function TransactionGraph(props: ITransactionGraphProps) {
   const { data, isLoading } = trpc.useQuery([
-    'reports.getDeductionsReport',
+    'reports.getTransactionReport',
     { ...props, storeId: props.storeId },
   ]);
   const { data: storeData, isLoading: isFetchingStoreData } = trpc.useQuery([

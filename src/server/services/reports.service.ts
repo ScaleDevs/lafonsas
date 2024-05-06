@@ -64,7 +64,7 @@ class Service {
     }
   }
 
-  public async getDeductionsReport(inputs: {
+  public async getTransactionReport(inputs: {
     storeId: string;
     startDate: Date | string;
     endDate: Date | string;
