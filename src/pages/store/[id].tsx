@@ -1,13 +1,19 @@
+import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { twMerge } from 'tailwind-merge';
+import dayjs from 'dayjs';
+import { BsXCircle } from 'react-icons/bs';
 
 import Layout from '@/layouts/index';
 import { trpc } from '@/utils/trpc';
 import { PHpeso } from '@/modules/utils';
 import { Pencil1Icon } from '@radix-ui/react-icons';
 import StoreUpdate from '@/modules/store/StoreUpdate';
-import { BsXCircle } from 'react-icons/bs';
 import useDisclosure from '@/modules/hooks/useDisclosure';
+import { SKUGraph } from '@/modules/store/SKUReports';
+import { getEndOfMonth, getStartOfMonth } from '@/utils/helper';
+import { FilterModal } from '@/modules/store/Filter';
+import { TransactionGraph } from '@/modules/store/TransactionGraph';
 
 export interface IDetailsProps {}
 
@@ -67,12 +73,77 @@ const Section1 = ({ id }: { id: string }) => {
   );
 };
 
+const Graphs = ({ id }: { id: string }) => {
+  const [startDate, setStartDate] = useState(getStartOfMonth());
+  const [endDate, setEndDate] = useState(getEndOfMonth());
+
+  return (
+    <div>
+      <div className='space-y-5'>
+        <FilterModal
+          startDate={startDate}
+          endDate={endDate}
+          onSearch={({ date1, date2 }) => {
+            setStartDate(date1);
+            setEndDate(date2);
+          }}
+        />
+
+        <div className='flex'>
+          <div className='text-md rounded-md bg-gray-300 p-3 font-comfortaa'>
+            {dayjs(startDate).format('MMM DD, YYYY')}
+          </div>
+          <div className='flex items-center px-3'>-</div>
+          <div className='text-md rounded-md bg-gray-300 p-3 font-comfortaa'>
+            {dayjs(endDate).format('MMM DD, YYYY')}
+          </div>
+        </div>
+      </div>
+
+      <br />
+
+      <div className='grid grid-cols-2 gap-3 pb-10'>
+        <div className='space-y-5 rounded-md bg-white p-5 shadow-lg md:p-10'>
+          <div className='flex items-center gap-3 md:px-12'>
+            <p className='whitespace-nowrap text-xl font-bold'>SKU REPORTS</p>
+            <div className='h-[1px] w-full bg-gray-500' />
+          </div>
+
+          <div className='h-[300px] w-full'>
+            <SKUGraph startDate={startDate} endDate={endDate} storeId={id} />
+          </div>
+        </div>
+
+        <div className='space-y-5 rounded-md bg-white p-5 shadow-lg md:p-10'>
+          <div className='flex items-center gap-3 md:px-12'>
+            <p className='whitespace-nowrap text-xl font-bold'>
+              TRANSACTION REPORTS
+            </p>
+            <div className='h-[1px] w-full bg-gray-500' />
+          </div>
+
+          <div className='h-[300px] w-full'>
+            <TransactionGraph
+              startDate={startDate}
+              endDate={endDate}
+              storeId={id}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function Details(props: IDetailsProps) {
   const router = useRouter();
 
   return (
     <Layout>
-      <Section1 id={router.query.id as string} />
+      <div className='space-y-5'>
+        <Section1 id={router.query.id as string} />
+        <Graphs id={router.query.id as string} />
+      </div>
     </Layout>
   );
 }
