@@ -34,6 +34,7 @@ export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
     startDate,
     endDate,
     storeId,
+    productType,
     deliveryNumber,
     page,
     setDeliveryState,
@@ -42,21 +43,45 @@ export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
 
   const { data, isLoading } = trpc.useQuery([
     'delivery.getDeliveries',
-    { limit: 10, page, startDate, endDate, storeId, deliveryNumber },
+    {
+      limit: 10,
+      page,
+      startDate,
+      endDate,
+      storeId,
+      productType,
+      deliveryNumber,
+    },
   ]);
 
   const { data: exportData, isLoading: fetchingExportData } = trpc.useQuery([
     'delivery.getDeliveries',
-    { noLimit: true, page: 1, startDate, endDate, storeId, deliveryNumber },
+    {
+      noLimit: true,
+      page: 1,
+      startDate,
+      endDate,
+      storeId,
+      deliveryNumber,
+      productType,
+    },
   ]);
 
   const handlePageChange = (page: number) => {
     setDeliveryState('page', page);
   };
 
-  const onSearch = ({ date1, date2, storeId, dr }: OnDeliverySearchParams) => {
+  const onSearch = ({
+    date1,
+    date2,
+    storeId,
+    dr,
+    productType,
+  }: OnDeliverySearchParams) => {
     setDeliveryState('startDate', date1);
     setDeliveryState('endDate', date2);
+
+    if (productType) setDeliveryState('productType', productType);
 
     if (storeId === 'ALL') setDeliveryState('storeId', undefined);
     else setDeliveryState('storeId', storeId);
@@ -97,6 +122,7 @@ export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
           endDate={endDate}
           store={storeId}
           deliveryNumber={deliveryNumber}
+          currentProductType={productType}
           closeModal={() => setOpenFilterModal(false)}
           onSearch={onSearch}
         />
@@ -136,6 +162,9 @@ export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
             <div className='text-md rounded-md bg-gray-300 p-3 font-comfortaa'>
               {dayjs(endDate).format('MMM DD, YYYY')}
             </div>
+          </div>
+          <div className='text-md flex rounded-md bg-gray-300 p-3 font-comfortaa'>
+            <p>Total: {data?.totalCount ?? 0}</p>
           </div>
         </div>
         <div>
