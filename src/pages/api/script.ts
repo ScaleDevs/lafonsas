@@ -1,17 +1,34 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-// import prisma from '@/server/repository/prisma.client';
+import prisma from '@/server/repository/prisma.client';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   console.log('========== RUNNING SCRIPT ========');
+
+  // const result = await prisma.delivery.updateMany({
+  //   where: {
+  //     deliveryNumber: {
+  //       contains: 'B-',
+  //     },
+  //   },
+  //   data: {
+  //     // Specify the fields to update here, for example:
+  //     productType: 'banana-chips', // Update this field as needed
+  //   },
+  // });
 
   // const result = await prisma.delivery.findMany({
   //   where: {
-  //     paymentId: {
-  //       not: null,
+  //     deliveryNumber: {
+  //       contains: 'B-',
   //     },
   //   },
   //   orderBy: { postingDate: 'asc' },
   // });
+
+  // console.log(result);
 
   // const cashRecords = result.filter((v) => (v.checkNumber === '' || v.checkNumber === null) && v.checkDate === null);
 
@@ -49,6 +66,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // console.log('result.length', result.length);
   // console.log(cashRecords.length);
+
+  // console.log('COUNT', result.count);
+  // console.log('DONE');
 
   res.json({ healthCheck: 'Healthy' });
   res.end();
