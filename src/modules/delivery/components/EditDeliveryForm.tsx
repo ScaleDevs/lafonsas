@@ -13,6 +13,7 @@ import Button from '@/components/Button';
 
 const schema = z.object({
   storeId: z.string().min(1, 'Please Choose Store'),
+  productType: z.string().min(1, 'Please Input Product Type'),
   deliveryNumber: z.string().min(1, 'Please Input Delivery Number'),
   postingDate: z.string().min(1, 'Please Input posting date'),
   orders: z
@@ -154,13 +155,28 @@ export default function EditDeliveryForm({
           formInput={{ register, property: 'deliveryNumber' }}
           errorMessage={errors.deliveryNumber?.message}
         />
+      </div>
 
+      <div className='flex flex-col justify-between space-y-5 lg:flex-row lg:space-x-7 lg:space-y-0'>
         <TextField
           required
           type='date'
           label='Posting Date'
           formInput={{ register, property: 'postingDate' }}
           errorMessage={errors.postingDate?.message}
+        />
+
+        <SelectField
+          required
+          label='Product Type'
+          options={[
+            { label: 'masareal', value: 'masareal' },
+            { label: 'banana-chips', value: 'banana-chips' },
+          ]}
+          control={control}
+          property='productType'
+          defaultValue={formDefaultValues?.productType}
+          errorMessage={errors.productType?.message}
         />
       </div>
 

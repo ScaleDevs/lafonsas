@@ -12,6 +12,7 @@ const generateInitialEditFormValues = (delivery: Delivery) => {
   return {
     storeId: delivery.storeId,
     deliveryNumber: delivery.deliveryNumber,
+    productType: delivery.productType,
     postingDate: dayjs(delivery.postingDate).format('YYYY-MM-DD'),
     orders: delivery.orders || [],
     returnSlip: delivery.returnSlip || [],
@@ -23,9 +24,15 @@ export interface IDeliveryProfileProps {
   setDeliveryId: (id: string | null) => void;
 }
 
-export default function DeliveryProfile({ deliveryId, setDeliveryId }: IDeliveryProfileProps) {
+export default function DeliveryProfile({
+  deliveryId,
+  setDeliveryId,
+}: IDeliveryProfileProps) {
   const { setDeliveryState } = useDeliveryStoreTrack();
-  const { data, isLoading, refetch } = trpc.useQuery(['delivery.getById', deliveryId]);
+  const { data, isLoading, refetch } = trpc.useQuery([
+    'delivery.getById',
+    deliveryId,
+  ]);
   const { mutate } = trpc.useMutation('delivery.delete');
   const [isEdit, setIsEdit] = useState(false);
   const [isSuccessEdit, setIsSuccessEdit] = useState(false);
@@ -59,17 +66,25 @@ export default function DeliveryProfile({ deliveryId, setDeliveryId }: IDelivery
     <>
       {isSuccessEdit ? (
         <>
-          <Notification rounded='sm' type='success' message='Delivery Record Updated' />
+          <Notification
+            rounded='sm'
+            type='success'
+            message='Delivery Record Updated'
+          />
           <br />
         </>
       ) : (
         ''
       )}
-      <div className='bg-white shadow-lg px-5 py-7 rounded-md'>
+      <div className='rounded-md bg-white px-5 py-7 shadow-lg'>
         {isEdit ? (
           <>
             <div className='w-24'>
-              <Button buttonTitle='Back' size='sm' onClick={() => setIsEdit(false)} />
+              <Button
+                buttonTitle='Back'
+                size='sm'
+                onClick={() => setIsEdit(false)}
+              />
             </div>
             <EditDeliveryForm
               deliveryId={deliveryId}
@@ -81,14 +96,27 @@ export default function DeliveryProfile({ deliveryId, setDeliveryId }: IDelivery
           <>
             <div className='flex flex-row justify-between'>
               <div className='w-24'>
-                <Button buttonTitle='Back' size='sm' onClick={handlBackButton} />
+                <Button
+                  buttonTitle='Back'
+                  size='sm'
+                  onClick={handlBackButton}
+                />
               </div>
               <div className='flex flex-row space-x-2'>
                 <div className='w-24'>
-                  <Button buttonTitle='Edit' size='sm' onClick={() => setIsEdit(true)} />
+                  <Button
+                    buttonTitle='Edit'
+                    size='sm'
+                    onClick={() => setIsEdit(true)}
+                  />
                 </div>
                 <div className='w-24'>
-                  <Button buttonTitle='Delete' size='sm' color='red' onClick={onDeleteDelivery} />
+                  <Button
+                    buttonTitle='Delete'
+                    size='sm'
+                    color='red'
+                    onClick={onDeleteDelivery}
+                  />
                 </div>
               </div>
             </div>
