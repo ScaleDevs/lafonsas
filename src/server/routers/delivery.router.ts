@@ -32,6 +32,7 @@ export const deliveryRouter = createRouter()
       return DeliveryService.createDelivery({
         ...input,
         paymentId: null,
+        productType: '',
         postingDate: new Date(input.postingDate),
       });
     },
@@ -124,6 +125,7 @@ export const deliveryRouter = createRouter()
   })
   .query('getDeliveries', {
     input: z.object({
+      productType: z.string().optional(),
       deliveryNumber: z.string().optional(),
       storeId: z.string().optional(),
       startDate: z.string(),
@@ -140,6 +142,7 @@ export const deliveryRouter = createRouter()
           );
         return {
           pageCount: 1,
+          totalCount: 1,
           records: delivery ? [delivery] : [],
         };
       }

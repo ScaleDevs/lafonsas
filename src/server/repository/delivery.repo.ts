@@ -2,6 +2,7 @@ import prisma from './prisma.client';
 import { IDelivery, IPaginationInputs } from '@/utils/types';
 
 export type IFindDeliveriesInput = {
+  productType?: string;
   storeId?: string;
   startDate: Date | string;
   endDate: Date | string;
@@ -45,13 +46,22 @@ class Respository {
     });
   }
 
-  public async findDeliveries({ startDate, endDate, storeId, page, limit, noLimit }: IFindDeliveriesInput) {
+  public async findDeliveries({
+    startDate,
+    endDate,
+    storeId,
+    productType,
+    page,
+    limit,
+    noLimit,
+  }: IFindDeliveriesInput) {
     const whereFilter = {
       postingDate: {
         gte: startDate,
         lte: endDate,
       },
       storeId,
+      productType,
     };
 
     const [result, totalCount] = await Promise.all([
@@ -80,6 +90,7 @@ class Respository {
 
     return {
       pageCount: Math.ceil(totalCount / limit),
+      totalCount,
       records: result,
     };
   }
@@ -139,7 +150,10 @@ class Respository {
     return result;
   }
 
-  public async updateDelivery(deliveryId: string, deliveryPartialData: Partial<IDelivery>) {
+  public async updateDelivery(
+    deliveryId: string,
+    deliveryPartialData: Partial<IDelivery>,
+  ) {
     return prisma.delivery.update({
       where: {
         id: deliveryId,

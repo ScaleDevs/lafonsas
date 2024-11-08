@@ -8,18 +8,29 @@ export type DeliveryStates = {
   startDate: string;
   endDate: string;
   storeId: string | undefined;
+  productType?: string;
   deliveryNumber: string | undefined;
   page: number;
 
-  setDeliveryState: (label: keyof Omit<DeliveryStates, 'setDeliveryState' | 'resetDeliveryState'>, value: any) => void;
+  setDeliveryState: (
+    label: keyof Omit<
+      DeliveryStates,
+      'setDeliveryState' | 'resetDeliveryState'
+    >,
+    value: any,
+  ) => void;
   resetDeliveryState: () => void;
 };
 
-const initState: Omit<DeliveryStates, 'setDeliveryState' | 'resetDeliveryState'> = {
+const initState: Omit<
+  DeliveryStates,
+  'setDeliveryState' | 'resetDeliveryState'
+> = {
   deletedDelivery: null,
   startDate: getStartOfMonth(),
   endDate: getEndOfMonth(),
   storeId: undefined,
+  productType: undefined,
   deliveryNumber: undefined,
   page: 1,
 };
