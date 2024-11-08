@@ -3,6 +3,7 @@ import z from 'zod';
 export const deliveryFormSchema = z.object({
   storeId: z.string().min(1, 'Please Choose Store'),
   deliveryNumber: z.string().min(1, 'Please Input Delivery Number'),
+  productType: z.string().min(1, 'Please Input Product Type'),
   postingDate: z.string().min(1, 'Please Input posting date'),
   orders: z
     .array(

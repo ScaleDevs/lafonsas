@@ -12,6 +12,7 @@ import {
 const initialData = {
   storeId: '',
   deliveryNumber: '',
+  productType: '',
   postingDate: '',
   widthHoldingTax: undefined,
   otherDeduction: undefined,

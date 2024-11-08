@@ -35,7 +35,6 @@ export default function CreateDeliveryForm({
     handleSubmit,
     resetField,
     formState: { errors },
-    watch,
     control,
   } = useForm<DeliveryFormSchemaType>({
     resolver: zodResolver(deliveryFormSchema),
@@ -115,13 +114,27 @@ export default function CreateDeliveryForm({
           formInput={{ register, property: 'deliveryNumber' }}
           errorMessage={errors.deliveryNumber?.message}
         />
+      </div>
 
+      <div className='flex flex-col justify-between space-y-5 lg:flex-row lg:space-x-7 lg:space-y-0'>
         <TextField
           required
           type='date'
           label='Posting Date'
           formInput={{ register, property: 'postingDate' }}
           errorMessage={errors.postingDate?.message}
+        />
+
+        <SelectField
+          required
+          label='Product Type'
+          options={[
+            { label: 'masareal', value: 'masareal' },
+            { label: 'banana-chips', value: 'banana-chips' },
+          ]}
+          control={control}
+          property='productType'
+          errorMessage={errors.productType?.message}
         />
       </div>
 

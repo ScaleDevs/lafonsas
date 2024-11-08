@@ -12,6 +12,7 @@ export const deliveryRouter = createRouter()
       storeId: z.string(),
       postingDate: z.string(),
       deliveryNumber: z.string(),
+      productType: z.string(),
       amount: z.number(),
       orders: z.array(
         z.object({
@@ -32,7 +33,6 @@ export const deliveryRouter = createRouter()
       return DeliveryService.createDelivery({
         ...input,
         paymentId: null,
-        productType: '',
         postingDate: new Date(input.postingDate),
       });
     },
