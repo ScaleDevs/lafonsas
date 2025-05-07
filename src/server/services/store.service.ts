@@ -1,10 +1,15 @@
 import { IStore } from '@/utils/types';
-import { IFindStoresInput, StoreRepository } from '@/server/repository/store.repo';
+import {
+  IFindStoresInput,
+  StoreRepository,
+} from '@/server/repository/store.repo';
 import { TRPCError } from '@trpc/server';
 import prisma from '../repository/prisma.client';
 
 class Service {
-  public async createStore(storeData: Omit<IStore, 'id' | 'parentStore'> & { childStores?: string[] }) {
+  public async createStore(
+    storeData: Omit<IStore, 'id'> & { childStores?: string[] },
+  ) {
     const { childStores, ...rest } = storeData;
 
     try {
@@ -13,13 +18,19 @@ class Service {
       if (!!childStores && childStores.length > 0)
         for (const child of childStores) {
           const childStore = await StoreRepository.findStoreById(child);
-          if (!!childStore && !childStore.parentStore) await StoreRepository.updateStore(child, { parentStore: parent.id });
+          if (!!childStore && !childStore.parentStore)
+            await StoreRepository.updateStore(child, {
+              parentStore: parent.id,
+            });
         }
 
       return parent;
     } catch (err) {
       console.log(err);
-      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Something went wrong',
+      });
     }
   }
 
@@ -27,7 +38,10 @@ class Service {
     try {
       return StoreRepository.findStoreById(storeId);
     } catch (err) {
-      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Something went wrong',
+      });
     }
   }
 
@@ -35,7 +49,10 @@ class Service {
     try {
       return StoreRepository.findStoreByName(storeName);
     } catch (err) {
-      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Something went wrong',
+      });
     }
   }
 
@@ -43,7 +60,10 @@ class Service {
     try {
       return StoreRepository.findStores(inputs);
     } catch (err) {
-      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Something went wrong',
+      });
     }
   }
 
@@ -52,7 +72,10 @@ class Service {
       console.log('updateStore - SERVICE');
       return StoreRepository.updateStore(storeId, storePartialData);
     } catch (err) {
-      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Something went wrong',
+      });
     }
   }
 
@@ -71,7 +94,10 @@ class Service {
 
       return StoreRepository.deleteStore(storeId);
     } catch (err) {
-      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Something went wrong',
+      });
     }
   }
 }

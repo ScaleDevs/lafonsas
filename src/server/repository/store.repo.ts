@@ -6,11 +6,10 @@ export type IFindStoresInput = {
 } & IPaginationInputs;
 
 class Respository {
-  public async createStore(storeData: Omit<IStore, 'id' | 'parentStore'>) {
+  public async createStore(storeData: Omit<IStore, 'id'>) {
     return prisma.store.create({
       data: {
         ...storeData,
-        parentStore: null,
       },
     });
   }
