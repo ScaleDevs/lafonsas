@@ -60,6 +60,7 @@ export default function UpdateForm({
     { limit: 2000, page: 1 },
   ]);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const {
     register,
@@ -127,6 +128,12 @@ export default function UpdateForm({
 
     mutate(mutateParams, {
       onSuccess() {
+        setSuccessMessage(
+          !!billPartialData.invoiceRefNo
+            ? 'Bill updated. Go back to the list and open it again to view with the new reference number'
+            : 'Bill updated',
+        );
+
         reset({
           ...formData,
         });
@@ -170,7 +177,6 @@ export default function UpdateForm({
         />
 
         <TextField
-          disabled
           required
           label='Reference Number'
           placeholder='enter reference number here'
@@ -307,7 +313,11 @@ export default function UpdateForm({
 
         {isSuccess && !error ? (
           <div className='py-3'>
-            <Notification rounded='sm' type='success' message='Bill updated' />
+            <Notification
+              rounded='sm'
+              type='success'
+              message={successMessage}
+            />
           </div>
         ) : (
           ''
