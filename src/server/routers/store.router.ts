@@ -54,6 +54,15 @@ export const storeRouter = createRouter()
       return StoreService.removeChildStore(input);
     },
   })
+  .mutation('linkChildStore', {
+    input: z.object({
+      parentStoreId: z.string(),
+      childStoreId: z.string(),
+    }),
+    resolve({ input }) {
+      return StoreService.linkChildStoreToParent(input);
+    },
+  })
   .query('getById', {
     input: z.string(),
     resolve({ input }) {

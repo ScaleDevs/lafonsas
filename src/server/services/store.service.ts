@@ -122,6 +122,36 @@ class Service {
       });
     }
   }
+
+  public async linkChildStoreToParent({
+    parentStoreId,
+    childStoreId,
+  }: {
+    parentStoreId: string;
+    childStoreId: string;
+  }) {
+    try {
+      await prisma.store.update({
+        where: {
+          id: childStoreId,
+        },
+        data: {
+          parentStore: {
+            set: parentStoreId,
+          },
+        },
+      });
+
+      return StoreRepository.findStoreById(childStoreId);
+    } catch (err) {
+      console.error('(Error) linkChildStoreToParent :: ', err);
+
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Something went wrong',
+      });
+    }
+  }
 }
 
 export const StoreService = new Service();

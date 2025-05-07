@@ -18,6 +18,9 @@ import { TransactionGraph } from '@/modules/store/TransactionGraph';
 import { cn } from '@/shadcn/lib/utils';
 import TableLoader from '@/components/TableLoader';
 import Paginator from '@/components/Paginator';
+import SelectField from '@/components/SelectField';
+import Button from '@/components/Button';
+import FadeIn from '@/components/FadeIn';
 
 export interface IDetailsProps {}
 
@@ -203,6 +206,111 @@ const TableRow = ({
   );
 };
 
+const AddNewChildStore = ({
+  parentStoreId,
+  page,
+}: {
+  parentStoreId: string;
+  page: number;
+}) => {
+  const ctx = trpc.useContext();
+
+  const [childStoreId, setChildStoreId] = useState('');
+  const [errMessage, setErrMessage] = useState('');
+
+  const { mutate, isLoading: isLinking } = trpc.useMutation(
+    'store.linkChildStore',
+  );
+
+  const {
+    data: soloStores,
+    isLoading: fetchingStoresOption,
+    refetch,
+  } = trpc.useQuery(['store.getStores', { limit: 1000 }]);
+
+  const addNewChildStore = () => {
+    if (!childStoreId) {
+      setErrMessage('You have not chosen a child store!');
+      return;
+    }
+
+    mutate(
+      {
+        childStoreId,
+        parentStoreId,
+      },
+      {
+        onSuccess(newChildStoreData) {
+          refetch();
+          ctx.setQueryData(
+            ['store.getStores', { parentStoreId, page, limit: 10 }],
+            (curr: any) => {
+              return {
+                ...curr,
+                records: newChildStoreData
+                  ? [
+                      ...curr.records,
+                      {
+                        id: newChildStoreData?.id,
+                        name: newChildStoreData?.name,
+                        isParent: newChildStoreData?.isParent,
+                        parentStore: newChildStoreData?.parentStore,
+                      },
+                    ]
+                  : curr.records,
+              };
+            },
+          );
+        },
+        onError(error) {
+          console.error(error);
+          setErrMessage(
+            'Something Went Wrong! Try Again Later or Contact Admin',
+          );
+        },
+      },
+    );
+  };
+
+  return (
+    <>
+      {' '}
+      <p className='font-medium'>Add New Child Store:</p>
+      <div className='flex w-1/2 justify-start gap-3'>
+        <SelectField
+          property='childStoreAdd'
+          options={
+            soloStores?.records
+              .filter((store) => !store.isParent && !store.parentStore)
+              .map((store: any) => {
+                return { label: store.name, value: store.id };
+              }) || []
+          }
+          isLoading={fetchingStoresOption}
+          onChange={(v) => {
+            setChildStoreId(v);
+            setErrMessage('');
+          }}
+        />
+
+        <div className='min-w-48'>
+          <Button
+            buttonTitle='ADD'
+            className='h-full p-0'
+            onClick={addNewChildStore}
+            isLoading={isLinking}
+          />
+        </div>
+      </div>
+      {errMessage && (
+        <FadeIn cssText='text-red-500' duration='animation-duration-200'>
+          {errMessage}
+        </FadeIn>
+      )}
+    </>
+  );
+};
+
 const ChildStores = ({ parentStoreId }: { parentStoreId: string }) => {
   const [page, setPage] = useState(1);
 
@@ -217,6 +325,10 @@ const ChildStores = ({ parentStoreId }: { parentStoreId: string }) => {
         <TableLoader />
       ) : (
         <>
+          <AddNewChildStore parentStoreId={parentStoreId} page={page} />
+
+          <br />
+
           <table className='w-full min-w-[800px]'>
             <thead>
               <tr className='border-b border-gray-500 text-left font-raleway text-xl'>
