@@ -41,6 +41,7 @@ model Delivery {
   id             String   @id @default(auto()) @map("_id") @db.ObjectId
   postingDate    DateTime
   deliveryNumber String   @unique
+  counterNumber  String?
   productType    String
   amount         Float
   orders         Order[]
