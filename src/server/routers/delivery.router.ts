@@ -12,6 +12,7 @@ export const deliveryRouter = createRouter()
       storeId: z.string(),
       postingDate: z.string(),
       deliveryNumber: z.string(),
+      counterNumber: z.string().nullable(),
       productType: z.string(),
       amount: z.number(),
       orders: z.array(

@@ -114,6 +114,13 @@ export default function CreateDeliveryForm({
           formInput={{ register, property: 'deliveryNumber' }}
           errorMessage={errors.deliveryNumber?.message}
         />
+
+        <TextField
+          label='Counter Number'
+          placeholder='enter counter number here'
+          formInput={{ register, property: 'counterNumber' }}
+          errorMessage={errors.deliveryNumber?.message}
+        />
       </div>
 
       <div className='flex flex-col justify-between space-y-5 lg:flex-row lg:space-x-7 lg:space-y-0'>

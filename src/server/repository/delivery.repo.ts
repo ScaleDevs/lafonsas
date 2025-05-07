@@ -13,6 +13,7 @@ class Respository {
     return prisma.delivery.create({
       data: {
         ...deliveryData,
+        counterNumber: deliveryData.counterNumber,
       },
     });
   }

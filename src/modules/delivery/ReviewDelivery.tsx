@@ -74,6 +74,7 @@ export default function ReviewDelivery({
       orders: newOrderArr,
       returnSlip,
       amount: getTotalPrice(),
+      counterNumber: rest.counterNumber ?? null,
     };
 
     mutate(mutateParams, {
