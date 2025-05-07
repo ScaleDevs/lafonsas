@@ -48,9 +48,17 @@ export interface IUpdateProps {
   resetIsUpdate: () => void;
 }
 
-export default function UpdateForm({ data, refetchCalls, resetIsUpdate }: IUpdateProps) {
-  const { mutate, isLoading, isSuccess, isError } = trpc.useMutation('bill.update');
-  const { data: accountsData, isLoading: getAccountLoader } = trpc.useQuery(['account.getMany', { limit: 2000, page: 1 }]);
+export default function UpdateForm({
+  data,
+  refetchCalls,
+  resetIsUpdate,
+}: IUpdateProps) {
+  const { mutate, isLoading, isSuccess, isError } =
+    trpc.useMutation('bill.update');
+  const { data: accountsData, isLoading: getAccountLoader } = trpc.useQuery([
+    'account.getMany',
+    { limit: 2000, page: 1 },
+  ]);
   const [error, setError] = useState('');
 
   const {
@@ -130,25 +138,17 @@ export default function UpdateForm({ data, refetchCalls, resetIsUpdate }: IUpdat
   return (
     <div className='rounded-md bg-white px-5 py-7 shadow-lg'>
       <div className='w-16 py-3'>
-        <Button size='sm' buttonTitle='Back' onClick={resetIsUpdate} font='raleway' />
+        <Button
+          size='sm'
+          buttonTitle='Back'
+          onClick={resetIsUpdate}
+          font='raleway'
+        />
       </div>
 
-      {isSuccess && !error ? (
-        <div className='py-3'>
-          <Notification rounded='sm' type='success' message='Bill updated' />
-        </div>
-      ) : (
-        ''
-      )}
-      {isError || error ? (
-        <div className='py-3'>
-          <Notification rounded='sm' type='error' message={error || 'Something went wrong'} />
-        </div>
-      ) : (
-        ''
-      )}
-
-      <h1 className='font-raleway text-3xl font-semibold'>UPDATE BILL DETAILS</h1>
+      <h1 className='font-raleway text-3xl font-semibold'>
+        UPDATE BILL DETAILS
+      </h1>
 
       <br />
 
@@ -193,7 +193,13 @@ export default function UpdateForm({ data, refetchCalls, resetIsUpdate }: IUpdat
           <h1 className='text-md font-raleway font-semibold md:text-lg'>
             Expenses : <span className='text-red-500'>*</span>
           </h1>
-          {errors.expenses?.message ? <FadeIn cssText='font-raleway text-red-500'>{errors.expenses?.message}</FadeIn> : ''}
+          {errors.expenses?.message ? (
+            <FadeIn cssText='font-raleway text-red-500'>
+              {errors.expenses?.message}
+            </FadeIn>
+          ) : (
+            ''
+          )}
           <div className='space-y-3'>
             {fields.map((field, index) => {
               return (
@@ -206,7 +212,11 @@ export default function UpdateForm({ data, refetchCalls, resetIsUpdate }: IUpdat
                     type='date'
                     label='Date'
                     formInput={{ register, property: `expenses.${index}.date` }}
-                    errorMessage={errors?.expenses ? errors.expenses[index]?.date?.message : undefined}
+                    errorMessage={
+                      errors?.expenses
+                        ? errors.expenses[index]?.date?.message
+                        : undefined
+                    }
                   />
 
                   <SelectField
@@ -215,22 +225,36 @@ export default function UpdateForm({ data, refetchCalls, resetIsUpdate }: IUpdat
                     disabled={!!field.accountId}
                     options={
                       accountsData?.records.map((account) => {
-                        return { label: account.accountName, value: account.accountId };
+                        return {
+                          label: account.accountName,
+                          value: account.accountId,
+                        };
                       }) || []
                     }
                     control={control}
                     property={`expenses.${index}.accountId`}
                     isLoading={getAccountLoader}
                     defaultValue={field.accountId}
-                    errorMessage={errors?.expenses ? errors.expenses[index]?.accountId?.message : undefined}
+                    errorMessage={
+                      errors?.expenses
+                        ? errors.expenses[index]?.accountId?.message
+                        : undefined
+                    }
                   />
 
                   <TextField
                     label='Description'
                     type='text'
                     placeholder='enter description here'
-                    formInput={{ register, property: `expenses.${index}.description` }}
-                    errorMessage={errors?.expenses ? errors.expenses[index]?.description?.message : undefined}
+                    formInput={{
+                      register,
+                      property: `expenses.${index}.description`,
+                    }}
+                    errorMessage={
+                      errors?.expenses
+                        ? errors.expenses[index]?.description?.message
+                        : undefined
+                    }
                   />
 
                   <TextField
@@ -238,15 +262,27 @@ export default function UpdateForm({ data, refetchCalls, resetIsUpdate }: IUpdat
                     labelCss='text-sm font-bold'
                     type='number'
                     placeholder='enter amount here'
-                    formInput={{ register, property: `expenses.${index}.amount` }}
-                    errorMessage={errors?.expenses ? errors.expenses[index]?.amount?.message : undefined}
+                    formInput={{
+                      register,
+                      property: `expenses.${index}.amount`,
+                    }}
+                    errorMessage={
+                      errors?.expenses
+                        ? errors.expenses[index]?.amount?.message
+                        : undefined
+                    }
                   />
                   <button
                     type='button'
                     className='group flex h-16 w-[100%] flex-row items-center justify-center rounded-md border border-red-500 px-3 transition-colors duration-200 hover:bg-red-500 md:w-16 lg:h-[100%]'
                     onClick={() => remove(index)}
                   >
-                    <IconComp iconName='TrashIcon' iconProps={{ fillColor: 'text-red-500 group-hover:text-white' }} />
+                    <IconComp
+                      iconName='TrashIcon'
+                      iconProps={{
+                        fillColor: 'text-red-500 group-hover:text-white',
+                      }}
+                    />
                   </button>
                 </div>
               );
@@ -255,11 +291,38 @@ export default function UpdateForm({ data, refetchCalls, resetIsUpdate }: IUpdat
           <button
             type='button'
             className='text-md mt-3 rounded-sm bg-primary px-5 py-1 font-raleway text-xl font-semibold text-white'
-            onClick={() => append({ expenseId: '', date: '', amount: 0, description: '', accountId: '' })}
+            onClick={() =>
+              append({
+                expenseId: '',
+                date: '',
+                amount: 0,
+                description: '',
+                accountId: '',
+              })
+            }
           >
             +
           </button>
         </div>
+
+        {isSuccess && !error ? (
+          <div className='py-3'>
+            <Notification rounded='sm' type='success' message='Bill updated' />
+          </div>
+        ) : (
+          ''
+        )}
+        {isError || error ? (
+          <div className='py-3'>
+            <Notification
+              rounded='sm'
+              type='error'
+              message={error || 'Something went wrong'}
+            />
+          </div>
+        ) : (
+          ''
+        )}
 
         <Button type='submit' size='md' isLoading={isLoading} />
       </form>
