@@ -35,6 +35,7 @@ export const deliveryRouter = createRouter()
         ...input,
         paymentId: null,
         postingDate: new Date(input.postingDate),
+        counterNumber: input.counterNumber || null,
       });
     },
   })

@@ -6,6 +6,7 @@ export interface ITableRowProps {
     storeId: string;
     postingDate: Date;
     deliveryNumber: string;
+    counterNumber: string | null;
     amount: number;
     id: string;
     paymentId: string | null;
@@ -24,6 +25,7 @@ export default function TableRow({ delivery, onClick }: ITableRowProps) {
     >
       <td>{delivery.store.name}</td>
       <td>{delivery.deliveryNumber}</td>
+      <td>{delivery.counterNumber || 'N/A'}</td>
       <td>{dayjs(delivery.postingDate).format('MMM DD, YYYY')}</td>
       <td>₱{delivery.amount}</td>
       <td>

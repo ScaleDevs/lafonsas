@@ -202,6 +202,7 @@ export default function TableDelivery({ setDeliveryId }: ITableDeliveryProps) {
                 <tr className='border-b border-gray-500 text-left font-raleway text-xl'>
                   <th className='pb-3'>Store</th>
                   <th className='pb-3'>DeliveryNumber</th>
+                  <th className='pb-3'>Counter No.</th>
                   <th className='pb-3'>PostingDate</th>
                   <th className='pb-3'>Amount</th>
                   <th className='pb-3'>Paid</th>
