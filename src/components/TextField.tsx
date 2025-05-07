@@ -52,7 +52,9 @@ const TextField = ({
 
   const borderColor = {
     primary: `${
-      disabled ? 'border-gray-200  cursor-not-allowed' : 'border-zinc-600  hover:border-blue-500'
+      disabled
+        ? 'border-gray-200  cursor-not-allowed'
+        : 'border-zinc-600  hover:border-blue-500'
     } focus:border-blue-500`,
     secondary: 'border-gray-300 hover:border-blue-500 focus:border-blue-500',
     error: 'border-red-500',
@@ -84,7 +86,7 @@ const TextField = ({
       })
     : {
         onChange: onInputChange,
-        value: defaultValue,
+        defaultValue: defaultValue,
       };
 
   return (
