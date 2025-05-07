@@ -3,7 +3,6 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { Product } from '@prisma/client';
 import { trpc } from '@/utils/trpc';
 import TextField from '@/components/TextField';
 import SelectField from '@/components/SelectField';
@@ -15,6 +14,7 @@ const schema = z.object({
   storeId: z.string().min(1, 'Please Choose Store'),
   productType: z.string().min(1, 'Please Input Product Type'),
   deliveryNumber: z.string().min(1, 'Please Input Delivery Number'),
+  counterNumber: z.string().optional(),
   postingDate: z.string().min(1, 'Please Input posting date'),
   orders: z
     .array(
@@ -154,6 +154,13 @@ export default function EditDeliveryForm({
           placeholder='enter delivery number here'
           formInput={{ register, property: 'deliveryNumber' }}
           errorMessage={errors.deliveryNumber?.message}
+        />
+
+        <TextField
+          label='Counter Number'
+          placeholder='enter counter number here'
+          formInput={{ register, property: 'counterNumber' }}
+          errorMessage={errors.counterNumber?.message}
         />
       </div>
 

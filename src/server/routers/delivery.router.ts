@@ -46,6 +46,7 @@ export const deliveryRouter = createRouter()
         storeId: z.string().optional(),
         postingDate: z.string().optional(),
         deliveryNumber: z.string().optional(),
+        counterNumber: z.string().optional(),
         productType: z.string().optional(),
         orders: z
           .array(
@@ -96,6 +97,10 @@ export const deliveryRouter = createRouter()
           input.partialData.postingDate === undefined
             ? undefined
             : new Date(input.partialData.postingDate),
+        counterNumber:
+          input.partialData.counterNumber === ''
+            ? null
+            : input.partialData.counterNumber,
       };
 
       return DeliveryService.updateDelivery(input.deliveryId, partialData);

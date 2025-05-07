@@ -12,6 +12,7 @@ const generateInitialEditFormValues = (delivery: Delivery) => {
   return {
     storeId: delivery.storeId,
     deliveryNumber: delivery.deliveryNumber,
+    counterNumber: delivery.counterNumber ?? undefined,
     productType: delivery.productType,
     postingDate: dayjs(delivery.postingDate).format('YYYY-MM-DD'),
     orders: delivery.orders || [],

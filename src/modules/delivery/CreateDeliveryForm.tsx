@@ -119,7 +119,7 @@ export default function CreateDeliveryForm({
           label='Counter Number'
           placeholder='enter counter number here'
           formInput={{ register, property: 'counterNumber' }}
-          errorMessage={errors.deliveryNumber?.message}
+          errorMessage={errors.counterNumber?.message}
         />
       </div>
 
