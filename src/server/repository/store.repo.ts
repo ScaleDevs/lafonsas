@@ -3,6 +3,7 @@ import { IStore, IPaginationInputs } from '@/utils/types';
 
 export type IFindStoresInput = {
   storeName?: string;
+  parentStoreId?: string;
 } & IPaginationInputs;
 
 class Respository {
@@ -22,11 +23,21 @@ class Respository {
     return prisma.store.findUnique({ where: { name: storeName } });
   }
 
-  public async findStores({ page, limit, storeName }: IFindStoresInput) {
+  public async findStores({
+    page,
+    limit,
+    storeName,
+    parentStoreId,
+  }: IFindStoresInput) {
     const whereFilter = {
       name: {
         startsWith: storeName,
       },
+      parentStore: parentStoreId
+        ? {
+            equals: parentStoreId,
+          }
+        : undefined,
     };
 
     const result = await prisma.store.findMany({

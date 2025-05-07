@@ -100,6 +100,28 @@ class Service {
       });
     }
   }
+
+  public async removeChildStore(storeId: string) {
+    try {
+      await prisma.store.update({
+        where: {
+          id: storeId,
+        },
+        data: {
+          parentStore: {
+            unset: true,
+          },
+        },
+      });
+
+      return storeId;
+    } catch (err) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Something went wrong',
+      });
+    }
+  }
 }
 
 export const StoreService = new Service();

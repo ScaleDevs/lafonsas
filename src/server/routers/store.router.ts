@@ -48,6 +48,12 @@ export const storeRouter = createRouter()
       return StoreService.deleteStore(input);
     },
   })
+  .mutation('removeChildStore', {
+    input: z.string(),
+    resolve({ input }) {
+      return StoreService.removeChildStore(input);
+    },
+  })
   .query('getById', {
     input: z.string(),
     resolve({ input }) {
@@ -64,6 +70,7 @@ export const storeRouter = createRouter()
   .query('getStores', {
     input: z.object({
       storeName: z.string().min(3).optional(),
+      parentStoreId: z.string().optional(),
       page: z.number().optional().default(1),
       limit: z.number().optional().default(10),
     }),

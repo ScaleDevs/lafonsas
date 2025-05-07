@@ -2,18 +2,22 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { twMerge } from 'tailwind-merge';
 import dayjs from 'dayjs';
-import { BsXCircle } from 'react-icons/bs';
+import { BsTrash, BsXCircle } from 'react-icons/bs';
+import { TbLoader } from 'react-icons/tb';
+import { Pencil1Icon } from '@radix-ui/react-icons';
 
 import Layout from '@/layouts/index';
 import { trpc } from '@/utils/trpc';
 import { PHpeso } from '@/modules/utils';
-import { Pencil1Icon } from '@radix-ui/react-icons';
 import StoreUpdate from '@/modules/store/StoreUpdate';
 import useDisclosure from '@/modules/hooks/useDisclosure';
 import { SKUGraph } from '@/modules/store/SKUReports';
 import { getEndOfMonth, getStartOfMonth } from '@/utils/helper';
 import { FilterModal } from '@/modules/store/Filter';
 import { TransactionGraph } from '@/modules/store/TransactionGraph';
+import { cn } from '@/shadcn/lib/utils';
+import TableLoader from '@/components/TableLoader';
+import Paginator from '@/components/Paginator';
 
 export interface IDetailsProps {}
 
@@ -145,14 +149,174 @@ const Graphs = ({ id }: { id: string }) => {
   );
 };
 
+const TableRow = ({
+  id,
+  storeName,
+  parentStoreId,
+  page,
+}: {
+  id: string;
+  storeName: string;
+  parentStoreId: string;
+  page: number;
+}) => {
+  const { mutate, isLoading } = trpc.useMutation('store.removeChildStore');
+  const ctx = trpc.useContext();
+
+  const removeChildStore = async () => {
+    try {
+      mutate(id, {
+        onSuccess() {
+          ctx.setQueryData(
+            ['store.getStores', { parentStoreId, page, limit: 10 }],
+            (curr: any) => {
+              return {
+                ...curr,
+                records: curr.records.filter((v: any) => v.id != id),
+              };
+            },
+          );
+        },
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  return (
+    <tr className='h-14 text-left font-comfortaa transition-colors duration-200 hover:bg-gray-200'>
+      <td>{storeName}</td>
+      <td>
+        <button
+          className=' rounded-md bg-red-500 p-3'
+          onClick={removeChildStore}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <TbLoader className='animate-spin text-lg text-white' />
+          ) : (
+            <BsTrash className='text-white' />
+          )}
+        </button>
+      </td>
+    </tr>
+  );
+};
+
+const ChildStores = ({ parentStoreId }: { parentStoreId: string }) => {
+  const [page, setPage] = useState(1);
+
+  const { data, isLoading } = trpc.useQuery([
+    'store.getStores',
+    { parentStoreId, page, limit: 10 },
+  ]);
+
+  return (
+    <div className='overflow-x-auto rounded-md bg-white px-5 py-7 shadow-lg'>
+      {isLoading ? (
+        <TableLoader />
+      ) : (
+        <>
+          <table className='w-full min-w-[800px]'>
+            <thead>
+              <tr className='border-b border-gray-500 text-left font-raleway text-xl'>
+                <th className='pb-3'>Store</th>
+                <th className='pb-3'></th>
+              </tr>
+            </thead>
+            <tbody>
+              {data
+                ? data.records.map((store) => (
+                    <TableRow
+                      key={store.id}
+                      id={store.id}
+                      storeName={store.name}
+                      parentStoreId={parentStoreId}
+                      page={page}
+                    />
+                  ))
+                : null}
+            </tbody>
+          </table>
+        </>
+      )}
+
+      <br />
+
+      <Paginator
+        currentPage={page}
+        pageCount={data?.pageCount || 0}
+        handlePageChange={(v) => setPage(v)}
+      />
+    </div>
+  );
+};
+
+const Section2 = ({ id }: { id: string }) => {
+  const { data, isLoading } = trpc.useQuery(['store.getById', id]);
+
+  const [tabVal, setTabVal] = useState(1);
+
+  return (
+    <div>
+      {data?.isParent && (
+        <div className='flex flex-row justify-center gap-8'>
+          <div
+            className={cn(
+              'cursor-pointer',
+              'text-gray-800',
+              tabVal === 1
+                ? 'border-b-2 border-primary pb-1 text-primary'
+                : 'hover:text-gray-600',
+            )}
+            onClick={() => setTabVal(1)}
+          >
+            <p className='text-2xl'>Child Stores</p>
+          </div>
+          <div
+            className={cn(
+              'cursor-pointer',
+              'text-gray-800',
+              tabVal === 2
+                ? 'border-b-2 border-primary pb-1 text-primary'
+                : 'hover:text-gray-600',
+            )}
+            onClick={() => setTabVal(2)}
+          >
+            <p className='text-2xl'>Graphs</p>
+          </div>
+        </div>
+      )}
+
+      <br />
+
+      {isLoading ? (
+        <div className='flex h-[25rem] w-full items-center justify-center'>
+          <div className='flex flex-col items-center justify-center gap-5'>
+            <p className='text-2xl'>Loading Content</p>
+            <TbLoader className='animate-spin text-5xl' />
+          </div>
+        </div>
+      ) : (
+        <>
+          {tabVal === 1 && !!data?.isParent && (
+            <ChildStores parentStoreId={id} />
+          )}
+          {(tabVal === 2 || !data?.isParent) && <Graphs id={id} />}
+        </>
+      )}
+    </div>
+  );
+};
+
 export default function Details(props: IDetailsProps) {
   const router = useRouter();
 
   return (
     <Layout>
-      <div className='space-y-5'>
+      <div className='space-y-8'>
         <Section1 id={router.query.id as string} />
-        <Graphs id={router.query.id as string} />
+        <Section2 id={router.query.id as string} />
       </div>
     </Layout>
   );
