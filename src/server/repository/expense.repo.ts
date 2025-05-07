@@ -1,5 +1,6 @@
 import { TRPCError } from '@trpc/server';
 import { Prisma } from '@prisma/client';
+
 import prisma from './prisma.client';
 import { IExpense, IPaginationInputs } from '@/utils/types';
 
@@ -38,11 +39,21 @@ class Respository {
     return prisma.expense.findFirst({ where: { expenseId } });
   }
 
-  public async findExpenses({ dateFilter, accountId, billId, page, limit, noLimit }: IFindExpensesInput) {
+  public async findExpenses({
+    dateFilter,
+    accountId,
+    billId,
+    page,
+    limit,
+    noLimit,
+  }: IFindExpensesInput) {
     const whereFilter: Prisma.ExpenseWhereInput = {};
 
     if (!dateFilter && !accountId && !billId)
-      throw new TRPCError({ code: 'BAD_REQUEST', message: 'There are no filters applied!' });
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'There are no filters applied!',
+      });
 
     if (!!dateFilter)
       whereFilter['date'] = {
@@ -91,7 +102,11 @@ class Respository {
   public async getExportsData({ dateFilter, accountId }: IGetExportsData) {
     const whereFilter: Prisma.ExpenseWhereInput = {};
 
-    if (!dateFilter) throw new TRPCError({ code: 'BAD_REQUEST', message: 'There are no filters applied!' });
+    if (!dateFilter)
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'There are no filters applied!',
+      });
 
     if (!!dateFilter)
       whereFilter['date'] = {
@@ -124,7 +139,10 @@ class Respository {
     return result;
   }
 
-  public async updateExpense(expenseId: string, expensePartialData: Partial<IExpense>) {
+  public async updateExpense(
+    expenseId: string,
+    expensePartialData: Partial<IExpense>,
+  ) {
     return prisma.expense.update({
       where: {
         expenseId,
@@ -137,6 +155,31 @@ class Respository {
     return prisma.expense.delete({
       where: {
         expenseId,
+      },
+    });
+  }
+
+  public async getExpensesByBillId(billId: string) {
+    return prisma.expense.findMany({
+      where: {
+        billId: billId,
+      },
+      select: {
+        expenseId: true,
+      },
+    });
+  }
+
+  public async deleteInvalidExpensesOfBill(
+    billId: string,
+    invalidExpensesIds: string[],
+  ) {
+    return prisma.expense.deleteMany({
+      where: {
+        billId: billId,
+        expenseId: {
+          in: invalidExpensesIds,
+        },
       },
     });
   }

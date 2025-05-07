@@ -1,9 +1,11 @@
 import dayjs from 'dayjs';
 import { z } from 'zod';
+
 import { createRouter } from '../createRouter';
 import { authMiddleware } from '../util';
 import { BillService } from '@/server/services/bill.service';
 import { ExpenseService } from '@/server/services/expense.service';
+import { ExpenseRepository } from '../repository/expense.repo';
 
 export const billRouter = createRouter()
   .middleware(authMiddleware)
@@ -50,9 +52,14 @@ export const billRouter = createRouter()
         .optional(),
     }),
     async resolve({ input }) {
-      const result = await BillService.updateBill(input.billId, input.partialData);
+      const result = await BillService.updateBill(
+        input.billId,
+        input.partialData,
+      );
 
-      if (input.expenses)
+      if (input.expenses) {
+        const validExpenseIds: string[] = [];
+
         for (const expense of input.expenses) {
           const partialData = { ...expense };
           const expenseId = expense.expenseId;
@@ -60,13 +67,30 @@ export const billRouter = createRouter()
 
           if (!!expenseId) {
             await ExpenseService.updateExpense(expenseId, { ...partialData });
-          } else
-            await ExpenseService.createExpense({
+            validExpenseIds.push(expenseId);
+          } else {
+            const newExpense = await ExpenseService.createExpense({
               ...partialData,
               date: new Date(expense.date),
               billId: result.billId,
             });
+
+            validExpenseIds.push(newExpense.expenseId);
+          }
         }
+
+        const billExpenses = await ExpenseRepository.getExpensesByBillId(
+          input.billId,
+        );
+        const invalidExpensesIds = billExpenses
+          .filter((v) => !validExpenseIds.includes(v.expenseId))
+          .map((v) => v.expenseId);
+
+        await ExpenseRepository.deleteInvalidExpensesOfBill(
+          input.billId,
+          invalidExpensesIds,
+        );
+      }
     },
   })
   .mutation('delete', {
@@ -98,7 +122,9 @@ export const billRouter = createRouter()
       return BillService.findBills({
         ...input,
         dateFilter: {
-          startDate: dayjs(input.dateFilter.startDate).startOf('day').toISOString(),
+          startDate: dayjs(input.dateFilter.startDate)
+            .startOf('day')
+            .toISOString(),
           endDate: dayjs(input.dateFilter.endDate).endOf('day').toISOString(),
         },
       });

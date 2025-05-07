@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client';
+
 import { IExpense, IBill } from '@/utils/types';
 import { ExpenseRepository } from '@/repo/expense.repo';
 import { BillRepository, IFindBillsInput } from '@/repo/bill.repo';
@@ -20,7 +21,10 @@ type ErrorCode =
   | 'CLIENT_CLOSED_REQUEST';
 
 class Service {
-  public async createBill(billData: Omit<IBill, 'billId'>, expensesData: Omit<IExpense, 'expenseId' | 'billId'>[]) {
+  public async createBill(
+    billData: Omit<IBill, 'billId'>,
+    expensesData: Omit<IExpense, 'expenseId' | 'billId'>[],
+  ) {
     try {
       const billResult = await BillRepository.createBill({
         ...billData,
@@ -49,9 +53,16 @@ class Service {
     }
   }
 
-  public async findBill({ refNo, billId }: { refNo?: string; billId?: string }) {
+  public async findBill({
+    refNo,
+    billId,
+  }: {
+    refNo?: string;
+    billId?: string;
+  }) {
     try {
-      if (!refNo && !billId) throw new TRPCError({ code: 'BAD_REQUEST', message: 'No ID Provided' });
+      if (!refNo && !billId)
+        throw new TRPCError({ code: 'BAD_REQUEST', message: 'No ID Provided' });
 
       const whereFilter: Prisma.BillWhereInput = {};
 
@@ -78,12 +89,19 @@ class Service {
         },
       });
 
-      if (!bill) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Bill does not Exist' });
+      if (!bill)
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Bill does not Exist',
+        });
 
       return bill;
     } catch (err) {
       console.log(err);
-      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Something went wrong',
+      });
     }
   }
 
@@ -92,16 +110,26 @@ class Service {
       return BillRepository.findBills(params);
     } catch (err) {
       console.log(err);
-      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Something went wrong',
+      });
     }
   }
 
   public async updateBill(billId: string, partialData: Partial<IBill>) {
     try {
+      if (partialData.date) {
+        partialData.date = new Date(partialData.date);
+      }
+
       return BillRepository.updateBill(billId, partialData);
     } catch (err) {
       console.log(err);
-      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Something went wrong',
+      });
     }
   }
 
@@ -110,7 +138,10 @@ class Service {
       return BillRepository.deleteBill(billId);
     } catch (err) {
       console.log(err);
-      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Something went wrong',
+      });
     }
   }
 }

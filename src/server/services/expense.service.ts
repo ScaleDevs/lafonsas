@@ -1,6 +1,10 @@
 import dayjs from 'dayjs';
 import { IExpense } from '@/utils/types';
-import { ExpenseRepository, IFindExpensesInput, IGetExportsData } from '@/repo/expense.repo';
+import {
+  ExpenseRepository,
+  IFindExpensesInput,
+  IGetExportsData,
+} from '@/repo/expense.repo';
 import { TRPCError } from '@trpc/server';
 
 class Service {
@@ -8,7 +12,10 @@ class Service {
     try {
       return ExpenseRepository.createExpense(data);
     } catch (err) {
-      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Something went wrong',
+      });
     }
   }
 
@@ -16,7 +23,10 @@ class Service {
     try {
       return ExpenseRepository.findExpenseById(expenseId);
     } catch (err) {
-      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Something went wrong',
+      });
     }
   }
 
@@ -30,7 +40,10 @@ class Service {
       };
     } catch (err) {
       console.error('Error => findExpenses() :: ', err);
-      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Something went wrong',
+      });
     }
   }
 
@@ -41,18 +54,29 @@ class Service {
       return expensesResult;
     } catch (err) {
       console.error('Error => getExportsData() :: ', err);
-      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Something went wrong',
+      });
     }
   }
 
-  public async updateExpense(expenseId: string, partialData: Partial<IExpense>) {
+  public async updateExpense(
+    expenseId: string,
+    partialData: Partial<IExpense>,
+  ) {
     try {
       return ExpenseRepository.updateExpense(expenseId, {
         ...partialData,
-        date: partialData.date ? dayjs.tz(partialData.date).toISOString() : undefined,
+        date: partialData.date
+          ? dayjs.tz(partialData.date).toISOString()
+          : undefined,
       });
     } catch (err) {
-      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Something went wrong',
+      });
     }
   }
 
@@ -60,7 +84,10 @@ class Service {
     try {
       return ExpenseRepository.deleteExpense(expenseId);
     } catch (err) {
-      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong' });
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Something went wrong',
+      });
     }
   }
 }
