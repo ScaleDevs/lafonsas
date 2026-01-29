@@ -10,6 +10,12 @@ import InputArray from '@/modules/delivery/components/InputArray';
 import { IOrder } from './DeliveryDetailsReport';
 import Button from '@/components/Button';
 
+const defaultProductTypes = [
+  { label: 'masareal', value: 'masareal' },
+  { label: 'banana-chips', value: 'banana-chips' },
+  { label: 'chicharon', value: 'chicharon' },
+];
+
 const schema = z.object({
   storeId: z.string().min(1, 'Please Choose Store'),
   productType: z.string().min(1, 'Please Input Product Type'),
@@ -50,6 +56,10 @@ export default function EditDeliveryForm({
     'store.getStores',
     { limit: 1000 },
   ]);
+  const {
+    data: productTypesData,
+    isLoading: isLoadingProductTypes,
+  } = trpc.useQuery(['product.getAll']);
   const { mutate } = trpc.useMutation('delivery.update');
   const [storeId, setStoreId] = useState(
     defaultValues.storeId ? defaultValues.storeId : '',
@@ -176,14 +186,17 @@ export default function EditDeliveryForm({
         <SelectField
           required
           label='Product Type'
-          options={[
-            { label: 'masareal', value: 'masareal' },
-            { label: 'banana-chips', value: 'banana-chips' },
-          ]}
+          options={
+            productTypesData?.map((productType: any) => ({
+              label: productType.name,
+              value: productType.value,
+            })) || defaultProductTypes
+          }
           control={control}
           property='productType'
           defaultValue={formDefaultValues?.productType}
           errorMessage={errors.productType?.message}
+          isLoading={isLoadingProductTypes}
         />
       </div>
 
