@@ -26,6 +26,10 @@ export default function CreateDeliveryForm({
     'store.getStores',
     { limit: 1000 },
   ]);
+  const {
+    data: productTypesData,
+    isLoading: isLoadingProductTypes,
+  } = trpc.useQuery(['productType.getAll']);
   const [storeId, setStoreId] = useState(
     defaultValues.storeId ? defaultValues.storeId : '',
   );
@@ -135,13 +139,16 @@ export default function CreateDeliveryForm({
         <SelectField
           required
           label='Product Type'
-          options={[
-            { label: 'masareal', value: 'masareal' },
-            { label: 'banana-chips', value: 'banana-chips' },
-          ]}
+          options={
+            productTypesData?.map((productType: any) => ({
+              label: productType.name,
+              value: productType.value,
+            })) || []
+          }
           control={control}
           property='productType'
           errorMessage={errors.productType?.message}
+          isLoading={isLoadingProductTypes}
         />
       </div>
 
