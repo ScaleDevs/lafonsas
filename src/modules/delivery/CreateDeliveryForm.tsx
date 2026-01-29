@@ -13,6 +13,12 @@ import {
   deliveryFormSchema,
 } from './types';
 
+const defaultProductTypes = [
+  { label: 'masareal', value: 'masareal' },
+  { label: 'banana-chips', value: 'banana-chips' },
+  { label: 'chicharon', value: 'chicharon' },
+];
+
 export interface CreateDeliveryFormProps {
   defaultValues: DeliveryFormSchemaType;
   changeStep: (handleChangeStepParams: HandleChangeStepParams) => void;
@@ -29,7 +35,7 @@ export default function CreateDeliveryForm({
   const {
     data: productTypesData,
     isLoading: isLoadingProductTypes,
-  } = trpc.useQuery(['productType.getAll']);
+  } = trpc.useQuery(['product.getAll']);
   const [storeId, setStoreId] = useState(
     defaultValues.storeId ? defaultValues.storeId : '',
   );
@@ -143,7 +149,7 @@ export default function CreateDeliveryForm({
             productTypesData?.map((productType: any) => ({
               label: productType.name,
               value: productType.value,
-            })) || []
+            })) || defaultProductTypes
           }
           control={control}
           property='productType'
