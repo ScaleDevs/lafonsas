@@ -27,6 +27,12 @@ export interface IListDeliveryFilterProps {
   onSearch: (data: OnDeliverySearchParams) => void;
 }
 
+const defaultProductTypes = [
+  { label: 'masareal', value: 'masareal' },
+  { label: 'banana-chips', value: 'banana-chips' },
+  { label: 'chicharon', value: 'chicharon' },
+];
+
 export default function ListDeliveryFilter({
   onSearch,
   closeModal,
@@ -40,6 +46,10 @@ export default function ListDeliveryFilter({
     'store.getStores',
     { limit: 1000 },
   ]);
+  const {
+    data: productTypesData,
+    isLoading: isLoadingProductTypes,
+  } = trpc.useQuery(['product.getAll']);
   const [date1, setDate1] = useState(startDate);
   const [date2, setDate2] = useState(endDate);
   const [storeId, setStoreId] = useState(!store ? 'ALL' : store);
@@ -110,13 +120,15 @@ export default function ListDeliveryFilter({
           <SelectField
             label='Product Type'
             property='productType'
-            options={[
-              { label: 'masareal', value: 'masareal' },
-              { label: 'banana-chips', value: 'banana-chips' },
-            ]}
+            options={
+              productTypesData?.map((productType: any) => ({
+                label: productType.name,
+                value: productType.value,
+              })) || defaultProductTypes
+            }
             defaultValue={currentProductType}
             onChange={(value) => setProductType(value)}
-            isLoading={isLoading}
+            isLoading={isLoadingProductTypes}
           />
 
           <br />
