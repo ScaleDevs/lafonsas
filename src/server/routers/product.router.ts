@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import { createRouter } from '../createRouter';
 import { authMiddleware } from '../util';
-import { ProductTypeService } from '@/server/services/productType.service';
+import { productService } from '@/server/services/product.service';
 
-export const productTypeRouter = createRouter()
+export const productRouter = createRouter()
     .middleware(authMiddleware)
     .mutation('create', {
         input: z.object({
@@ -12,11 +12,11 @@ export const productTypeRouter = createRouter()
             description: z.string().optional().nullable(),
         }),
         resolve({ input }) {
-            return ProductTypeService.createProductType(input);
+            return productService.createProduct(input);
         },
     })
     .query('getAll', {
         resolve() {
-            return ProductTypeService.findAllProductTypes();
+            return productService.findAllProducts();
         },
     });

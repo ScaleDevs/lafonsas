@@ -1,17 +1,17 @@
-import { ProductTypeRepository } from '@/server/repository/productType.repo';
+import { productRepository } from '@/server/repository/product.repo';
 import { TRPCError } from '@trpc/server';
 
 class Service {
-    public async createProductType(productTypeData: {
+    public async createProduct(productData: {
         name: string;
         value: string;
         description?: string | null;
     }) {
         try {
-            return ProductTypeRepository.createProductType({
-                name: productTypeData.name.trim(),
-                value: productTypeData.value.trim(),
-                description: productTypeData.description?.trim() || null,
+            return productRepository.createProduct({
+                name: productData.name.trim(),
+                value: productData.value.trim(),
+                description: productData.description?.trim() || null,
             });
         } catch (err) {
             throw new TRPCError({
@@ -21,9 +21,9 @@ class Service {
         }
     }
 
-    public async findAllProductTypes() {
+    public async findAllProducts() {
         try {
-            return ProductTypeRepository.findAllProductTypes();
+            return productRepository.findAllProducts();
         } catch (err) {
             throw new TRPCError({
                 code: 'INTERNAL_SERVER_ERROR',
@@ -33,4 +33,4 @@ class Service {
     }
 }
 
-export const ProductTypeService = new Service();
+export const productService = new Service();

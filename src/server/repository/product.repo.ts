@@ -1,23 +1,23 @@
 import prisma from './prisma.client';
 
 class Repository {
-    public async createProductType(productTypeData: {
+    public async createProduct(productData: {
         name: string;
         value: string;
         description?: string | null;
     }) {
         return prisma.productType.create({
             data: {
-                ...productTypeData,
+                ...productData,
             },
         });
     }
 
-    public async findAllProductTypes() {
+    public async findAllProducts() {
         return prisma.productType.findMany({
             orderBy: { name: 'asc' },
         });
     }
 }
 
-export const ProductTypeRepository = new Repository();
+export const productRepository = new Repository();
