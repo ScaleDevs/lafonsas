@@ -107,3 +107,12 @@ model Expense {
   @@index([billId])
   @@index([date])
 }
+
+model ProductType {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  value       String
+  description String?
+
+  @@index([name])
+}

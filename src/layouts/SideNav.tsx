@@ -57,9 +57,8 @@ const NavLinkHouse = ({ title, Icon, links }: INavLinkHouseProps) => {
       </FadeIn>
 
       <div
-        className={`ml-4 border-l-2 transition-[max-height] duration-500 ${
-          collapse ? 'max-h-56 ease-in' : 'max-h-0'
-        } overflow-hidden border-gray-600`}
+        className={`ml-4 border-l-2 transition-[max-height] duration-500 ${collapse ? 'max-h-56 ease-in' : 'max-h-0'
+          } overflow-hidden border-gray-600`}
       >
         {links.map(({ title, path }, index) => (
           <LinkItem key={index} path={path}>
@@ -130,9 +129,8 @@ export default function SideNav() {
       </button>
 
       <div
-        className={`${
-          sideNavOpen ? 'w-[70%] sm:w-64' : 'w-0 sm:w-[3.5rem]'
-        } absolute  z-10 h-full overflow-hidden bg-white shadow-lg transition-[width] duration-500 sm:relative sm:w-64`}
+        className={`${sideNavOpen ? 'w-[70%] sm:w-64' : 'w-0 sm:w-[3.5rem]'
+          } absolute  z-10 h-full overflow-hidden bg-white shadow-lg transition-[width] duration-500 sm:relative sm:w-64`}
       >
         {sideNavOpen ? (
           ''
@@ -196,6 +194,15 @@ export default function SideNav() {
                 links={[
                   { title: 'Create Payment', path: '/payment/create' },
                   { title: 'List Payments', path: '/payment' },
+                ]}
+              />
+
+              <NavLinkHouse
+                title='Products'
+                Icon={() => <IconComp iconName='BoxIcon' iconProps={{}} />}
+                links={[
+                  { title: 'Create Product', path: '/products/create' },
+                  { title: 'List Products', path: '/products' },
                 ]}
               />
               <NavLink path='/login' logout Icon={() => <IconComp iconName='LogoutIcon' iconProps={{}} />}>
